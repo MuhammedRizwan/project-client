@@ -13,19 +13,24 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import Logo from "./Logo";
-import { SearchIcon } from "./SearchIcon";
+import Logo from "../Logo";
+import { SearchIcon } from "../icons/SearchIcon";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { PiPersonArmsSpreadFill } from "react-icons/pi";
 import { FaHome } from "react-icons/fa";
 import { LuPackageSearch } from "react-icons/lu";
 import { GiPostStamp } from "react-icons/gi";
 import { TiContacts } from "react-icons/ti";
-
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
   return (
-    <Navbar shouldHideOnScroll maxWidth={"full"} className="bg-red-600 rounded-b-3xl ">
+    <Navbar
+      shouldHideOnScroll
+      maxWidth={"full"}
+      className="bg-red-500 rounded-b-3xl "
+    >
       <NavbarBrand>
         <Logo />
         <p className="font-bold text-inherit">HEAVEN FINDER</p>
@@ -82,10 +87,10 @@ export default function Header() {
           <Button
             as={Link}
             className=" bg-red-700 text-black"
-            href="/login"
+            href={pathname === "/login" ? "/signup" : "/login"}
             variant="flat"
           >
-            Sign in
+            {pathname === "/login" ? "Sign up" : "Sign in"}
           </Button>
         </NavbarItem>
       </NavbarContent>
@@ -101,18 +106,18 @@ export default function Header() {
           aria-label="Dropdown menu with description"
         >
           <DropdownItem
-           key="agencyLogin" 
-          description="Login as travel agency"
-          className=" text-red-600 font-thin"
-          startContent={<PiPersonArmsSpreadFill/>}
+            key="agencyLogin"
+            description="Login as travel agency"
+            className=" text-red-600 font-thin"
+            startContent={<PiPersonArmsSpreadFill />}
           >
-            Login as agent
+            <Link href="/agent">Login as agent</Link>
           </DropdownItem>
           <DropdownItem
             key="Home"
             description="visit Home page"
             className="lg:hidden sm:block text-danger font-thin"
-            startContent={<FaHome/>}
+            startContent={<FaHome />}
           >
             Home
           </DropdownItem>
@@ -120,8 +125,7 @@ export default function Header() {
             key="Packages"
             description="filter the packages"
             className="lg:hidden sm:block text-danger font-thin"
-            startContent={<LuPackageSearch/>}
-
+            startContent={<LuPackageSearch />}
           >
             Packages
           </DropdownItem>
@@ -130,7 +134,7 @@ export default function Header() {
             key="Blog"
             description="Read the blogs"
             className="lg:hidden sm:block text-danger font-thin"
-            startContent={<GiPostStamp/>}
+            startContent={<GiPostStamp />}
           >
             Blog
           </DropdownItem>
@@ -138,7 +142,7 @@ export default function Header() {
             key="Contact"
             description="for any Queries"
             className="lg:hidden sm:block text-danger font-thin"
-            startContent={<TiContacts/>}
+            startContent={<TiContacts />}
           >
             Contact
           </DropdownItem>

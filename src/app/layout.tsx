@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Navbar";
-import { Providers } from "./providers";
+import { Providers } from "./Provider";
+
 
 export const metadata: Metadata = {
   title: "Heaven finder",
@@ -16,10 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-       <Header/>
-        {children}
-        </Providers>
+     <Providers>{children}</Providers> 
       </body>
     </html>
   );
