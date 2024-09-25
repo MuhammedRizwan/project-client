@@ -1,87 +1,324 @@
 "use client";
-import { Button } from "@nextui-org/react";
-
+import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
-import PasswordInput from "@/components/Inputs/PasswordInput";
-import Inputs from "@/components/Inputs/Inputs";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { useState } from "react";
+import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
+import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { addAgent } from "@/store/reducer/agentReducer";
+import toast from "react-hot-toast";
+import useAgentAuthRedirect from "@/hooks/useAgentAuthRedirect";
 
-export default function AgentSignupPage() {
+interface SignupFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;
+  location: string;
+  document: FileList;
+}
+
+export default function SignupForm() {
+  useAgentAuthRedirect()
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (data: SignupFormData) => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("agency_name", data.username);
+      formData.append("email", data.email);
+      formData.append("phone", data.phone);
+      formData.append("location", data.location);
+      formData.append("password", data.password);
+
+      if (uploadedFile) {
+        formData.append("document", uploadedFile);
+      }else{
+        toast.error("Please Add Any Document")
+        return
+      }
+      const res = await axios.post(
+        "http://localhost:5000/agent/signup",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (res.status === 201) {        
+        const { agent } = res.data;
+        dispatch(addAgent(agent));
+        toast.success(res.data.message);
+        router.push("/agent/verification");
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data || "Couldn't Register";
+      toast.error(errorMessage.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setImagePreview(null);
+      }
+    }
+  };
+
   return (
-    <>
-      <div className="h-full w-full">
-        <div className="p-5 h-full w-full items-center"></div>
-      </div>
-      <div className="h-full w-full flex flex-col md:flex-row justify-between">
-        <div
-          className="flex justify-end items-end bg-cover bg-center w-ful rounded md:rounded-e-3xl md:w-1/2"
-          style={{
-            backgroundImage: `url('/images/Apakunee-Falls-View.webp')`,
-          }}
-        >
-          <div className="h-64 sm:h-80 md:h-96 lg:h-[500px] w-full"></div>
-        </div>
-        <div className="md:w-1/2 w-full px-10 m-2 ">
-          <div className="px-10  ">
-            <h1 className="text-3xl font-bold">Get Started Now</h1>
-            <p>Enter your information to move to the next world</p>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Travel Agency Signup
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex gap-8">
+            <div className="flex-1">
+              <Input
+                size="sm"
+                isClearable
+                variant="bordered"
+                isRequired
+                className="w-full mb-4"
+                type="text"
+                label="Username"
+                placeholder="Type your username"
+                {...register("username", {
+                  required: "Username is required",
+                  minLength: {
+                    value: 5,
+                    message: "Username must be at least 5 characters",
+                  },
+                })}
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.username && errors.username.message}
+              </p>
+
+              <Input
+                size="sm"
+                isClearable
+                isRequired
+                variant="bordered"
+                className="w-full mb-4"
+                type="email"
+                label="Email"
+                placeholder="Type your email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email",
+                  },
+                })}
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.email && errors.email.message}
+              </p>
+
+              <Input
+                size="sm"
+                isClearable
+                isRequired
+                variant="bordered"
+                className="w-full mb-4"
+                type="text"
+                label="Phone"
+                placeholder="Type your phone"
+                {...register("phone", {
+                  required: "Phone is required",
+                  pattern: {
+                    value: /^\d{10}$/,
+                    message: "Phone number must be 10 digits",
+                  },
+                })}
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.phone && errors.phone.message}
+              </p>
+
+              <Input
+                size="sm"
+                isClearable
+                isRequired
+                variant="bordered"
+                className="w-full mb-4"
+                label="Location"
+                placeholder="Type your agency location"
+                {...register("location", {
+                  required: "Location is required",
+                })}
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.location && errors.location.message}
+              </p>
+              <div className="w-full text-center my-4">
+                {loading && loading ? (
+                  <Button
+                    isLoading
+                    type="submit"
+                    className="bg-yellow-700 text-black w-1/2"
+                    variant="flat"
+                  >
+                    Sign Up
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="bg-yellow-700 text-black w-1/2"
+                    variant="flat"
+                  >
+                    Sign Up
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Upload Document (PDF/Image)
+              </label>
+              <input
+                type="file"
+                className="block w-full text-sm text-gray-900 mb-2"
+                accept=".pdf, .jpg, .jpeg, .png"
+                onChange={handleFileUpload}
+              />
+
+              {imagePreview ? (
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Uploaded Image Preview:
+                  </p>
+                  <Image
+                    width={32}
+                    height={32}
+                    src={imagePreview}
+                    alt="Uploaded Preview"
+                    className="w-32 h-32 object-cover rounded-md shadow-md"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-gray-600">
+                    No document uploaded yet
+                  </p>
+                  <Image
+                    width={32}
+                    height={32}
+                    src="/images/documnet.webp"
+                    alt="Dummy Document Preview"
+                    className="w-32 h-32 object-cover rounded-md shadow-md"
+                  />
+                </div>
+              )}
+
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.document && "Please upload a document (PDF or image)"}
+              </p>
+
+              <Input
+                size="sm"
+                isClearable
+                isRequired
+                variant="bordered"
+                label="Password"
+                placeholder="Type your password"
+                type={isVisible ? "text" : "password"}
+                className="w-full mb-4"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                  pattern: {
+                    value: /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+                    message:
+                      "Password must contain an uppercase letter, and a special character",
+                  },
+                })}
+                endContent={
+                  <button
+                    className="focus:outline-none"
+                    type="button"
+                    onClick={toggleVisibility}
+                    aria-label="toggle password visibility"
+                  >
+                    {isVisible ? (
+                      <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    ) : (
+                      <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    )}
+                  </button>
+                }
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.password && errors.password.message}
+              </p>
+
+              <Input
+                size="sm"
+                isClearable
+                isRequired
+                variant="bordered"
+                label="Confirm Password"
+                placeholder="Type your confirm password"
+                className="w-full mb-4"
+                type={isVisible ? "text" : "password"}
+                {...register("confirmPassword", {
+                  required: "Confirm password is required",
+                  validate: (value, formValues) =>
+                    value === formValues.password || "Passwords must match",
+                })}
+              />
+              <p className="text-red-500 text-xs min-h-[20px]">
+                {errors.confirmPassword?.message || ""}
+              </p>
+            </div>
           </div>
 
-          <div className="px-6">
-            <Inputs
-              size="sm"
-              className="max-w-xs m-4"
-              type="Username"
-              label="text"
-              placeholder="Type your username"
-            />{" "}
-            <Inputs
-              className="max-w-xs m-4 "
-              type="email"
-              label="Email"
-              placeholder="Type your email"
-            />{" "}
-            <Inputs
-              className="max-w-xs m-4"
-              type="text"
-              label="Phone"
-              placeholder="Type your phone"
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Type your password"
-              className="max-w-xs m-4"
-            />
-            <PasswordInput
-              label="Confirm password"
-              placeholder="Type your confirm password"
-              className="max-w-xs m-4"
-            />
-            <div className="text-start ms-5 text-sm">
-              Already have an account?{" "}
-              <Link
-                href="/agent"
-                className="font-bold text-red-600 hover:underline"
-              >
-                Sign in
-              </Link>
-            </div>
-            {/* <div className="text-slate-500 font-semibold w-1/2 flex ">
-              <FcGoogle className="m-1" />
-              Sign in with Google
-            </div> */}
-            <div className="w-1/2 text-end my-3">
-              <Button
-                as={Link}
-                className=" bg-red-700 text-black w-36"
-                href="/agentHome"
-                variant="flat"
-              >
-                Sign up
-              </Button>
-            </div>
+          <div className="text-start text-sm mt-4">
+            Already have an account?{" "}
+            <Link
+              href="/agent"
+              className="font-bold text-yellow-700 hover:underline"
+            >
+              Sign in
+            </Link>
           </div>
-        </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

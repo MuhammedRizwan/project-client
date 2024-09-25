@@ -1,6 +1,6 @@
 "use client";
 import { Provider } from "react-redux";
-import { store, persistor } from "../Redux-store/store";
+import { store, persistor } from "../store/store";
 import { NextUIProvider } from "@nextui-org/react";
 import { PersistGate } from "redux-persist/integration/react";
 

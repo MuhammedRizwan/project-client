@@ -1,8 +1,11 @@
+'use client'
 import SignupForm from "@/components/user/forms/SignupForm";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function SignupPage() {
+  useAuthRedirect()
   return (
-    <>
+    <div className=" bg-gray-100">
       <div className="h-full w-full">
         <div className="p-5 h-full w-full items-center"></div>
       </div>
@@ -20,10 +23,9 @@ export default function SignupPage() {
             <h1 className="text-3xl font-bold">Get Started Now</h1>
             <p>Enter your information to move to the next world</p>
           </div>
-          {/* Use the SignupForm component here */}
           <SignupForm />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -5,47 +5,69 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/Redux-store/store";
+import { AppDispatch } from "@/store/store";
 import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import { useState } from "react";
 import axios from "axios";
-import { addUser } from "@/Redux-store/Redux-reducer/userReducer";
+import { addUser, updateUser } from "@/store/reducer/userReducer";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 interface LoginFormData {
   email: string;
   password: string;
 }
+
 export default function LoginForm() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [loading,setLoading]=useState(false)
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>();
+
   const dispatch = useDispatch<AppDispatch>();
+
   const onSubmit = async (data: LoginFormData) => {
-    const res = await axios.post("http://localhost:5000/login", data);
-    if (res.status === 200) {
-      dispatch(addUser(res.data));
-      if (!res.data.userDetails.is_verifyied) {
-        router.push("/verification");
-      } else {
-        router.push("/");
+    try {
+      setLoading(true)
+      const res = await axios.post("http://localhost:5000/login", data);
+      if (res.status === 200) {
+        const { refreshToken ,user} = res.data;
+        dispatch(updateUser(res.data));
+        Cookies.set("refreshToken", refreshToken, {
+          httpOnly: false,
+          expires: 7,
+        });
+        if (user.is_verified) {
+          toast.success(res.data.message)
+          router.push("/"); 
+        } 
       }
-      try {
-      } catch (error) {
-        console.log(res.data.error);
+    } catch (error:any) {
+      if (error.response && error.response.data.redirect) {
+        const { user} = error.response.data;
+        dispatch(addUser(user));
+        router.push(error.response.data.redirect);
+      } {
+        const errorMessage = error?.response?.data || "Login failed";
+      toast.error(errorMessage.message);
+      setLoading(false)
       }
+     
     }
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="p-10  ">
+      <div className="p-10">
         <h1 className="text-3xl font-bold">Welcome Back</h1>
-        <p>enter your credentials to access your acount</p>
+        <p>Enter your credentials to access your account</p>
       </div>
 
       <div className="px-6">
@@ -69,11 +91,12 @@ export default function LoginForm() {
         <p className="text-red-500 mx-5 text-xs min-h-[20px]">
           {errors.email && errors.email.message}
         </p>
+
         <Input
           isRequired
           variant="bordered"
           label="Password"
-          placeholder="Type your confirm password"
+          placeholder="Type your password"
           className="max-w-xs mx-4"
           {...register("password", {
             required: "Password is required",
@@ -108,29 +131,43 @@ export default function LoginForm() {
         </p>
 
         <div className="text-start ms-5 font-semibold">
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/forget-password" className="text-sm hover:underline">
             Forgot password?
           </Link>
         </div>
+
         <div className="w-1/2 text-end my-3">
+        {loading && loading?(
           <Button
+          isLoading
             type="submit"
-            className=" bg-red-700 text-black w-36"
+            className="bg-yellow-600 text-black w-36"
             variant="flat"
           >
             Sign in
           </Button>
+        ):(
+          <Button
+            type="submit"
+            className="bg-yellow-600 text-black w-36"
+            variant="flat"
+          >
+            Sign in
+          </Button>
+        )}
+          
         </div>
+
         <div className="flex items-start text-start p-4 text-sm">
-          <div className="text-slate-500 font-semibold w-1/2 flex ">
+          <div className="text-slate-500 font-semibold w-1/2 flex">
             <FcGoogle className="m-1" />
             Sign in with Google
           </div>
           <div className="text-slate-500 font-semibold">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <Link
               href="/signup"
-              className="font-bold text-red-600 hover:underline"
+              className="font-bold text-yellow-600 hover:underline"
             >
               Sign up
             </Link>

@@ -3,13 +3,14 @@ import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/Redux-store/store";
-import { addUser } from "@/Redux-store/Redux-reducer/userReducer";
+import { AppDispatch } from "@/store/store";
+import { addUser } from "@/store/reducer/userReducer";
 import { useState } from "react";
 import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface SignupFormData {
   username: string;
@@ -20,6 +21,7 @@ interface SignupFormData {
 }
 
 export default function SignupForm() {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -30,18 +32,20 @@ export default function SignupForm() {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
+      setLoading(true);
       const res = await axios.post("http://localhost:5000/signup", data);
       if (res.status === 201) {
-        dispatch(addUser(res.data.userDetails));
-        localStorage.setItem("token", JSON.stringify(res.data.acessToken));
-        if (!res.data.userDetails.is_verifyied) {
+        const { user } = res.data;
+        dispatch(addUser(user));
+        if (!res.data.user.is_verified) {
+          toast.success(res.data.message);
           router.push("/verification");
         }
-      } else {
-        console.log(res);
       }
-    } catch (error) {
-      console.log("User already exists");
+    } catch (error: any) {
+      setLoading(false);
+      const errorMessage = error?.response?.data || "signup failed";
+      toast.error(errorMessage.message);
     }
   };
 
@@ -181,20 +185,31 @@ export default function SignupForm() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-bold text-red-600 hover:underline"
+            className="font-bold text-yellow-700 hover:underline"
           >
             Sign in
           </Link>
         </div>
 
         <div className="w-1/2 text-end my-3">
-          <Button
-            type="submit"
-            className="bg-red-700 text-black w-36"
-            variant="flat"
-          >
-            Sign Up
-          </Button>
+          {loading && loading ? (
+            <Button
+              isLoading
+              type="submit"
+              className="bg-yellow-700 text-black w-36"
+              variant="flat"
+            >
+              Sign Up
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="bg-yellow-700 text-black w-36"
+              variant="flat"
+            >
+              Sign Up
+            </Button>
+          )}
         </div>
       </form>
     </div>

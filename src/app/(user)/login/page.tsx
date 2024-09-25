@@ -1,8 +1,13 @@
+'use client'
 import LoginForm from "@/components/user/forms/LoginForm";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
+
+
 
 export default function LoginPage() {
+  useAuthRedirect()
   return (
-    <>
+    <div className=" bg-gray-100">
       <div className="h-full w-full">
         <div className="p-5 h-full w-full items-center"></div>
       </div>
@@ -21,6 +26,6 @@ export default function LoginPage() {
           <div className="h-64 sm:h-80 md:h-96 lg:h-[500px] w-full"></div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
