@@ -1,4 +1,4 @@
-import Sidebar from "@/components/admin/SideBar";
+import Agentsidebar from "@/components/agent/agentSidebar";
 import type { Metadata } from "next";
 
 
@@ -14,7 +14,7 @@ export default function AdminLayout({
 }>) {
   return (
     <div className="flex min-h-screen bg-gray-100"> 
-      <Sidebar Name="DASHBOARD" />
+      <Agentsidebar Name="DASHBOARD" />
       <div className="flex-1 p-8">
         {children}
       </div>

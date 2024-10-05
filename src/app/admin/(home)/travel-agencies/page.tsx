@@ -1,10 +1,11 @@
 "use client";
-import BlockModal from "@/components/admin/modal/blockModal";
+import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import { Agent } from "@/interfaces/agent";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function TravelAgencies() {
   const router = useRouter();
@@ -65,9 +66,16 @@ export default function TravelAgencies() {
         const response = await axios.get(
           "http://localhost:5000/admin/travel-agencies"
         );
-        setAgent(response.data);
-      } catch (err) {
+        const {agencies}=response.data
+        setAgent(agencies);
+      } catch (error) {
         setError("Error fetching users");
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data || "Fetching Failed";
+          toast.error(errorMessage.message);
+        } else {
+          toast.error("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -91,8 +99,8 @@ export default function TravelAgencies() {
           { id: selectedAgent._id, is_block: newStatus }
         );
         if (res.status === 200) {
-          const updatedAgent = res.data;
-          console.log(res.data);
+          const updatedAgent = res.data.agent;
+          toast.success(res.data.message)
 
           setAgent((prevAgent) =>
             prevAgent.map((agent) =>
@@ -102,6 +110,12 @@ export default function TravelAgencies() {
         }
       } catch (error) {
         setError("Error fetching users");
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data || "Action failed";
+          toast.error(errorMessage.message);
+        } else {
+          toast.error("An unknown error occurred");
+        }
       } finally {
         setShowModal(false);
       }

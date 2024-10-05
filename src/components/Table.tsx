@@ -62,7 +62,7 @@ const Table = <T extends object>({ columns, data }: TableProps<T>) => {
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className="px-5 py-3 font-semibold text-xs uppercase tracking-wider text-left"
+                  className="px-6 py-3 font-semibold text-xs uppercase tracking-wider text-left bg-gray-50"
                 >
                   {column.label}
                 </th>

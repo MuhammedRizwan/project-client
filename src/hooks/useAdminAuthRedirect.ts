@@ -4,14 +4,15 @@ import { RootState} from "@/store/store";
 import { useSelector } from "react-redux";
 
 
-const useAuthRedirect=()=>{
+const useAdminAuthRedirect=()=>{
     const router = useRouter();
-    const accessToken = useSelector((state: RootState) => state.user.accessToken);
+    const accessToken = useSelector((state: RootState) => state.admin.accessToken);
+  
     useEffect(() => {
       if (accessToken) {
-        router.replace("/");
+        router.replace("/admin/dashboard");
       }
     }, [accessToken, router]);
   };
 
-export default useAuthRedirect;
+export default useAdminAuthRedirect;

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React from "react";
 import {
   Navbar,
@@ -8,16 +8,16 @@ import {
   Button,
 } from "@nextui-org/react";
 import Logo from "../Logo";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { logout } from "@/store/reducer/agentReducer";
+import { logout } from "@/store/reducer/adminReducer";
+
 
 export default function AdminNavbar() {
-  const router=useRouter()
-  const dispatch=useDispatch()
-  const pathname=usePathname()
-  const {accessToken}=useSelector((state:RootState)=>state.agent)
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { accessToken } = useSelector((state: RootState) => state.admin);
   return (
     <Navbar shouldHideOnScroll maxWidth={"full"}>
       <NavbarBrand>
@@ -27,21 +27,28 @@ export default function AdminNavbar() {
 
       <NavbarContent justify="end">
         <NavbarItem>
-          {accessToken?( <Button 
-          onClick={()=>{
-            dispatch(logout())
-            router.push('/admin');
-          }}
-           color="primary"  variant="flat">
-            Logout
-          </Button>):( <Button 
-          onClick={()=>{
-            router.push('/admin');
-          }}
-           color="primary"  variant="flat">
-            Login
-          </Button>)}
-         
+          {accessToken ? (
+            <Button
+              onClick={() => {
+                dispatch(logout());
+                router.push("/admin");
+              }}
+              color="primary"
+              variant="flat"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                router.push("/admin");
+              }}
+              color="primary"
+              variant="flat"
+            >
+              Login
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
     </Navbar>

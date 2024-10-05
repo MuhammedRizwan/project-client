@@ -1,6 +1,5 @@
 "use client";
 import { Button, Input } from "@nextui-org/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -10,6 +9,7 @@ import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import { useState } from "react";
 import axios from "axios";
 import { addAdmin } from "@/store/reducer/adminReducer";
+import toast from "react-hot-toast";
 
 interface LoginFormData {
   email: string;
@@ -19,6 +19,7 @@ export default function AdminLoginForm() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -26,10 +27,22 @@ export default function AdminLoginForm() {
   } = useForm<LoginFormData>();
   const dispatch = useDispatch<AppDispatch>();
   const onSubmit = async (data: LoginFormData) => {
-    const res = await axios.post("http://localhost:5000/admin/login", data);
-    if (res.status === 200) {
-      dispatch(addAdmin(res.data));
-      router.push("/admin/dashboard");
+    try {
+      setLoading(true)
+      const res = await axios.post("http://localhost:5000/admin/login", data);
+      if (res.status === 200) {
+        dispatch(addAdmin(res.data));
+        toast.success(res.data.message);
+        router.push("/admin/dashboard");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Login failed";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+      setLoading(false);
     }
   };
   return (
@@ -98,16 +111,10 @@ export default function AdminLoginForm() {
           {errors.password?.message || ""}
         </p>
 
-        <div className="text-start ms-5 font-semibold">
-          <Link
-            href="/agent/forget-password"
-            className="text-sm hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
+      
         <div className="w-1/2 text-end my-3">
           <Button
+          isLoading={loading}
             type="submit"
             className="  bg-yellow-600 text-black w-36"
             variant="flat"

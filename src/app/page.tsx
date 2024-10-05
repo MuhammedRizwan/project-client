@@ -4,11 +4,9 @@ import Hero from "@/components/home/Hero";
 import Packages from "@/components/home/Packages";
 import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/user/Footer";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 
-export default function Home() {
-  const state=useSelector((state:RootState)=>state.user)  
+
+export default function Home() { 
   return (
     <div>
       <Header />

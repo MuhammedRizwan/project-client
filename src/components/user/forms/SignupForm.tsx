@@ -42,10 +42,14 @@ export default function SignupForm() {
           router.push("/verification");
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false);
-      const errorMessage = error?.response?.data || "signup failed";
-      toast.error(errorMessage.message);
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Signup Failed";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
 

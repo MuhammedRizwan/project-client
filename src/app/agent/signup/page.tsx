@@ -71,9 +71,13 @@ export default function SignupForm() {
         toast.success(res.data.message);
         router.push("/agent/verification");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Couldn't Register";
-      toast.error(errorMessage.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Couldn't Register";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }

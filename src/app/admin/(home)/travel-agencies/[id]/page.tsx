@@ -2,7 +2,9 @@
 import { Agent } from "@/interfaces/agent";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import BlockModal from "@/components/admin/modal/blockModal";
+import BlockModal from "@/components/modal/blockModal";
+import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function ProfileCard({ params }: { params: { id: string } }) {
   const [agent, setAgent] = useState<Agent | null>(null);
@@ -18,10 +20,16 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
         const response = await axios.get(
           `http://localhost:5000/admin/travel-agencies/${params.id}`
         );
-        setAgent(response.data);
+        setAgent(response.data.agent);
         setIsBlocked(response.data.is_block);
-      } catch (err) {
+      } catch (error) {
         setError("Error fetching agent details");
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data || "Fetching Failed";
+          toast.error(errorMessage.message);
+        } else {
+          toast.error("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -32,13 +40,22 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const toggleBlockStatus = async () => {
     try {
-      await axios.patch("http://localhost:5000/admin/travel-agencies/block", {
+      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/block", {
         id: params.id,
         is_block: !isBlocked,
       });
-      setIsBlocked((prev) => !prev);
-    } catch (err) {
+      if(res.status==200){
+        setIsBlocked((prev) => !prev);
+        toast.success(res.data.message)
+      }
+    } catch (error) {
       setError("Error updating block status");
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Action Failed";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setShowModal(false);
     }
@@ -50,13 +67,22 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleAccept = async () => {
     try {
-      await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
+      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
         id: params.id,
         admin_verified: "accept",
       });
-      setAgent((prev) => prev && { ...prev, admin_verified: "accept" });
-    } catch (err) {
+      if(res.status==200){
+        toast.success(res.data.message)
+        setAgent((prev) => prev && { ...prev, admin_verified: "accept" });
+      }
+    } catch (error) {
       setError("Error accepting agent");
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Action Failed";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setIsReadOnly(true);
     }
@@ -64,13 +90,22 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleReject = async () => {
     try {
-      await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
+      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
         id: params.id,
         admin_verified: "reject",
       });
-      setAgent((prev) => prev && { ...prev, admin_verified: "reject" });
-    } catch (err) {
-      setError("Error rejecting agent");
+      if(res.status==200){
+        toast.success(res.data.message)
+        setAgent((prev) => prev && { ...prev, admin_verified: "reject" });
+      }
+    } catch (error) {
+      setError("Error accepting agent");
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Action Failed";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setIsReadOnly(true);
     }
@@ -131,7 +166,7 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
       <div className="flex flex-col items-center">
         {documentUrl && isImage && (
-          <img
+          <Image
             src={documentUrl}
             alt="Uploaded Image"
             className="w-32 h-32 rounded-lg shadow mb-4"

@@ -1,10 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import BlockModal from "@/components/admin/modal/blockModal";
+import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import { User } from "@/interfaces/user";
+import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function userList() {
   const [users, setUsers] = useState<User[]>([]);
@@ -34,14 +36,14 @@ export default function userList() {
       key: "is_block",
       label: "Block/Unblock",
       render: (user: User) => (
-        <button
+        <Button
           onClick={() => handleBlockClick(user)}
           className={`px-4 py-2 ${
             user.is_block ? "bg-green-500" : "bg-red-500"
           } text-white rounded w-20`}
         >
           {user.is_block ? "Unblock" : "Block"}
-        </button>
+        </Button>
       ),
     },
   ];
@@ -49,21 +51,29 @@ export default function userList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const response = await axios.get("http://localhost:5000/admin/users");
-        setUsers(response.data);
-      } catch (err) {
+        if(response.status==200){
+          const {users}=response.data
+          setUsers(users);
+        }
+      } catch (error) {
         setError("Error fetching users");
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data || "Fetching Failed";
+          toast.error(errorMessage.message);
+        } else {
+          toast.error("An unknown error occurred");
+        }
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-  console.log(users);
   const handleBlockClick = (user: User) => {
     setSelectedUser(user);
     setShowModal(true);
@@ -77,9 +87,8 @@ export default function userList() {
           { id: selectedUser._id, is_block: newStatus }
         );
         if (res.status === 200) {
-          const updatedUser = res.data;
-          console.log(res.data);
-
+          const updatedUser = res.data.user;
+          toast.success(res.data.message)
           setUsers((prevUsers) =>
             prevUsers.map((user) =>
               user._id === updatedUser._id ? updatedUser : user
@@ -88,6 +97,12 @@ export default function userList() {
         }
       } catch (error) {
         setError("Error fetching users");
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data || "Action Failed";
+          toast.error(errorMessage.message);
+        } else {
+          toast.error("An unknown error occurred");
+        }
       } finally {
         setShowModal(false);
       }

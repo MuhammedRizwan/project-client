@@ -8,7 +8,6 @@ const Gallery = () => {
             <img src="/gallery-2.jpg" alt="Gallery 2" className="rounded-lg shadow-lg"/>
             <img src="/gallery-3.jpg" alt="Gallery 3" className="rounded-lg shadow-lg"/>
             <img src="/gallery-4.jpg" alt="Gallery 4" className="rounded-lg shadow-lg"/>
-            {/* Add more images if needed */}
           </div>
         </div>
       </section>

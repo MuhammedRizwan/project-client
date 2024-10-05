@@ -14,6 +14,7 @@ import { addUser, updateUser } from "@/store/reducer/userReducer";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
+
 interface LoginFormData {
   email: string;
   password: string;
@@ -49,16 +50,21 @@ export default function LoginForm() {
           router.push("/"); 
         } 
       }
-    } catch (error:any) {
-      if (error.response && error.response.data.redirect) {
-        const { user} = error.response.data;
-        dispatch(addUser(user));
-        router.push(error.response.data.redirect);
-      } {
-        const errorMessage = error?.response?.data || "Login failed";
-      toast.error(errorMessage.message);
-      setLoading(false)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data.redirect) {
+          const { user} = error.response.data;
+          dispatch(addUser(user));
+          router.push(error.response.data.redirect);
+        } else{
+          const errorMessage = error?.response?.data || "Login failed";
+        toast.error(errorMessage.message);
+        setLoading(false)
+        }
+      } else {
+        toast.error("An unknown error occurred");
       }
+      
      
     }
   };
@@ -158,13 +164,16 @@ export default function LoginForm() {
           
         </div>
 
-        <div className="flex items-start text-start p-4 text-sm">
+        <div className="flex items-start text-start p- text-sm">
           <div className="text-slate-500 font-semibold w-1/2 flex">
-            <FcGoogle className="m-1" />
-            Sign in with Google
+          <Button >
+          <FcGoogle className="m-1" />
+          Sign in with Google
+          </Button>
+          
           </div>
           <div className="text-slate-500 font-semibold">
-            Don't have an account?{" "}
+            Do not have an account?{" "}
             <Link
               href="/signup"
               className="font-bold text-yellow-600 hover:underline"

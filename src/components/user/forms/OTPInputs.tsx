@@ -16,7 +16,7 @@ export default function OTPInputs() {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const dispatch = useDispatch<AppDispatch>();
-  const { user, accessToken } = useAppSelector((state) => state.user);
+  const { user} = useAppSelector((state) => state.user);
 
   useEffect(() => {
     if (timer > 0) {
@@ -69,9 +69,13 @@ export default function OTPInputs() {
         toast.success(res.data.message);
         router.push("/");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Failed to verify";
-      toast.error(errorMessage.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Failed to verify OTP";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
   const handleResendOtp = async () => {

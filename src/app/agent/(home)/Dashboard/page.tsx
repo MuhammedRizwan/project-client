@@ -1,8 +1,5 @@
-'use client'
-import { useState } from "react";
 
 export default function TravelDashboard() {
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex">

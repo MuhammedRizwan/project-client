@@ -13,10 +13,11 @@ interface ForgetPassword {
   confirmPassword: string;
 }
 
-export default function forgotPassword() {
+export default function ForgotPassword() {
   useAgentAuthRedirect()
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", ""]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [otpData, setOtpData] = useState("");
   const [verified, setVerified] = useState({ email: "", otp: "" });
@@ -92,9 +93,13 @@ export default function forgotPassword() {
         toast.success("Email verified");
         toast.success("OTP send");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Not verified";
-      toast.error(errorMessage.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Not verified";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoader((prev) => ({ ...prev, email: false }));
     }
@@ -113,7 +118,8 @@ export default function forgotPassword() {
       } else {
         toast.error("Insert a valid otp");
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as Error;
       toast.error(error.message);
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
@@ -133,9 +139,13 @@ export default function forgotPassword() {
         toast.success(res.data.message);
         router.push("/agent");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Couldn't change password";
-      toast.error(errorMessage.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Couldn't change password";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
     }

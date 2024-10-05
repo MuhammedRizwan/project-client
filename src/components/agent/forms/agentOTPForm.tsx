@@ -74,9 +74,13 @@ export default function AgentOTPInputs() {
         toast.success(res.data.message);
         router.push("/agent");
       } 
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Incorrect OTP";
-      toast.error(errorMessage.message);
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data || "Invalid OTP";
+            toast.error(errorMessage.message);
+          } else {
+            toast.error("An unknown error occurred");
+          }
     }
   };
   const handleResendOtp = async () => {
@@ -91,9 +95,13 @@ export default function AgentOTPInputs() {
           setTimer(30);
         }
       } 
-    } catch (error:any) {
-        const errorMessage = error?.response?.data || "Couldn't Resend OTP";
-        toast.error(errorMessage.message);
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data || "couldn't send OTP";
+            toast.error(errorMessage.message);
+          } else {
+            toast.error("An unknown error occurred");
+          }
     }
   };
   return (

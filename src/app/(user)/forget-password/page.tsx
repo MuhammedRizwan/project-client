@@ -13,7 +13,8 @@ interface ForgetPassword {
   confirmPassword: string;
 }
 
-export default function forgotPassword() {
+export default function ForgotPassword() {
+  useAuthRedirect()
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
@@ -89,9 +90,13 @@ export default function forgotPassword() {
         toast.success("Email verified");
         toast.success("OTP send");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Not verified";
-      toast.error(errorMessage.message);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Not verified";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoader((prev) => ({ ...prev, email: false }));
     }
@@ -110,8 +115,9 @@ export default function forgotPassword() {
       } else {
         toast.error("Insert a valid otp");
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      const err=error as Error
+      toast.error(err.message);
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
     }
@@ -129,9 +135,13 @@ export default function forgotPassword() {
         toast.success(res.data.message);
         router.push("/login");
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data || "Couldn't change password";
-      toast.error(errorMessage.message);
+    } catch (error) {
+       if (axios.isAxiosError(error)) {
+    const errorMessage = error.response?.data || "Couldn't change password";
+    toast.error(errorMessage.message);
+  } else {
+    toast.error("An unknown error occurred");
+  }
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
     }

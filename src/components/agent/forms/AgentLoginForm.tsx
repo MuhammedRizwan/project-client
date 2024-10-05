@@ -37,15 +37,20 @@ export default function AgentLoginForm() {
         dispatch(updateAgent(res.data));
         router.push("/agent");
       }
-    } catch (error: any) {
-      if (error.response && error.response.data.redirect) {
-        const { agent } = error.response.data;
-        dispatch(addAgent(agent));
-        router.push(error.response.data.redirect);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data.redirect) {
+          const { agent } = error.response.data;
+          dispatch(addAgent(agent));
+          router.push(error.response.data.redirect);
+        } else {
+          const errorMessage = error?.response?.data || "Login failed";
+          toast.error(errorMessage.message);
+        }
       } else {
-        const errorMessage = error?.response?.data || "Login failed";
-        toast.error(errorMessage.message);
+        toast.error("An unknown error occurred");
       }
+    
     } finally {
       setLoading(false);
     }
