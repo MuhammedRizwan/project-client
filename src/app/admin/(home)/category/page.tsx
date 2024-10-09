@@ -191,7 +191,6 @@ export default function Categories() {
       if (selectedFile) {
         formData.append("image", selectedFile);
       }
-      
       const response = await axios.post(
         `http://localhost:5000/admin/category/update/${selectedCategory?._id}`,
         formData,

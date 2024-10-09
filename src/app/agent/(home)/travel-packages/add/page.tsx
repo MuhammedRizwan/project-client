@@ -19,7 +19,7 @@ const AddPackagePage = () => {
         toast.error("Please login to add package");
         return;
       }
-      const res = await axios.post("http://localhost:5000/agent/package/add",{agentId:agent._id, ...data},{
+      const res = await axios.post("http://localhost:5000/agent/package/add",{travel_agent_id:agent._id, ...data},{
         headers: {
           'Content-Type': 'multipart/form-data'
         }

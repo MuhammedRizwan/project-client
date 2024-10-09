@@ -13,18 +13,18 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
 export interface PackageFormValues {
-  packageName: string;
+  package_name: string;
   category: Category[];
-  maxPerson: number;
-  noOfDays: number;
-  noOfNights: number;
+  max_person: number;
+  no_of_days: number;
+  no_of_nights: number;
   destinations: string[];
-  price: number;
+  original_price: number;
   itineraries: {
     day: number;
     activities: { time: string; activity: string }[];
   }[];
-  images: string[];
+  images: File[];
 }
 
 interface PackageFormProps {
@@ -56,7 +56,7 @@ export default function PackageForm({
       ...initialData,
     },
   });
-  const [images, setImages] = useState<string[]>(initialData?.images || []);
+  const [images, setImages] = useState<File[]>([]);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "itineraries",
@@ -65,7 +65,7 @@ export default function PackageForm({
   useEffect(() => {
     if (initialData) {
       reset(initialData);
-      setImages(initialData.images || []);
+      setImages([]);
     }
   }, [initialData, reset]);
 
@@ -137,21 +137,20 @@ export default function PackageForm({
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const fileArray = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      );
+      const fileArray = Array.from(files); // Store the files directly
       setImages((prevImages) => [...prevImages, ...fileArray]);
-      setValue("images", [...getValues("images"), ...fileArray]);
+      // Update the form value to include the file names (optional)
+      setValue("images", fileArray);
     }
   };
 
   const handleDelete = (index: number) => {
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
-    setValue("images", updatedImages);
-    URL.revokeObjectURL(images[index]);
+    setValue("images", updatedImages); // Adjust image names
   };
 
+  
   const handleChange = (index: number) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -160,9 +159,8 @@ export default function PackageForm({
       const target = event.target as HTMLInputElement;
       if (target && target.files && target.files[0]) {
         const newImageFile = target.files[0];
-        const newImageUrl = URL.createObjectURL(newImageFile);
         const updatedImages = [...images];
-        updatedImages[index] = newImageUrl;
+        updatedImages[index] = newImageFile;
         setImages(updatedImages);
         setValue("images", updatedImages);
       }
@@ -170,8 +168,36 @@ export default function PackageForm({
     fileInput.click();
   };
 
+  // Submit handler
+  const onSubmitHandler = (data: PackageFormValues) => {
+    const formData = new FormData();
+    formData.append("packageName", data.package_name);
+    formData.append("maxPerson", data.max_person.toString());
+    formData.append("noOfDays", data.no_of_days.toString());
+    formData.append("noOfNights", data.no_of_nights.toString());
+    formData.append("price", data.original_price.toString());
+    formData.append("category", JSON.stringify(data.category));
+    formData.append("destinations", JSON.stringify(data.destinations));
+    formData.append("itineraries", JSON.stringify(data.itineraries));
+    images.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
+    const packageFormValues: PackageFormValues = {
+      package_name: data.package_name,
+      category: JSON.parse(formData.get("category") as string),
+      max_person: parseInt(formData.get("maxPerson") as string),
+      no_of_days: parseInt(formData.get("noOfDays") as string),
+      no_of_nights: parseInt(formData.get("noOfNights") as string),
+      original_price: parseInt(formData.get("price") as string),
+      destinations: JSON.parse(formData.get("destinations") as string),
+      itineraries: JSON.parse(formData.get("itineraries") as string),
+      images: images,
+    };
+    onSubmit(packageFormValues);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmitHandler)}>
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl">
         <h1 className="text-2xl font-bold mb-4">{formTitle}</h1>
         <p className="text-gray-600">
@@ -187,7 +213,7 @@ export default function PackageForm({
               Package Name
             </label>
             <Input
-              {...register("packageName", {
+              {...register("package_name", {
                 required: "Package name is required",
                 maxLength: {
                   value: 30,
@@ -204,7 +230,7 @@ export default function PackageForm({
                     const capitalizedValue = value.replace(/\b\w/g, (char) =>
                       char.toUpperCase()
                     );
-                    setValue("packageName", capitalizedValue);
+                    setValue("package_name", capitalizedValue);
                     return true;
                   },
                 },
@@ -212,7 +238,7 @@ export default function PackageForm({
               placeholder="Type Package Name"
             />
             <p className="text-red-500 text-xs min-h-[20px]">
-              {errors.packageName?.message || ""}
+              {errors.package_name?.message || ""}
             </p>
           </div>
 
@@ -274,7 +300,7 @@ export default function PackageForm({
               Maximum Person
             </label>
             <Input
-              {...register("maxPerson", {
+              {...register("max_person", {
                 required: "Maximum person count is required",
                 pattern: {
                   value: /^[0-9]+$/,
@@ -292,7 +318,7 @@ export default function PackageForm({
               placeholder="Maximum Person can go"
             />
             <p className="text-red-500 text-xs min-h-[20px]">
-              {errors.maxPerson?.message || ""}
+              {errors.max_person?.message || ""}
             </p>
           </div>
 
@@ -305,7 +331,7 @@ export default function PackageForm({
             </label>
             <Input
               type="number"
-              {...register("noOfDays", {
+              {...register("no_of_days", {
                 required: "Number of days is required",
                 min: { value: 1, message: "Number of days must be at least 1" },
                 max: {
@@ -318,7 +344,7 @@ export default function PackageForm({
               max={10}
             />
             <p className="text-red-500 text-xs min-h-[20px]">
-              {errors.noOfDays?.message || ""}
+              {errors.no_of_days?.message || ""}
             </p>
           </div>
 
@@ -331,7 +357,7 @@ export default function PackageForm({
             </label>
             <Input
               type="number"
-              {...register("noOfNights", {
+              {...register("no_of_nights", {
                 required: "Number of nights is required",
                 min: {
                   value: 0,
@@ -343,7 +369,7 @@ export default function PackageForm({
                 },
                 validate: {
                   adjustDays: (nights) => {
-                    const days = getValues("noOfDays");
+                    const days = getValues("no_of_days");
                     if (nights - days > 1 || nights - days < -1) {
                       return "Days must be either Nights - 1 or Nights + 1.";
                     }
@@ -354,7 +380,7 @@ export default function PackageForm({
               placeholder="Number Of Nights"
             />
             <p className="text-red-500 text-xs min-h-[20px]">
-              {errors.noOfNights?.message || ""}
+              {errors.no_of_nights?.message || ""}
             </p>
           </div>
         </div>
@@ -423,7 +449,7 @@ export default function PackageForm({
             </label>
             <Input
               type="number"
-              {...register("price", {
+              {...register("original_price", {
                 required: "Price is required",
                 min: {
                   value: 1,
@@ -433,7 +459,7 @@ export default function PackageForm({
               placeholder="Price of package"
             />
             <p className="text-red-500 text-xs min-h-[20px]">
-              {errors.price?.message || ""}
+              {errors.original_price?.message || ""}
             </p>
           </div>
         </div>
@@ -503,7 +529,7 @@ export default function PackageForm({
           {images.map((image, index) => (
             <div key={index} className="relative">
               <Image
-                src={image}
+                src={URL.createObjectURL(images[index])}
                 alt={`Uploaded image ${index + 1}`}
                 width={300}
                 height={200}
