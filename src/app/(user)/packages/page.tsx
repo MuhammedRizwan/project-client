@@ -1,7 +1,9 @@
 'use client'
+import Spinnerpage from "@/app/loading";
 import Package from "@/interfaces/package";
 import axios from "axios";
 import { Bed, Plane, Car } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -29,7 +31,7 @@ export default function Component() {
     };
     fetchData();
   },[]);
-  console.log(packages)
+  if(loading)return <Spinnerpage/>
   return (
     <div className="min-h-screen bg-gray-100">
       <div
@@ -73,7 +75,9 @@ export default function Component() {
               key={index}
               className="bg-white rounded-lg shadow-lg overflow-hidden"
             >
-              <img
+              <Image
+                width={500}
+                height={300}
                 src={dest.images[0]}
                 alt={dest.package_name}
                 className="w-full h-48 object-cover"

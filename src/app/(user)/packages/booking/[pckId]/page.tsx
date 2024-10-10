@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export default function BookingForm({ params }: { params: { pckId: string } }) {
+  console.log(params.pckId)
   const router=useRouter()
   const [formData, setFormData] = useState({
     firstName: '',
@@ -50,8 +51,7 @@ export default function BookingForm({ params }: { params: { pckId: string } }) {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Book Now</h1>
       <p className="text-gray-600 mb-6">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat elit sed pretium,
-        egestas sed sit orem ipsum dolor sit amet.
+        Please fill out the form below to book your trip.
       </p>
 
       <div className="flex flex-col md:flex-row gap-8">

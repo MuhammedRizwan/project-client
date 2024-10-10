@@ -4,8 +4,10 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Package from '@/interfaces/package';
+import { useRouter } from 'next/navigation';
 
-export default function Component({ params }: { params: { packageId: string } }) {
+export default function PackagePage({ params }: { params: { packageId: string } }) {
+    const router=useRouter()
     const [packageData, setPackageData] = useState<Package | null>(null);
     useEffect(() => {
         const fetchData = async () => {
@@ -21,7 +23,7 @@ export default function Component({ params }: { params: { packageId: string } })
           }
         };
         fetchData();
-    },[])
+    },[params.packageId]);
   return (
     <div className="min-h-screen bg-white">
       <main className="container mx-auto px-4 py-8">
@@ -31,7 +33,7 @@ export default function Component({ params }: { params: { packageId: string } })
             <h1 className="text-3xl font-bold mt-4">{packageData?.package_name}</h1>
             <div className="flex items-center mt-2">
               <span className="text-2xl font-bold text-blue-600">₹{packageData?.offer_price}</span>
-              <button className="ml-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Book Now</button>
+              <button className="ml-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600" onClick={() =>{router.push(`/packages/booking/${packageData?._id}`)}}>Book Now</button>
             </div>
             <div className="flex items-center mt-2">
               <span className="text-sm text-gray-600 mr-2">Review 4.5/5</span>
@@ -44,7 +46,7 @@ export default function Component({ params }: { params: { packageId: string } })
             <Image src={packageData?.images[1]||"/default-image.jpg"} alt="Another waterfall view" width={500} height={300} className="rounded-lg" />
             <h2 className="text-xl font-semibold mt-4">About {packageData?.package_name}</h2>
             <p className="mt-2 text-gray-600">
-              Iguazu Falls, one of the world's largest waterfalls, spans the border between Brazil and Argentina. The falls divide the river into the upper and lower Iguazu. This natural wonder is surrounded by lush subtropical rainforest, home to diverse wildlife.
+              Iguazu Falls, one of the world&apos;s largest waterfalls, spans the border between Brazil and Argentina. The falls divide the river into the upper and lower Iguazu. This natural wonder is surrounded by lush subtropical rainforest, home to diverse wildlife.
             </p>
           </div>
         </div>

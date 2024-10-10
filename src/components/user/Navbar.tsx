@@ -57,7 +57,7 @@ export default function Header() {
           <NavbarItem>
             <Link
               className="text-blck hover:font-bold inline-block w-20"
-              href="#"
+              href=""
             >
               PACKAGES
             </Link>

@@ -13,6 +13,7 @@ import axios from "axios";
 import { addUser, updateUser } from "@/store/reducer/userReducer";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 
 interface LoginFormData {
@@ -21,6 +22,7 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -68,6 +70,14 @@ export default function LoginForm() {
      
     }
   };
+  if (session) {
+    return (
+      <>
+        <p>Signed in as {session.user!.email}</p>
+        <button onClick={() => signOut()}>Sign out</button>
+      </>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -163,10 +173,11 @@ export default function LoginForm() {
         )}
           
         </div>
+        
 
         <div className="flex items-start text-start p- text-sm">
           <div className="text-slate-500 font-semibold w-1/2 flex">
-          <Button >
+          <Button onClick={() => signIn('google')} >
           <FcGoogle className="m-1" />
           Sign in with Google
           </Button>
