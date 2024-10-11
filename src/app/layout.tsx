@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./Provider";
+import {SessionProvider} from "next-auth/react"
 import {Toaster} from "react-hot-toast"
 
 
@@ -17,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-     <Providers><Toaster position="bottom-center" />{children}</Providers> 
+     <Providers><Toaster position="bottom-center" /><SessionProvider  refetchInterval={0} refetchOnWindowFocus={false}>{children}</SessionProvider></Providers> 
       </body>
     </html>
   );

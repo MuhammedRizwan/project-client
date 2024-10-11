@@ -25,18 +25,36 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { logout } from "@/store/reducer/userReducer";
+import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
 
 export default function Header() {
-  const { accessToken } = useSelector((state: RootState) => state.user);
+  const { data: session } = useSession(); // Fetch the session directly
+  const user = session?.user;
+
   const dispatch = useDispatch();
   const pathname = usePathname();
   const router = useRouter();
+  const { accessToken } = useSelector((state: RootState) => state.user);
+
+  const handleLogout = () => {
+    if (user) {
+      // If authenticated via NextAuth
+      nextAuthSignOut({
+        callbackUrl: "/login", // Redirect to login after logout
+      });
+    } else if (accessToken) {
+      // If authenticated via Redux (Custom authentication)
+      dispatch(logout());
+      router.replace("/login"); // Redirect to login after logout
+    }
+  };
+
   return (
     <div className=" bg-gray-100">
       <Navbar
         shouldHideOnScroll
         maxWidth={"full"}
-        className=" bg-yellow-600 rounded-b-3xl "
+        className=" bg-yellow-600 rounded-b-3xl"
       >
         <NavbarBrand>
           <Logo />
@@ -94,12 +112,9 @@ export default function Header() {
             type="search"
           />
           <NavbarItem>
-            {accessToken ? (
+            {accessToken || user ? (
               <Button
-                onClick={() => {
-                  dispatch(logout());
-                  router.replace("/login");
-                }}
+                onClick={handleLogout}
                 className=" bg-yellow-700 text-black"
                 variant="flat"
               >
@@ -111,7 +126,6 @@ export default function Header() {
                   router.push(pathname === "/login" ? "/signup" : "/login");
                 }}
                 className=" bg-yellow-700 text-black"
-                // href={pathname === "/login" ? "/signup" : "/login"}
                 variant="flat"
               >
                 {pathname === "/login" ? "Sign up" : "Sign in"}

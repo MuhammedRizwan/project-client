@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Header from "@/components/user/Navbar";
 import Footer from "@/components/user/Footer";
-import SessionWrapper from "@/components/sessionWrapper";
 
 export const metadata: Metadata = {
   title: "Heaven finder user",
@@ -15,9 +14,7 @@ export default function UserLayout({
 }>) {
   return (
     <>
-      <Header />
-      <SessionWrapper>{children}</SessionWrapper>
-      <Footer />
+      <Header />{children}<Footer />
     </>
   );
 }

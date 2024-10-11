@@ -1,10 +1,10 @@
 'use client'
+
 import Header from "@/components/user/Navbar";
 import Hero from "@/components/home/Hero";
 import Packages from "@/components/home/Packages";
 import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/user/Footer";
-
 
 export default function Home() { 
   return (
