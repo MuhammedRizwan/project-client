@@ -65,11 +65,13 @@ export default function PackageForm({
   useEffect(() => {
     if (initialData) {
       reset(initialData);
-      setImages([]);
+      setImages(initialData.images || []);
     }
   }, [initialData, reset]);
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set([""]));
+  const [selectedKeys, setSelectedKeys] = useState(
+    new Set([initialData?.category?.[0].category_name || ""])
+  );
 
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -77,10 +79,10 @@ export default function PackageForm({
   );
 
   const handleSelectionChange = (keys: unknown) => {
-    console.log(keys);
-    
-    const selectedCategory = categories.find((category) => category._id === keys);
-    setSelectedKeys(new Set([selectedCategory?.category_name ?? '']));
+    const selectedCategory = categories.find(
+      (category) => category._id === keys
+    );
+    setSelectedKeys(new Set([selectedCategory?.category_name ?? ""]));
     setValue("category", selectedCategory ? [selectedCategory] : []);
   };
 
@@ -99,7 +101,7 @@ export default function PackageForm({
   };
 
   const [destinations, setDestinations] = useState<string[]>(
-    getValues("destinations") || []
+    initialData?.destinations || []
   );
 
   // Function to add a new destination
@@ -139,8 +141,8 @@ export default function PackageForm({
     if (files) {
       const fileArray = Array.from(files); // Store the files directly
       setImages((prevImages) => [...prevImages, ...fileArray]);
-      // Update the form value to include the file names (optional)
-      setValue("images", fileArray);
+
+      setValue("images", [...images, ...fileArray]);
     }
   };
 
@@ -150,7 +152,6 @@ export default function PackageForm({
     setValue("images", updatedImages); // Adjust image names
   };
 
-  
   const handleChange = (index: number) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -275,7 +276,6 @@ export default function PackageForm({
               </DropdownMenu>
             </Dropdown>
 
-          
             <input
               type="hidden"
               value={selectedValue} // Pass the selected value here
@@ -528,13 +528,19 @@ export default function PackageForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {images.map((image, index) => (
             <div key={index} className="relative">
-              <Image
-                src={URL.createObjectURL(images[index])}
-                alt={`Uploaded image ${index + 1}`}
-                width={300}
-                height={200}
-                className="rounded-md"
-              />
+              {image instanceof File ? (
+                <Image
+                  src={URL.createObjectURL(image)}
+                  alt={`Uploaded image ${index + 1}`}
+                  width={300}
+                  height={200}
+                  className="rounded-md"
+                  onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
+                />
+              ) : (
+                <p>Invalid image file</p>
+              )}
+
               <Button
                 type="button"
                 color="danger"
@@ -563,7 +569,7 @@ export default function PackageForm({
 
       <div className=" mx-auto  p-8  mt-8 flex justify-end">
         <Button type="submit" className="bg-yellow-700 hover:bg-yellow-800">
-          Submit Package
+          {initialData ? "Save Changes" : "Create Package"}
         </Button>
       </div>
     </form>

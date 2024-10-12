@@ -1,6 +1,7 @@
 'use client'
 import PackageForm, { PackageFormValues } from "@/components/package/PackageForm";
 import { Agent } from "@/interfaces/agent";
+import axiosInstance from "@/lib/axiosInstence";
 import { RootState } from "@/store/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -19,7 +20,7 @@ const AddPackagePage = () => {
         toast.error("Please login to add package");
         return;
       }
-      const res = await axios.post("http://localhost:5000/agent/package/add",{travel_agent_id:agent._id, ...data},{
+      const res = await axiosInstance.post("/agent/package/add",{travel_agent_id:agent._id, ...data},{
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -43,7 +44,7 @@ const AddPackagePage = () => {
   useEffect(() => {
     const fetchCategories=async()=>{
       try{
-        const res=await axios.get("http://localhost:5000/agent/category")
+        const res=await axiosInstance.get("/agent/category")
         const {categories}=res.data
         setCategories(categories)
       }catch(error){

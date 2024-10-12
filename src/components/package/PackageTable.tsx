@@ -31,7 +31,7 @@ export default function PackageTable({ data }: { data: Package[] }) {
                 <Image
                   alt={pkg.package_name}
                   src={pkg.images[0] || "/default-image.jpg"}
-                  className="rounded-l-lg h-full w-full object-cover"
+                  className="rounded-l-lg h-44 w-60 object-fill"
                 />
               </div>
               <CardBody className="flex flex-col w-2/3 px-4">
@@ -62,7 +62,7 @@ export default function PackageTable({ data }: { data: Package[] }) {
                 </p>
                 <div className="flex justify-end space-x-3">
                   <Button color="danger">Block</Button>
-                  <Button color="primary">Edit</Button>
+                  <Button color="primary" onClick={() => router.push(`/agent/travel-packages/edit/${pkg._id}`)}>Edit</Button>
                 </div>
               </CardBody>
             </Card>
