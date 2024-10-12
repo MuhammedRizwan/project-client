@@ -9,15 +9,15 @@ import {
 } from "@nextui-org/react";
 import Logo from "../Logo";
 import { usePathname, useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch} from "react-redux";
 import { logout } from "@/store/reducer/agentReducer";
+import Cookies from "js-cookie";
 
 export default function AgentNavbar() {
   const router=useRouter()
   const dispatch=useDispatch()
   const pathname=usePathname()
-  const {accessToken}=useSelector((state:RootState)=>state.agent)
+  const accessToken=Cookies.get("accessToken")
   return (
     <Navbar shouldHideOnScroll maxWidth={"full"}>
       <NavbarBrand>
@@ -29,6 +29,7 @@ export default function AgentNavbar() {
         <NavbarItem>
           {accessToken?( <Button 
           onClick={()=>{
+            Cookies.remove('accessToken');
             dispatch(logout())
             router.push('/agent');
           }}
@@ -41,7 +42,6 @@ export default function AgentNavbar() {
            color="primary"  variant="flat">
             {pathname === "/agent" ? "Signup" : "Login"}
           </Button>)}
-         
         </NavbarItem>
       </NavbarContent>
     </Navbar>

@@ -10,10 +10,10 @@ import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import { useState } from "react";
 import axios from "axios";
-import { addUser, updateUser } from "@/store/reducer/userReducer";
-import Cookies from "js-cookie";
+import { addUser} from "@/store/reducer/userReducer";
 import toast from "react-hot-toast";
 import { SignIn } from "@/lib/auth-action";
+import Cookies from "js-cookie";
 
 
 
@@ -42,12 +42,10 @@ export default function LoginForm() {
       setLoading(true)
       const res = await axios.post("http://localhost:5000/login", data);
       if (res.status === 200) {
-        const { refreshToken ,user} = res.data;
-        dispatch(updateUser(res.data));
-        Cookies.set("refreshToken", refreshToken, {
-          httpOnly: false,
-          expires: 7,
-        });
+        const { user,refreshToken,accessToken } = res.data;
+       Cookies.set("refreshToken",refreshToken)
+       Cookies.set("accessToken",accessToken)
+        dispatch(addUser(user));
         if (user.is_verified) {
           toast.success(res.data.message)
           router.push("/"); 

@@ -1,17 +1,18 @@
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { RootState} from "@/store/store";
-import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Cookies from "js-cookie";
 
+const useAuthRedirect = () => {
+  const router = useRouter();
 
-const useAuthRedirect=()=>{
-    const router = useRouter();
-    const accessToken = useSelector((state: RootState) => state.user.accessToken);
-    useEffect(() => {
-      if (accessToken) {
-        router.replace("/");
-      }
-    }, [accessToken, router]);
-  };
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken"); // Access token from cookies
+    console.log(accessToken);
+
+    if (accessToken) {
+      router.replace("/");
+    }
+  }, [router]);
+};
 
 export default useAuthRedirect;

@@ -22,19 +22,18 @@ import { LuPackageSearch } from "react-icons/lu";
 import { GiPostStamp } from "react-icons/gi";
 import { TiContacts } from "react-icons/ti";
 import { usePathname, useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch} from "react-redux";
 import { logout } from "@/store/reducer/userReducer";
 import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
+import Cookies from "js-cookie";
 
 export default function Header() {
   const { data: session } = useSession(); // Fetch the session directly
   const user = session?.user;
-
+  const accessToken =Cookies.get("accessToken");
   const dispatch = useDispatch();
   const pathname = usePathname();
   const router = useRouter();
-  const { accessToken } = useSelector((state: RootState) => state.user);
 
   const handleLogout = () => {
     if (user) {
@@ -65,20 +64,20 @@ export default function Header() {
           justify="center"
         >
           <NavbarItem className="relative">
-            <Link
-              href="#"
-              className="text-blck hover:font-bold inline-block w-10"
+            <p
+              className="text-blck hover:font-bold inline-block w-10 cursor-pointer"
+              onClick={() => router.push("/")}
             >
               HOME
-            </Link>
+            </p>
           </NavbarItem>
           <NavbarItem>
-            <Link
-              className="text-blck hover:font-bold inline-block w-20"
-              href=""
+            <p
+              className="text-blck hover:font-bold inline-block w-20 cursor-pointer"
+              onClick={() => router.push("/packages")}
             >
               PACKAGES
-            </Link>
+            </p>
           </NavbarItem>
           <NavbarItem>
             <Link

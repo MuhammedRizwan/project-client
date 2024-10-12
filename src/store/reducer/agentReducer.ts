@@ -7,7 +7,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   agent: null as Agent | null,
-  accessToken: null as string | null,
 };
 
 const userSlice = createSlice({
@@ -16,24 +15,13 @@ const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.agent = null;
-      state.accessToken = null;
+      
     },
     addAgent: (state, action) => {
-      const agent = action.payload;
-      console.log(agent);
-      
-      state.agent = agent;
-    },
-    updateAgent: (state, action) => {
-      const { agent, accessToken } = action.payload;
-      state.agent = agent;
-      state.accessToken = accessToken;
-    },
-    updateToken: (state, action) => {
-      state.accessToken = action.payload;
+      state.agent = action.payload;
     },
   },
 });
 
-export const { logout, addAgent, updateAgent, updateToken } = userSlice.actions;
+export const { logout, addAgent} = userSlice.actions;
 export default userSlice.reducer;

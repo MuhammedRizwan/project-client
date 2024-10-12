@@ -1,12 +1,11 @@
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { RootState} from "@/store/store";
-import { useSelector } from "react-redux";
+import Cookies from "js-cookie"
 
 
 const useAgentAuthRedirect=()=>{
     const router = useRouter();
-    const accessToken = useSelector((state: RootState) => state.agent.accessToken);
+    const accessToken = Cookies.get("accessToken");
   
     useEffect(() => {
       if (accessToken) {

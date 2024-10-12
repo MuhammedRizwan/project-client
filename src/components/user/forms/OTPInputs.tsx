@@ -1,6 +1,6 @@
 "use client";
 import { useAppSelector } from "@/store/hooks";
-import { updateUser } from "@/store/reducer/userReducer";
+import { addUser } from "@/store/reducer/userReducer";
 import { AppDispatch } from "@/store/store";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
@@ -65,7 +65,8 @@ export default function OTPInputs() {
         user,
       });
       if (res.status === 200) {
-        dispatch(updateUser(res.data));
+        const { user } = res.data;
+        dispatch(addUser(user));
         toast.success(res.data.message);
         router.push("/");
       }

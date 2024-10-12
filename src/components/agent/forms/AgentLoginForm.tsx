@@ -10,7 +10,8 @@ import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { addAgent, updateAgent } from "@/store/reducer/agentReducer";
+import { addAgent } from "@/store/reducer/agentReducer";
+import Cookies from "js-cookie";
 
 interface LoginFormData {
   email: string;
@@ -34,7 +35,10 @@ export default function AgentLoginForm() {
     try {
       const res = await axios.post("http://localhost:5000/agent/login", data);
       if (res.status === 200) {
-        dispatch(updateAgent(res.data));
+        const { agent,refreshToken,accessToken } = res.data;
+        Cookies.set("refreshToken",refreshToken)
+        Cookies.set("accessToken",accessToken)
+        dispatch(addAgent(agent));
         router.push("/agent");
       }
     } catch (error) {

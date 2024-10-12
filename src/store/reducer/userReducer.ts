@@ -16,7 +16,6 @@ interface Iuser {
 
 const initialState = {
   user: null as Iuser | null,
-  accessToken: null as string | null,
 };
 
 const userSlice = createSlice({
@@ -25,22 +24,13 @@ const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
     },
-    addUser: (state, action) => {      
-      const user = action.payload;
-      state.user = user;
+    addUser: (state, action) => {    
+      state.user = action.payload;
     },
-    updateUser: (state, action) => {      
-      const { user, accessToken } = action.payload;
-      state.user = user;
-      state.accessToken = accessToken;
-    },
-    updateToken: (state, action) => {
-      state.accessToken = action.payload;
-    },
+    
   },
 });
 
-export const { logout, addUser, updateUser, updateToken } = userSlice.actions;
+export const { logout, addUser } = userSlice.actions;
 export default userSlice.reducer;
