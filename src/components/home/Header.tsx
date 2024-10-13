@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Logo from '../Logo'
-import UserLoginButton from '../UserLoginButton'
+import UserLoginButton from '../user/UserLoginButton'
 
 export default function Header() {
   return (

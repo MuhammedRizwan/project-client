@@ -18,4 +18,6 @@ export default interface Package  {
   itineraries: Itinerary[];
   is_block?: boolean;
   images: string[];
+  description: string;
+  departure:string
 }
