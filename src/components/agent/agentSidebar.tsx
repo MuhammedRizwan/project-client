@@ -6,11 +6,11 @@ import Cookies from "js-cookie"
 import { useDispatch } from "react-redux"
 import { logout } from "@/store/reducer/agentReducer"
 
-
 export default function AgentSidebar({ name = "HEAVEN FINDER" }) {
   const pathname = usePathname()
-const dispatch=useDispatch()
-const router = useRouter();
+  const dispatch = useDispatch()
+  const router = useRouter()
+
   const menuItems = [
     { href: "/agent/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/agent/travel-packages", label: "Travel Packages", icon: Package },
@@ -20,7 +20,7 @@ const router = useRouter();
   ]
 
   return (
-    <aside className=" h-screen bg-white shadow-lg w-64 ms-5 mb-20 mt-8 flex flex-col">
+    <aside className="sticky top-0 h-screen bg-white shadow-lg w-64 ms-3 mb-3 mt-3 flex flex-col">
       <div className="p-6">
         <h1 className="text-2xl font-bold">{name}</h1>
       </div>
@@ -47,9 +47,9 @@ const router = useRouter();
       <div className="bottom-0 p-4 bg-white border-t border-gray-200">
         <button
           onClick={() => {
-            Cookies.remove('accessToken');
+            Cookies.remove('accessToken')
             dispatch(logout())
-            router.push('/agent');
+            router.push('/agent')
           }}
           className="flex items-center w-full bg-white shadow-lg rounded-lg px-6 py-4 cursor-pointer hover:bg-gray-100 transition-colors duration-150"
         >

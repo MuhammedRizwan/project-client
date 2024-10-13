@@ -55,8 +55,8 @@ export default function Packages() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
+    <>
       <PackageTable data={packages} />
-    </div>
+    </>
   );
 }

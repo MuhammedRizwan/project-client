@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import {
   Navbar,
@@ -6,7 +5,6 @@ import {
   NavbarContent,
   NavbarItem,
   Link,
-  Button,
   Input,
   Dropdown,
   DropdownTrigger,
@@ -21,33 +19,9 @@ import { FaHome } from "react-icons/fa";
 import { LuPackageSearch } from "react-icons/lu";
 import { GiPostStamp } from "react-icons/gi";
 import { TiContacts } from "react-icons/ti";
-import { usePathname, useRouter } from "next/navigation";
-import { useDispatch} from "react-redux";
-import { logout } from "@/store/reducer/userReducer";
-import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
-import Cookies from "js-cookie";
+import UserLoginButton from "../UserLoginButton";
 
 export default function Header() {
-  const { data: session } = useSession(); // Fetch the session directly
-  const user = session?.user;
-  const accessToken =Cookies.get("accessToken");
-  const dispatch = useDispatch();
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    if (user) {
-      // If authenticated via NextAuth
-      nextAuthSignOut({
-        callbackUrl: "/login", // Redirect to login after logout
-      });
-    } else if (accessToken) {
-      // If authenticated via Redux (Custom authentication)
-      dispatch(logout());
-      router.replace("/login"); // Redirect to login after logout
-    }
-  };
-
   return (
     <div className=" bg-gray-100">
       <Navbar
@@ -64,20 +38,20 @@ export default function Header() {
           justify="center"
         >
           <NavbarItem className="relative">
-            <p
+            <Link
               className="text-blck hover:font-bold inline-block w-10 cursor-pointer"
-              onClick={() => router.push("/")}
+              href="/"
             >
               HOME
-            </p>
+            </Link>
           </NavbarItem>
           <NavbarItem>
-            <p
+            <Link
               className="text-blck hover:font-bold inline-block w-20 cursor-pointer"
-              onClick={() => router.push("/packages")}
+              href="/packages"
             >
               PACKAGES
-            </p>
+            </Link>
           </NavbarItem>
           <NavbarItem>
             <Link
@@ -111,25 +85,7 @@ export default function Header() {
             type="search"
           />
           <NavbarItem>
-            {accessToken || user ? (
-              <Button
-                onClick={handleLogout}
-                className=" bg-yellow-700 text-black"
-                variant="flat"
-              >
-                Logout
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  router.push(pathname === "/login" ? "/signup" : "/login");
-                }}
-                className=" bg-yellow-700 text-black"
-                variant="flat"
-              >
-                {pathname === "/login" ? "Sign up" : "Sign in"}
-              </Button>
-            )}
+           <UserLoginButton/>
           </NavbarItem>
         </NavbarContent>
 

@@ -62,7 +62,6 @@ const AddPackagePage = () => {
 
   return (
     <div>
-      <h1>Add New Package</h1>
       <PackageForm 
         initialData={undefined}
         categories={categories}

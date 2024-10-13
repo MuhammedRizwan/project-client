@@ -9,14 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
     "@heroicons/react": "^2.1.5",
     "@mui/joy": "^5.0.0-beta.48",
     "@nextui-org/react": "^2.4.6",
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
-    "framer-motion": "^11.5.4",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.451.0",
     "next": "14.2.8",

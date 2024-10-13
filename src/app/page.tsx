@@ -1,19 +1,21 @@
 'use client'
 
-import Header from "@/components/user/Navbar";
+import Header from "@/components/home/Header"
 import Hero from "@/components/home/Hero";
 import Packages from "@/components/home/Packages";
 import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/user/Footer";
+import LeftPackage from "@/components/home/LeftPackage";
+import RightPackage from "@/components/home/RightPackage";
 
 export default function Home() { 
   return (
     <div>
       <Header />
-
       <main>
         <Hero />
-        <section className="bg-gray-100 py-6">
+        <LeftPackage />
+        {/* <section className="bg-gray-100 py-6">
           <div className="flex justify-around text-center text-gray-600">
             <div>
               <h3 className="text-lg font-semibold">March 16, 2024</h3>
@@ -25,8 +27,11 @@ export default function Home() {
               <h3 className="text-lg font-semibold">86°F</h3>
             </div>
           </div>
-        </section>
+        </section> */}
         <Packages />
+        <RightPackage />
+        <LeftPackage/>
+        <RightPackage />
         <Gallery />
       </main>
       <Footer />
