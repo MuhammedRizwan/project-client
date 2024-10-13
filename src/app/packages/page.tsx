@@ -1,7 +1,7 @@
 "use client";
 import Spinnerpage from "@/app/loading";
 import Header from "@/components/home/Header";
-import PackageList from "@/components/package/PackageList";
+import PackageCard from "@/components/package/PackageCard";
 import Footer from "@/components/user/Footer";
 import Package from "@/interfaces/package";
 import axios from "axios";
@@ -65,16 +65,17 @@ export default function Component() {
             <option>5 Days</option>
             <option>7 Days</option>
           </select>
-          <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
-          >
+          <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
             Search
           </button>
         </div>
       </div>
       <div className="container mx-auto px-4 py-8">
-        <PackageList packages={packages} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-10">
+        <PackageCard packages={packages} />
+        </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

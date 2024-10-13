@@ -1,11 +1,12 @@
 import Package from "@/interfaces/package";
-import { Image } from "@nextui-org/react";
+
 import { User, Sun, Moon, Star} from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 export default function PackageDetials({packageData}:{packageData:Package|null}) {
     const router=useRouter()
   return (
-    <div className="relative min-h-screen flex">
+    <div className="min-h-screen flex">
       <div className="w-2/3 flex flex-col justify-center px-16">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           {packageData?.package_name}
@@ -57,12 +58,12 @@ export default function PackageDetials({packageData}:{packageData:Package|null})
         </div>
       </div>
 
-      <div className="w-1/2 relative">
+      <div className="w-1/2">
         <Image
-          src={packageData?.images[0]}
+          src={packageData?.images[0]||""}
           alt="Aerial view of coastal landscape"
           width={700}
-          className="w-full h-[600px] object-cover rounded-none"
+          className="w-full h-[600px] rounded-none"
           height={610}
           />
       </div>
