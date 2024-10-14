@@ -68,7 +68,7 @@ export default function OTPInputs() {
         const { user } = res.data;
         dispatch(addUser(user));
         toast.success(res.data.message);
-        router.push("/");
+        router.back();
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

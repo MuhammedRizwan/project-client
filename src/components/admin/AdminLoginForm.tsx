@@ -10,6 +10,7 @@ import { useState } from "react";
 import axios from "axios";
 import { addAdmin } from "@/store/reducer/adminReducer";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 interface LoginFormData {
   email: string;
@@ -31,7 +32,10 @@ export default function AdminLoginForm() {
       setLoading(true)
       const res = await axios.post("http://localhost:5000/admin/login", data);
       if (res.status === 200) {
-        dispatch(addAdmin(res.data));
+        const { admin,refreshToken,accessToken } = res.data;
+        Cookies.set("refreshToken",refreshToken)
+        Cookies.set("adminToken",accessToken)
+        dispatch(addAdmin(admin));
         toast.success(res.data.message);
         router.push("/admin/dashboard");
       }

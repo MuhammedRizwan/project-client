@@ -1,16 +1,15 @@
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { RootState} from "@/store/store";
-import { useSelector } from "react-redux";
+import Cookies from "js-cookie"
 
 
 const useAdminAuthRedirect=()=>{
     const router = useRouter();
-    const accessToken = useSelector((state: RootState) => state.admin.accessToken);
+    const accessToken = Cookies.get("adminToken");
   
     useEffect(() => {
       if (accessToken) {
-        router.replace("/admin/dashboard");
+        router.push("/admin/dashboard");
       }
     }, [accessToken, router]);
   };

@@ -48,7 +48,7 @@ export default function LoginForm() {
         dispatch(addUser(user));
         if (user.is_verified) {
           toast.success(res.data.message)
-          router.push("/"); 
+          router.back(); 
         } 
       }
     } catch (error) {

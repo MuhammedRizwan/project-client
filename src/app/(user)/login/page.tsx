@@ -1,11 +1,10 @@
 'use client'
 import LoginForm from "@/components/user/forms/LoginForm";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
+
 
 
 
 export default function LoginPage() {
-  useAuthRedirect()
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">

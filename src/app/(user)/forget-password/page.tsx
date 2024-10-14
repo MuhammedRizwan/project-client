@@ -1,5 +1,4 @@
 "use client";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -14,7 +13,6 @@ interface ForgetPassword {
 }
 
 export default function ForgotPassword() {
-  useAuthRedirect()
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isOtpVerified, setIsOtpVerified] = useState(false);

@@ -1,10 +1,12 @@
-import Sidebar from "@/components/admin/SideBar";
+'use client'
+import Cookies from "js-cookie";
 
 export default function Dashboard() {
+  const token = Cookies.get("adminToken");
+  console.log(token);
   return (
     <>
-      <Sidebar Name="DASHBOARD" />
-      <h1>hello</h1>;
+      <h1>{token}</h1>;
     </>
   );
 }

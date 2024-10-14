@@ -1,9 +1,7 @@
 'use client'
 import OTPInputs from "@/components/user/forms/OTPInputs";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function VerificationPage() {
-useAuthRedirect()
   return (
     <div className="bg-gray-100">
       <div className="h-full w-full">

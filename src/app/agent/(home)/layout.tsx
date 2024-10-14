@@ -1,4 +1,5 @@
 import Agentsidebar from "@/components/agent/agentSidebar";
+import ProtectedRouter from "@/components/agent/ProtectedRouter";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,9 +13,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex bg-gray-100">
-      <Agentsidebar/>
-      <div className="flex-1 p-3">{children}</div>
-    </div>
+    <ProtectedRouter>
+      <div className="flex bg-gray-100">
+        <Agentsidebar />
+        <div className="flex-1 p-3">{children}</div>
+      </div>
+    </ProtectedRouter>
   );
 }

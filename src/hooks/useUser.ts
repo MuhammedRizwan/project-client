@@ -3,14 +3,14 @@ import { useEffect } from "react"
 import Cookies from "js-cookie"
 
 
-const useAgentAuthRedirect=()=>{
+const useUser=()=>{
     const router = useRouter();
-    const accessToken = Cookies.get("agentToken");
+    const accessToken = Cookies.get("accessToken");
     useEffect(() => {
       if (accessToken) {
-        router.push("/agent/Dashboard");
+        router.back();
       }
     }, [accessToken, router]);
   };
 
-export default useAgentAuthRedirect;
+export default useUser;

@@ -37,9 +37,9 @@ export default function AgentLoginForm() {
       if (res.status === 200) {
         const { agent,refreshToken,accessToken } = res.data;
         Cookies.set("refreshToken",refreshToken)
-        Cookies.set("accessToken",accessToken)
+        Cookies.set("agentToken",accessToken)
         dispatch(addAgent(agent));
-        router.push("/agent");
+        router.push("/agent/Dashboard");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

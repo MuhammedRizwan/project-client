@@ -19,7 +19,7 @@ export default function UserLoginButton() {
             callbackUrl: "/login",
           });
         } else if (accessToken) {
-
+          Cookies.remove("accessToken");
           dispatch(logout());
           router.replace("/login"); 
         }

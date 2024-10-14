@@ -17,7 +17,7 @@ export default function AgentNavbar() {
   const router=useRouter()
   const dispatch=useDispatch()
   const pathname=usePathname()
-  const accessToken=Cookies.get("accessToken")
+  const accessToken=Cookies.get("agentToken")
   return (
     <Navbar shouldHideOnScroll maxWidth={"full"}>
       <NavbarBrand>
@@ -29,7 +29,7 @@ export default function AgentNavbar() {
         <NavbarItem>
           {accessToken?( <Button 
           onClick={()=>{
-            Cookies.remove('accessToken');
+            Cookies.remove('agentToken');
             dispatch(logout())
             router.push('/agent');
           }}

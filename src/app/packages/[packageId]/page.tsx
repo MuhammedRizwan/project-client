@@ -37,7 +37,6 @@ export default function PackagePage({
           `http://localhost:5000/packages/similar/${params.packageId}`
         );
         const { packageList } = response.data;
-        console.log(packageList,"yyyyyyyyyy")
         setPackages(packageList);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -51,7 +50,6 @@ export default function PackagePage({
     };
     fetchSimilarPackages();
   }, [params.packageId]);
-  console.log(packages,"ppppppppppppppp")
   return (
     <div className="min-h-screen bg-white">
         <Header/>

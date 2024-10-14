@@ -1,9 +1,7 @@
 'use client'
 import SignupForm from "@/components/user/forms/SignupForm";
-import useAuthRedirect from "@/hooks/useAuthRedirect";
 
 export default function SignupPage() {
-  useAuthRedirect()
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">
@@ -13,7 +11,7 @@ export default function SignupPage() {
         <div
           className="flex justify-end items-end bg-cover bg-center w-ful rounded md:rounded-e-3xl md:w-1/2"
           style={{
-            backgroundImage: `url('/images/Apakunee-Falls-View.webp')`,
+            backgroundImage: `url('/images/Apakunee.webp')`,
           }}
         >
           <div className="h-64 sm:h-80 md:h-96 lg:h-[500px] w-full"></div>

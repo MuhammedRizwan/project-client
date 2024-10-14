@@ -12,7 +12,6 @@ interface Admin {
 
 const initialState = {
   admin: null as Admin | null,
-  accessToken: null as string | null,
 };
 
 const adminSlice = createSlice({
@@ -21,18 +20,12 @@ const adminSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.admin = null;
-      state.accessToken = null;
     },
     addAdmin: (state, action) => {      
-      const { admin, accessToken } = action.payload;
-      state.admin = admin;
-      state.accessToken = accessToken;
-    },
-    updateToken: (state, action) => {
-      state.accessToken = action.payload;
+      state.admin = action.payload;
     },
   },
 });
 
-export const { logout, addAdmin, updateToken } = adminSlice.actions;
+export const { logout, addAdmin } = adminSlice.actions;
 export default adminSlice.reducer;
