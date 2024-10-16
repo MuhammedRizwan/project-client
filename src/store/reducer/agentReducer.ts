@@ -1,4 +1,4 @@
-import { Agent } from "@/interfaces/agent";
+import  Agent  from "@/interfaces/agent";
 import { createSlice } from "@reduxjs/toolkit";
 
 // const api = "http://localhost:5000";

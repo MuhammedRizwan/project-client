@@ -21,7 +21,7 @@ export default function UserLoginButton() {
         } else if (accessToken) {
           Cookies.remove("accessToken");
           dispatch(logout());
-          router.replace("/login"); 
+          router.push("/login"); 
         }
       };
     return (

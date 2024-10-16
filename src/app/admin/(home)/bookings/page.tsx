@@ -1,17 +1,13 @@
 "use client";
 import Table, { TableColumn } from "@/components/Table";
 import Booking from "@/interfaces/booking";
-import axiosInstance from "@/lib/axiosInstence";
-import { RootState } from "@/store/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
 
 export default function BookingsPage() {
-    const router = useRouter();
-  const {agent}=useSelector((state:RootState)=>state.agent)
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +17,9 @@ export default function BookingsPage() {
       key: "user_id", // Must match 'keyof Booking'
       label: "Name",
       render: (booking: Booking) =>
-        typeof booking.user_id === "object" ? booking.user_id.username : booking.user_id,
+        typeof booking.user_id === "object"
+          ? booking.user_id.username
+          : booking.user_id,
     },
     {
       key: "package_id", // Must match 'keyof Booking'
@@ -30,6 +28,14 @@ export default function BookingsPage() {
         typeof booking.package_id === "object"
           ? booking.package_id.package_name
           : booking.package_id,
+    },
+    {
+      key: "travel_agent_id", // Must match 'keyof Booking'
+      label: "Travel Agency",
+      render: (booking: Booking) =>
+        typeof booking.travel_agent_id === "object"
+          ? booking.travel_agent_id.agency_name
+          : booking.travel_agent_id,
     },
     {
       key: "payment_amount",
@@ -51,44 +57,32 @@ export default function BookingsPage() {
       ),
     },
     {
-        key: "travel_status",
-        label: "Travel Status",
-        render: (booking: Booking) => (
-          <span
-            className={`${
-              booking.travel_status === "completed"
-                ? "text-green-500"
-                : booking.travel_status === "in-progress"
-                ? "text-yellow-500"
-                : "text-red-500"
-            }`}
-          >
-            {booking.travel_status}
-          </span>
-        ),
-      },
-    {
-        key: "_id",
-        label: "view detials",
-        render: (booking: Booking) => (
-          <button
-            onClick={() => viewDetialsClick(booking)}
-            className={`px-4 py-2 w-32 bg-yellow-700 text-white rounded`}
-          >
-            view details
-          </button>
-        ),
-      },
+      key: "travel_status",
+      label: "Travel Status",
+      render: (booking: Booking) => (
+        <span
+          className={`${
+            booking.travel_status === "completed"
+              ? "text-green-500"
+              : booking.travel_status === "in-progress"
+              ? "text-yellow-500"
+              : "text-red-500"
+          }`}
+        >
+          {booking.travel_status}
+        </span>
+      ),
+    },
   ];
+
   
-  const viewDetialsClick = (booking: Booking) => {
-    router.push(`/agent/bookings/${booking._id}`);
-  };
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`/agent/booking/travel-agency/${agent?._id}`);
+        const response = await axios.get(
+          "http://localhost:5000/admin/booking/admin"
+        );
         console.log(response.data);
         if (response.status === 200) {
           const { bookings } = response.data;
@@ -107,7 +101,7 @@ export default function BookingsPage() {
       }
     };
     fetchBookings();
-  },[agent?._id]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;

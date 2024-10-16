@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import {
   Navbar,
@@ -20,8 +21,10 @@ import { LuPackageSearch } from "react-icons/lu";
 import { GiPostStamp } from "react-icons/gi";
 import { TiContacts } from "react-icons/ti";
 import UserLoginButton from "./UserLoginButton";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router=useRouter()
   return (
     <div className=" bg-gray-100">
       <Navbar
@@ -104,8 +107,9 @@ export default function Header() {
               description="Login as travel agency"
               className=" text-red-600 font-thin"
               startContent={<PiPersonArmsSpreadFill />}
-            >
-              <Link href="/agent">Login as agent</Link>
+              onClick={() => router.push('/agent')}
+              >
+                Login as agent
             </DropdownItem>
             <DropdownItem
               key="Home"
@@ -142,6 +146,7 @@ export default function Header() {
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
+        
       </Navbar>
     </div>
   );
