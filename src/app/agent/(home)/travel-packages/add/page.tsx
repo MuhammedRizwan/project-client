@@ -1,6 +1,6 @@
 'use client'
 import PackageForm, { PackageFormValues } from "@/components/package/PackageForm";
-import { Agent } from "@/interfaces/agent";
+import  Agent  from "@/interfaces/agent";
 import axiosInstance from "@/lib/axiosInstence";
 import { RootState } from "@/store/store";
 import axios from "axios";

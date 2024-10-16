@@ -1,7 +1,7 @@
 "use client";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
-import { Agent } from "@/interfaces/agent";
+import Agent  from "@/interfaces/agent";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

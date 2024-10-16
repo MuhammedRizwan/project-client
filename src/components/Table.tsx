@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-interface TableColumn<T extends object> {
+export interface TableColumn<T extends object> {
   key: keyof T;
   label: string;
   render?: (item: T) => React.ReactNode;
@@ -12,6 +12,7 @@ interface TableProps<T extends object> {
 }
 
 const Table = <T extends object>({ columns, data }: TableProps<T>) => {
+  console.log(data)
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -62,14 +63,14 @@ const Table = <T extends object>({ columns, data }: TableProps<T>) => {
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className="px-6 py-3 font-semibold text-xs uppercase tracking-wider text-left bg-gray-50"
+                  className="px-6 py-3 font-semibold text-xs uppercase tracking-wider text-center bg-gray-50"
                 >
                   {column.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-center">
             {paginatedData.length > 0 ? (
               paginatedData.map((row, index) => (
                 <tr

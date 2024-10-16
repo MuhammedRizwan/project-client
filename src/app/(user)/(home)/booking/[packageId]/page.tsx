@@ -7,17 +7,17 @@ import Package from "@/interfaces/package";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import toast from "react-hot-toast";
 
 interface BookingData {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address: string;
-  memberName: string;
-  memberAge: number;
+  members: { name: string; age: number }[];
   discountCode: string;
-  startDate: Date;
+  start_date: Date;
 }
 
 export default function BookingForm({
@@ -26,9 +26,9 @@ export default function BookingForm({
   params: { packageId: string };
 }) {
   const router = useRouter();
-  const {user}=useSelector((state:RootState)=>state.user)
+  const { user } = useSelector((state: RootState) => state.user);
   const [packageData, setPackageData] = useState<Package | null>(null);
-  const [members, setMembers] = useState<{ name: string; age: number }[]>([]);
+  const [members, setMembers] = useState([{ name: "", age: "" }]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [discount, setDiscount] = useState<number>(0);
   useEffect(() => {
@@ -51,33 +51,38 @@ export default function BookingForm({
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<BookingData>();
 
   const onSubmit = async (data: BookingData) => {
     try {
-      // Prepare the payload with form data, members, and package ID
       const payload = {
-        ...data,
+        bill_details: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+        },
         members,
-        packageId: params.packageId,
-        userId:user?._id,
+        package_id: params.packageId,
+        user_id: user?._id,
         totalPrice,
         discount,
+        start_date: data.start_date,
       };
-
+      console.log(payload);
       // Send the data to your backend API
       const response = await axios.post(
-        "http://localhost:5000/bookings",
+        "http://localhost:5000/booking",
         payload
       );
-
+      console.log(response.data);
       if (response.status === 201) {
         console.log("Booking successful:", response.data);
-        router.push("/payment"); // Navigate to payment page
+        router.push(`/payment/${params.packageId}`);
       } else {
-        alert("Failed to complete booking. Please try again.");
+        toast.error("Something went wrong. Please try again later.");
       }
     } catch (error) {
       console.error("Error submitting booking:", error);
@@ -85,23 +90,21 @@ export default function BookingForm({
     }
   };
 
-  const handleAddMember = (name: string, age: number) => {
-    if (packageData) {
-      if (members.length >= packageData?.max_person) {
-        alert(`Cannot add more than ${packageData?.max_person} members.`);
-        return;
-      }
-      const newMembers = [...members, { name, age }];
-      setMembers(newMembers);
+  const handleAddMember = () => {
+  if (packageData && members.length >= packageData.max_person) {
+    toast.error(`You can only add up to ${packageData.max_person} members.`);
+    return;
+  }
 
-      const newTotal = (packageData?.offer_price || 0) * newMembers.length;
-      setTotalPrice(newTotal - discount);
+  // Add a new member object with initial empty values
+  setMembers([...members, { name: "", age: "" }]);
+};  
 
-      // Clear member input fields
-      setValue("memberName", "");
-      setValue("memberAge", 0);
-    }
-  };
+  const handleMemberChange = (index: number, field: string, value: string) => {
+  const updatedMembers = [...members];
+  updatedMembers[index] = { ...updatedMembers[index], [field]: value };
+  setMembers(updatedMembers);
+};
 
   const handleApplyDiscount = (code: string) => {
     let discountValue = 0;
@@ -148,7 +151,7 @@ export default function BookingForm({
                   id="firstName"
                   className="w-full p-2 border rounded-md"
                   placeholder="First Name"
-                  {...register("firstName", {
+                  {...register("first_name", {
                     required: "First name is required",
                     maxLength: {
                       value: 50,
@@ -162,7 +165,7 @@ export default function BookingForm({
                   })}
                 />
                 <p className="text-red-500  text-xs min-h-[20px]">
-                  {(errors.firstName && errors.firstName.message) || ""}
+                  {(errors.first_name && errors.first_name.message) || ""}
                 </p>
               </div>
               <div>
@@ -177,7 +180,7 @@ export default function BookingForm({
                   id="lastName"
                   className="w-full p-2 border rounded-md"
                   placeholder="Input your Last Name in Here"
-                  {...register("lastName", {
+                  {...register("last_name", {
                     required: "Last name is required",
                     maxLength: {
                       value: 50,
@@ -190,7 +193,7 @@ export default function BookingForm({
                   })}
                 />
                 <p className="text-red-500  text-xs min-h-[20px]">
-                  {(errors.lastName && errors.lastName.message) || ""}
+                  {(errors.last_name && errors.last_name.message) || ""}
                 </p>
               </div>
             </div>
@@ -237,9 +240,8 @@ export default function BookingForm({
                   {...register("phone", {
                     required: "Phone number is required",
                     pattern: {
-                      value:
-                        /^\+?\d{1,3}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
-                      message: "Invalid phone number format",
+                      value: /^\d{10}$/,
+                      message: "Phone number must be exactly 10 digits",
                     },
                   })}
                 />
@@ -276,87 +278,57 @@ export default function BookingForm({
 
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">Add Members</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="memberName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="memberName"
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Input your First Name in Here"
-                  {...register("memberName", {
-                    required: "Member name is required",
-                    maxLength: {
-                      value: 30,
-                      message: "Member name cannot exceed 30 characters",
-                    },
-                    pattern: {
-                      value: /^[a-zA-Z\s.]+$/,
-                      message: "Only letters, spaces, and periods are allowed",
-                    },
-                  })}
-                />
-                <p className="text-red-500  text-xs min-h-[20px]">
-                  {(errors.memberName && errors.memberName.message) || ""}
-                </p>
-              </div>
-              <div>
-                <label
-                  htmlFor="memberAge"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Age
-                </label>
-                <input
-                  type="text"
-                  id="memberAge"
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Input your Age in Here"
-                  {...register("memberAge", {
-                    required: "Member age is required",
-                    valueAsNumber: true,
-                    min: {
-                      value: 4,
-                      message: "Member must be at least 4 years old",
-                    },
-                    max: {
-                      value: 100,
-                      message: "Member age cannot exceed 100 years",
-                    },
-                    validate: {
-                      isNumber: (value) =>
-                        !isNaN(value) || "Age must be a number",
-                    },
-                  })}
-                />
-                <p className="text-red-500  text-xs min-h-[20px]">
-                  {(errors.memberAge && errors.memberAge.message) || ""}
-                </p>
-              </div>
-            </div>
+
+            {members.map((member, index) => (
+  <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div>
+      <label
+        htmlFor={`memberName-${index}`}
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
+        Name
+      </label>
+      <input
+        type="text"
+        id={`memberName-${index}`}
+        className="w-full p-2 border rounded-md"
+        placeholder="Input member's name"
+        value={member.name}
+        onChange={(e) => handleMemberChange(index, "name", e.target.value)}
+      />
+    </div>
+
+    <div>
+      <label
+        htmlFor={`memberAge-${index}`}
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
+        Age
+      </label>
+      <input
+        type="text"
+        id={`memberAge-${index}`}
+        className="w-full p-2 border rounded-md"
+        placeholder="Input member's age"
+        value={member.age}
+        onChange={(e) => handleMemberChange(index, "age", e.target.value)}
+      />
+    </div>
+  </div>
+))}
+
             <button
               type="button"
-              onClick={() =>
-                handleAddMember(
-                  String(getValues("memberName")),
-                  Number(getValues("memberAge"))
-                )
-              }
+              onClick={handleAddMember}
               className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
             >
-              Add
+              Add Another Member
             </button>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="startDate"
+                <label htmlFor="startDate"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   When do you want to start your journey?
@@ -365,12 +337,12 @@ export default function BookingForm({
                   type="date"
                   id="startDate"
                   className="w-full p-2 border rounded-md"
-                  {...register("startDate", {
+                  {...register("start_date", {
                     required: "Start date is required",
                   })}
                 />
                 <p className="text-red-500  text-xs min-h-[20px]">
-                  {(errors.startDate && errors.startDate.message) || ""}
+                  {(errors.start_date && errors.start_date.message) || ""}
                 </p>
               </div>
             </div>
@@ -388,7 +360,7 @@ export default function BookingForm({
           <div className="bg-white p-6 rounded-lg shadow-md">
             <Image
               src={packageData?.images[0] || ""}
-              alt="Brazil, Iguazu waterfall"
+              alt={packageData?.package_name || ""}
               width={300}
               height={200}
               className="w-full rounded-lg mb-4"

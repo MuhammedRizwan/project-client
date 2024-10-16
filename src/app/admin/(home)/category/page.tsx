@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import BlockModal from "@/components/modal/blockModal";
 import AddModal from "@/components/modal/AddModal";
 import Table from "@/components/Table";
-import { Category } from "@/interfaces/category";
+import Category from "@/interfaces/category";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 
@@ -210,7 +210,7 @@ export default function Categories() {
         toast.success("Category updated successfully");
         reset(); // Reset form
       }
-    } catch(error) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
           error.response?.data?.message || "Failed to edit category";
@@ -226,19 +226,19 @@ export default function Categories() {
   return (
     <div>
       <div className="mb-4 w-full flex justify-end">
-  <button
-    onClick={() => {
-      reset({
-        category_name: "",
-        description: "",
-      });
-      setShowAddCategoryModal(true);
-    }}
-    className="px-4 py-2 bg-yellow-600 text-white rounded"
-  >
-    Add Category
-  </button>
-</div>
+        <button
+          onClick={() => {
+            reset({
+              category_name: "",
+              description: "",
+            });
+            setShowAddCategoryModal(true);
+          }}
+          className="px-4 py-2 bg-yellow-600 text-white rounded"
+        >
+          Add Category
+        </button>
+      </div>
 
       <Table columns={categoryColumns} data={category} />
 

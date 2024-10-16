@@ -1,5 +1,5 @@
 "use client";
-import { Agent } from "@/interfaces/agent";
+import Agent from "@/interfaces/agent";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import BlockModal from "@/components/modal/blockModal";

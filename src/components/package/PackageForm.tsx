@@ -1,5 +1,5 @@
 "use client";
-import { Category } from "@/interfaces/category";
+import  Category from "@/interfaces/category";
 import {
   Button,
   Dropdown,

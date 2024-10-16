@@ -2,7 +2,7 @@
 "use client";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
-import { User } from "@/interfaces/user";
+import  User  from "@/interfaces/user";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useEffect, useState } from "react";

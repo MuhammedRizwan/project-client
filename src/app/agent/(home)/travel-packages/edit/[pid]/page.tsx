@@ -5,7 +5,7 @@ import PackageForm, {
 } from "@/components/package/PackageForm";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // If you're using Next.js router
-import { Category } from "@/interfaces/category";
+import  Category  from "@/interfaces/category";
 import axiosInstance from "@/lib/axiosInstence";
 
 const EditPackagePage = ({ params }: { params: { pid: string } }) => {

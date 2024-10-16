@@ -1,4 +1,4 @@
-export interface Agent {
+export default interface Agent {
     _id?: string ;
     agency_name?: string;
     email: string;
