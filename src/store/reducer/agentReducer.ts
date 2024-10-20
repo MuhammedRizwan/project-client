@@ -1,5 +1,6 @@
 import  Agent  from "@/interfaces/agent";
 import { createSlice } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
 // const api = "http://localhost:5000";
 
@@ -14,6 +15,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      Cookies.remove("agentToken");
+      Cookies.remove("agentRefreshToken");
       state.agent = null;
       
     },

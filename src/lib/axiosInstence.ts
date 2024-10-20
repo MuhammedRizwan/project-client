@@ -1,56 +1,54 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import refreshToken from "./refreshToken";
 
-async function refreshToken() {
-  
-    try {
-      const res = await axios.post("http://localhost:5000/agent/refresh-token", {
-        refreshToken: Cookies.get("refreshToken"),
-      });
-      const { accessToken } = res.data;
-      Cookies.set("accessToken", accessToken); 
-      return accessToken;
-    } catch (error) {
-      console.error("Refresh token failed", error);
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
-      window.location.href = "/agent";
-      throw new Error ("Refresh token expired. Please log in again.");
-    }
-  }
+// Helper to Get Base URL Based on Role Token
+const getBaseUrl = () => {
+  if (Cookies.get("adminToken")) return "http://localhost:5000/admin";
+  if (Cookies.get("agentToken")) return "http://localhost:5000/agent";
+  return "http://localhost:5000"; // Default base URL
+};
+
+// Helper to Get the Correct Token for Authorization
+const getToken = () =>
+  Cookies.get("accessToken") ||
+  Cookies.get("adminToken") ||
+  Cookies.get("agentToken");
+
+// Create Axios Instance
 const axiosInstance = axios.create({
-  baseURL:'http://localhost:5000' ,
-  timeout: 10000,
+  baseURL: getBaseUrl()
 });
 
+// Request Interceptor to Add Authorization Header
 axiosInstance.interceptors.request.use(
-  async (config) => {
-    const token = Cookies.get("accessToken");
+  (config) => {
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error) => Promise.reject(error)
+);
+
+// Response Interceptor to Handle 401 Errors
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      try {
+        const newToken = await refreshToken(); // Refresh token on 401
+        const originalRequest = error.config;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest); // Retry original request
+      } catch (refreshError) {
+        console.error("Failed to refresh token:", refreshError);
+        return Promise.reject(refreshError);
+      }
+    }
     return Promise.reject(error);
   }
 );
 
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      if (error.response && error.response.status === 401) {
-        try {
-          const newToken = await refreshToken();
-          const originalRequest = error.config;
-          originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-          return axiosInstance(originalRequest);
-        } catch (refreshError) {
-          console.error("Failed to refresh token:", refreshError);
-          return Promise.reject(refreshError);
-        }
-      }
-      return Promise.reject(error);
-    }
-  );
 export default axiosInstance;

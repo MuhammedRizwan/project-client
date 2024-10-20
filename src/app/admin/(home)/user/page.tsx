@@ -2,7 +2,8 @@
 "use client";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
-import  User  from "@/interfaces/user";
+import User from "@/interfaces/user";
+import axiosInstance from "@/lib/axiosInstence";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -51,10 +52,10 @@ export default function userList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true)
-        const response = await axios.get("http://localhost:5000/admin/users");
-        if(response.status==200){
-          const {users}=response.data
+        setLoading(true);
+        const response = await axiosInstance.get("/users");
+        if (response.status == 200) {
+          const { users } = response.data;
           setUsers(users);
         }
       } catch (error) {
@@ -82,13 +83,13 @@ export default function userList() {
     if (selectedUser) {
       try {
         const newStatus = !selectedUser.is_block;
-        const res = await axios.patch(
-          "http://localhost:5000/admin/user/block",
-          { id: selectedUser._id, is_block: newStatus }
-        );
+        const res = await axiosInstance.patch("/user/block", {
+          id: selectedUser._id,
+          is_block: newStatus,
+        });
         if (res.status === 200) {
           const updatedUser = res.data.user;
-          toast.success(res.data.message)
+          toast.success(res.data.message);
           setUsers((prevUsers) =>
             prevUsers.map((user) =>
               user._id === updatedUser._id ? updatedUser : user

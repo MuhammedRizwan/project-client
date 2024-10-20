@@ -20,13 +20,13 @@ const AddPackagePage = () => {
         toast.error("Please login to add package");
         return;
       }
-      const res = await axiosInstance.post("/agent/package/add",{travel_agent_id:agent._id, ...data},{
+      const res = await axiosInstance.post("/package/add",{travel_agent_id:agent._id, ...data},{
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
       if(res.status === 201) {
-        router.push("/agent/travel-packages");
+        router.push("/travel-packages");
         toast.success("Package added successfully");
       }else{
         console.log(res.data);
@@ -44,7 +44,7 @@ const AddPackagePage = () => {
   useEffect(() => {
     const fetchCategories=async()=>{
       try{
-        const res=await axiosInstance.get("/agent/category")
+        const res=await axiosInstance.get("/category")
         const {categories}=res.data
         setCategories(categories)
       }catch(error){

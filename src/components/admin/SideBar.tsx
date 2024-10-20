@@ -15,7 +15,7 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           <li
             className={`flex items-center ${
               pathname === "/admin/dashboard" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
             <Link href="/admin/dashboard" className="flex items-center w-full">
               <svg
@@ -39,8 +39,8 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           {/* Users */}
           <li
             className={`flex items-center ${
-              pathname === "/admin/user" ? "bg-gray-300" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+              pathname === "/admin/user" ? "bg-gray-100" : "bg-white"
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
             <Link href="/admin/user" className="flex items-center w-full">
               <svg
@@ -65,7 +65,7 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           <li
             className={`flex items-center ${
               pathname === "/admin/travel-agencies" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
             <Link href="/admin/travel-agencies" className="flex items-center w-full">
               <svg
@@ -87,10 +87,10 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           </li>
           <li
             className={`flex items-center ${
-              pathname === "/admin/travel-agencies" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+              pathname === "/admin/category" ? "bg-gray-100" : "bg-white"
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
-            <Link href="/admin/travel-agencies" className="flex items-center w-full">
+            <Link href="/admin/category" className="flex items-center w-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -113,7 +113,7 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           <li
             className={`flex items-center ${
               pathname === "/admin/bookings" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
             <Link href="/admin/bookings" className="flex items-center w-full">
               <svg
@@ -135,10 +135,10 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           </li>
           <li
             className={`flex items-center ${
-              pathname === "/admin/bookings" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+              pathname === "/admin/coupons" ? "bg-gray-100" : "bg-white"
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
-            <Link href="/admin/bookings" className="flex items-center w-full">
+            <Link href="/admin/coupons" className="flex items-center w-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -161,7 +161,7 @@ export default function Sidebar({ Name = "HEAVEN FINDER" }) {
           <li
             className={`flex items-center ${
               pathname === "/admin/notifications" ? "bg-gray-100" : "bg-white"
-            } shadow-lg rounded-lg px-6 py-4 cursor-pointer`}
+            } shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
           >
             <Link href="/admin/notifications" className="flex items-center w-full">
               <svg

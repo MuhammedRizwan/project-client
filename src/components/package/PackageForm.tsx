@@ -1,5 +1,5 @@
 "use client";
-import  Category from "@/interfaces/category";
+import Category from "@/interfaces/category";
 import {
   Button,
   Dropdown,
@@ -9,8 +9,10 @@ import {
   Input,
 } from "@nextui-org/react";
 import Image from "next/image";
-import { useState, useEffect, useMemo } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useState, useEffect, useMemo, ChangeEvent } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { FiCircle, FiEdit2, FiTrash2, FiUpload } from "react-icons/fi";
 
 export interface PackageFormValues {
   package_name: string;
@@ -24,7 +26,20 @@ export interface PackageFormValues {
     day: number;
     activities: { time: string; activity: string }[];
   }[];
+  includedItems: string[];
+  excludedItems: string[];
   images: File[];
+}
+
+interface Activity {
+  time: string;
+  activity: string;
+}
+
+// Define the shape of an itinerary for a single day
+interface Itinerary {
+  day: number;
+  activities: Activity[];
 }
 
 interface PackageFormProps {
@@ -43,29 +58,52 @@ export default function PackageForm({
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
     setValue,
     getValues,
     reset,
   } = useForm<PackageFormValues>({
     defaultValues: {
-      itineraries: [{ day: 1, activities: [{ time: "", activity: "" }] }],
       destinations: [""],
       images: [],
+      includedItems: [""],
+      excludedItems: [""],
       ...initialData,
     },
   });
   const [images, setImages] = useState<File[]>([]);
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "itineraries",
-  });
+  const [includedItems, setIncludedItems] = useState<string[]>([]);
+  const [excludedItems, setExcludedItems] = useState<string[]>([]);
+  const [newIncludedItem, setNewIncludedItem] = useState<string>("");
+  const [newExcludedItem, setNewExcludedItem] = useState<string>("");
+  const [includedError, setIncludedError] = useState<string>("");
+  const [excludedError, setExcludedError] = useState<string>("");
+  const [imageError, setImageError] = useState<string>("");
+  const [noOfDays, setNoOfDays] = useState<number>(1);
+  const [activityError, setActivityError] = useState<string>("");
+  const [errorMessages, setErrorMessages] = useState<string[][]>([]);
+  const [destinationError, setDestinationError] = useState<string|null>(null);
+  const [itineraries, setItineraries] = useState<Itinerary[]>([
+    { day: 1, activities: [{ time: "", activity: "" }] },
+  ]);
+  useEffect(() => {
+    if (includedError || excludedError || imageError) {
+      const timer = setTimeout(() => {
+        setIncludedError("");
+        setExcludedError("");
+        setImageError("");
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [includedError, excludedError, imageError]);
 
   useEffect(() => {
     if (initialData) {
       reset(initialData);
       setImages(initialData.images || []);
+      setItineraries(initialData.itineraries || []);
+      setIncludedItems(initialData.includedItems || []);
+      setExcludedItems(initialData.excludedItems || []);
     }
   }, [initialData, reset]);
 
@@ -86,63 +124,205 @@ export default function PackageForm({
     setValue("category", selectedCategory ? [selectedCategory] : []);
   };
 
-  const handleDaysChange = (value: number) => {
-    const currentItineraries = getValues("itineraries");
+  const handleDaysChange = (days: number) => {
+    setNoOfDays(days);
+    const newItineraries = Array.from({ length: days }, (_, index) => ({
+      day: index + 1,
+      activities: itineraries[index]?.activities || [{ time: "", activity: "" }],
+    }));
+    setItineraries(newItineraries);
+    setValue("itineraries", newItineraries);
+  };
 
-    if (value > currentItineraries.length) {
-      for (let i = currentItineraries.length; i < value; i++) {
-        append({ day: i + 1, activities: [{ time: "", activity: "" }] });
-      }
+  const isValidTime = (
+    dayIndex: number,
+    activityIndex: number,
+    time: string
+  ): boolean => {
+    if (activityIndex === 0) return true;
+
+    const previousTime =
+      itineraries[dayIndex].activities[activityIndex - 1].time;
+    return previousTime <= time;
+  };
+
+  const handleInputChange = (
+    dayIndex: number,
+    activityIndex: number,
+    field: keyof Activity,
+    value: string
+  ) => {
+    const updatedItineraries = [...itineraries];
+    updatedItineraries[dayIndex].activities[activityIndex][field] = value;
+
+    if (field === "time" && !isValidTime(dayIndex, activityIndex, value)) {
+      updateError(
+        dayIndex,
+        activityIndex,
+        "Time must be after the previous activity."
+      );
     } else {
-      for (let i = currentItineraries.length; i > value; i--) {
-        remove(i - 1);
-      }
+      updateError(dayIndex, activityIndex, "");
     }
+
+    setItineraries(updatedItineraries);
+    setValue("itineraries", updatedItineraries);
+  };
+
+  const updateError = (
+    dayIndex: number,
+    activityIndex: number,
+    message: string
+  ) => {
+    const updatedErrors = [...errorMessages];
+    if (!updatedErrors[dayIndex]) {
+      updatedErrors[dayIndex] = [];
+    }
+    updatedErrors[dayIndex][activityIndex] = message;
+    setErrorMessages(updatedErrors);  
+  };
+
+  const handleAddActivity = (dayIndex: number) => {
+    const updatedItineraries = [...itineraries];
+
+    if (updatedItineraries[dayIndex].activities.length >= 5) {
+      setActivityError(`You can only add up to 5 activities for Day ${dayIndex + 1}`);
+      return;
+    }
+
+    updatedItineraries[dayIndex].activities.push({ time: "", activity: "" });
+    setItineraries(updatedItineraries);
+    setValue("itineraries", updatedItineraries);
+  };
+
+  const handleRemoveActivity = (dayIndex: number, activityIndex: number) => {
+    if (activityIndex === 0){
+      setActivityError(`cannot remove first activity for Day ${dayIndex + 1}`);
+      return;
+    }
+
+    const updatedItineraries = [...itineraries];
+    updatedItineraries[dayIndex].activities.splice(activityIndex, 1);
+    setItineraries(updatedItineraries);
+    setValue("itineraries", updatedItineraries);
   };
 
   const [destinations, setDestinations] = useState<string[]>(
-    initialData?.destinations || []
+    initialData?.destinations || [""]
   );
 
-  // Function to add a new destination
   const handleAddDestination = () => {
-    setDestinations([...destinations, ""]);
+    if (destinations.length < 4) {
+      setDestinations([...destinations, ""]);
+    }else{
+      setDestinationError("You can only add up to 4 destinations");
+    }
+    setTimeout(() => {
+      setDestinationError(null);
+    },15000)
   };
 
-  // Function to remove a destination
   const handleRemoveDestination = (index: number) => {
-    const updatedDestinations = destinations.filter((_, i) => i !== index);
-    setDestinations(updatedDestinations);
-    setValue("destinations", updatedDestinations); // Update the form state
+    if (index !== 0) { 
+      const updatedDestinations = destinations.filter((_, i) => i !== index);
+      setDestinations(updatedDestinations);
+      setValue("destinations", updatedDestinations);
+    }else{
+      setDestinationError("cannot remove first destination");
+    }
+    setTimeout(()=>{
+      setDestinationError(null)
+    },15000)
   };
 
-  // Function to update a destination in the array
   const handleChangeDestination = (index: number, value: string) => {
     const updatedDestinations = [...destinations];
     updatedDestinations[index] = value;
     setDestinations(updatedDestinations);
-    setValue("destinations", updatedDestinations); // Update the form state
+    setValue("destinations", updatedDestinations);
+  };
+  const addIncludedItem = () => {
+    if (newIncludedItem.length <= 0) setIncludedError("item is required");
+    if (newIncludedItem) {
+      if (includedItems.includes(newIncludedItem)) {
+        setIncludedError("item is already included");
+        setNewIncludedItem(""); // Clear input field
+        return;
+      }
+      if (excludedItems.includes(newIncludedItem)) {
+        setIncludedError("item is already excluded");
+        setNewIncludedItem(""); // Clear input field
+        return;
+      }
+      if (newIncludedItem)
+        setIncludedItems((prev) => [...prev, newIncludedItem]);
+      setValue("includedItems", includedItems);
+      setNewIncludedItem(""); // Clear input field
+    }
   };
 
-  const handleAddActivity = (dayIndex: number) => {
-    const currentItineraries = getValues("itineraries");
-    currentItineraries[dayIndex].activities.push({ time: "", activity: "" });
-    setValue("itineraries", [...currentItineraries]);
+  // Remove included item
+  const removeIncluded = (index: number) => {
+    setIncludedItems((prev) => prev.filter((_, i) => i !== index));
+    setValue("includedItems", [...includedItems,newIncludedItem]);
   };
 
-  const handleRemoveActivity = (dayIndex: number, activityIndex: number) => {
-    const currentItineraries = getValues("itineraries");
-    currentItineraries[dayIndex].activities.splice(activityIndex, 1);
-    setValue("itineraries", [...currentItineraries]);
+  // Add excluded item
+  const addExcludedItem = () => {
+    if (newExcludedItem.length <= 0) setExcludedError("item is required");
+    if (newExcludedItem) {
+      if (includedItems.includes(newExcludedItem)) {
+        setExcludedError("item is already included");
+        setNewIncludedItem(""); // Clear input field
+        return;
+      }
+      if (excludedItems.includes(newExcludedItem)) {
+        setExcludedError("item is already excluded");
+        setNewIncludedItem(""); // Clear input field
+        return;
+      }
+      setExcludedItems((prev) => [...prev, newExcludedItem]);
+      setValue("excludedItems", [...excludedItems,newExcludedItem]);
+      setNewExcludedItem(""); // Clear input field
+    }
+  };
+
+  // Remove excluded item
+  const removeExcluded = (index: number) => {
+    setExcludedItems((prev) => prev.filter((_, i) => i !== index));
+    setValue("excludedItems", excludedItems);
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files); // Store the files directly
-      setImages((prevImages) => [...prevImages, ...fileArray]);
 
-      setValue("images", [...images, ...fileArray]);
+    // Check if the current images have reached the maximum limit
+    if (images.length >= 6) {
+      setImageError("Maximum 6 images allowed");
+      return;
+    }
+
+    if (files) {
+      const acceptedFileTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+        "image/jpg",
+      ];
+      const validImages = Array.from(files).filter((file) =>
+        acceptedFileTypes.includes(file.type)
+      );
+      const remainingSlots = 6 - images.length;
+      const imagesToAdd = validImages.slice(0, remainingSlots);
+
+      if (imagesToAdd.length > 0) {
+        setImages((prevImages) => [...prevImages, ...imagesToAdd]);
+        setValue("images", [...images, ...imagesToAdd]);
+      } else {
+        setImageError("Please select valid images");
+      }
     }
   };
 
@@ -150,27 +330,61 @@ export default function PackageForm({
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
     setValue("images", updatedImages); // Adjust image names
+    toast.success("Image deleted successfully");
   };
 
   const handleChange = (index: number) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.accept = "image/*";
+    fileInput.accept = "image/*"; // Only allow image selection
+
     fileInput.onchange = (event: Event) => {
       const target = event.target as HTMLInputElement;
+
       if (target && target.files && target.files[0]) {
+        const acceptedFileTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+          "image/svg+xml",
+          "image/jpg",
+        ]; // Allowed image formats
+
         const newImageFile = target.files[0];
+        if (!acceptedFileTypes.includes(newImageFile.type)) {
+          setImageError("Please select a valid image");
+          return;
+        }
         const updatedImages = [...images];
         updatedImages[index] = newImageFile;
-        setImages(updatedImages);
-        setValue("images", updatedImages);
+
+        setImages(updatedImages); // Update state
+        setValue("images", updatedImages); // Sync with form state
+
+        toast.success("Image uploaded successfully");
+      } else {
+        toast.error("Please select an image");
       }
     };
-    fileInput.click();
+
+    fileInput.click(); // Open the file dialog
+  };
+
+  const handleIncludedItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+    setNewIncludedItem(capitalizedValue);
+  };
+  const handleExcludedItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+    setNewExcludedItem(capitalizedValue);
   };
 
   // Submit handler
   const onSubmitHandler = (data: PackageFormValues) => {
+    console.log(data);
     const formData = new FormData();
     formData.append("packageName", data.package_name);
     formData.append("maxPerson", data.max_person.toString());
@@ -180,6 +394,8 @@ export default function PackageForm({
     formData.append("category", JSON.stringify(data.category));
     formData.append("destinations", JSON.stringify(data.destinations));
     formData.append("itineraries", JSON.stringify(data.itineraries));
+    formData.append("includedItems", JSON.stringify(data.includedItems));
+    formData.append("excludedItems", JSON.stringify(data.excludedItems));
     images.forEach((file, index) => {
       formData.append(`images[${index}]`, file);
     });
@@ -192,6 +408,8 @@ export default function PackageForm({
       original_price: parseInt(formData.get("price") as string),
       destinations: JSON.parse(formData.get("destinations") as string),
       itineraries: JSON.parse(formData.get("itineraries") as string),
+      includedItems: JSON.parse(formData.get("includedItems") as string),
+      excludedItems: JSON.parse(formData.get("excludedItems") as string),
       images: images,
     };
     onSubmit(packageFormValues);
@@ -269,7 +487,10 @@ export default function PackageForm({
                 className="w-full"
               >
                 {categories.map((category: Category) => (
-                  <DropdownItem key={category._id}>
+                  <DropdownItem
+                    key={category._id}
+                    className="capitalize w-full"
+                  >
                     {category.category_name}
                   </DropdownItem>
                 ))}
@@ -398,7 +619,7 @@ export default function PackageForm({
                 key={index}
                 className="flex items-start mb-2 justify-between "
               >
-                <div>
+                <div className="flex-grow w-2/3">
                   <Input
                     {...register(`destinations.${index}`, {
                       required: "Destination is required",
@@ -410,7 +631,7 @@ export default function PackageForm({
                     })}
                     value={destination}
                     placeholder="Destination"
-                    className="flex-grow w-96"
+                    className="flex-grow w-full"
                     onChange={(e) =>
                       handleChangeDestination(index, e.target.value)
                     }
@@ -423,7 +644,7 @@ export default function PackageForm({
                 <Button
                   type="button"
                   onClick={() => handleRemoveDestination(index)}
-                  className="ml-2"
+                  className=""
                   color="danger"
                   isIconOnly
                 >
@@ -431,6 +652,9 @@ export default function PackageForm({
                 </Button>
               </div>
             ))}
+            <p className="text-red-500 text-xs">
+                    {destinationError || ""}
+                  </p>
             <Button
               type="button"
               onClick={handleAddDestination}
@@ -469,50 +693,71 @@ export default function PackageForm({
         <h1 className="text-2xl font-bold mb-4">Itineraries</h1>
         <p className="text-gray-600 mb-4">Add activities for each day.</p>
 
-        {fields.map((field, dayIndex) => (
-          <div key={field.id} className="mb-6">
+        {itineraries.map((itinerary: Itinerary, dayIndex) => (
+          <div key={dayIndex} className="mb-6">
             <h2 className="text-lg font-semibold mb-4">Day {dayIndex + 1}</h2>
 
-            {field.activities.map((activity, activityIndex) => (
-              <div key={activityIndex} className="flex space-x-4 mb-4">
-                <Input
-                  type="time"
-                  className="w-32" // Reduced size of the time input
-                  {...register(
-                    `itineraries.${dayIndex}.activities.${activityIndex}.time`
-                  )}
-                  placeholder="Activity Time"
-                />
-                {errors.itineraries?.[dayIndex]?.activities?.[activityIndex]
-                  ?.time && (
-                  <span className="text-red-500 text-sm">
-                    {
-                      errors.itineraries[dayIndex].activities[activityIndex]
-                        .time.message
+            {itinerary.activities.map((activity, activityIndex) => (
+              <div key={activityIndex} className="mb-4">
+                <div className="flex space-x-4">
+                  {/* Time Input with Error */}
+                  <div className="flex flex-col">
+                    <Input
+                      type="time"
+                      value={activity.time}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(
+                          dayIndex,
+                          activityIndex,
+                          "time",
+                          e.target.value
+                        )
+                      }
+                      className="w-32"
+                    />
+                  </div>
+
+                  {/* Activity Description Input */}
+                  <Input
+                    value={activity.activity}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(
+                        dayIndex,
+                        activityIndex,
+                        "activity",
+                        e.target.value
+                      )
                     }
-                  </span>
-                )}
-                <Input
-                  {...register(
-                    `itineraries.${dayIndex}.activities.${activityIndex}.activity`
+                    placeholder="Activity Description"
+                  />
+
+                  {/* Remove Button */}
+                  <Button
+                    color="danger"
+                    onClick={() =>
+                      handleRemoveActivity(dayIndex, activityIndex)
+                    }
+                    disabled={activityIndex === 0}
+                  >
+                    Remove
+                  </Button>
+                </div>
+                <div>
+                  {errorMessages[dayIndex]?.[activityIndex] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errorMessages[dayIndex][activityIndex] ||" "}
+                    </p>
                   )}
-                  placeholder="Activity Description"
-                />
-                <Button
-                  type="button"
-                  color="danger"
-                  onClick={() => handleRemoveActivity(dayIndex, activityIndex)}
-                >
-                  Remove Activity
-                </Button>
+                </div>
               </div>
             ))}
 
+            <p className="text-red-500 text-xs">{activityError}</p>
             <Button
-              type="button"
               color="primary"
               onClick={() => handleAddActivity(dayIndex)}
               className="mt-4"
+              disabled={itinerary.activities.length >= 5}
             >
               Add Activity
             </Button>
@@ -520,51 +765,151 @@ export default function PackageForm({
         ))}
       </div>
 
+      <div className="max-w-6xl  mx-auto bg-white p-8 rounded-lg shadow-xl mt-8">
+        <h1 className="text-2xl font-bold mb-4">
+          Included and Excluded in the Package
+        </h1>
+        <div className="md:flex">
+          <div className="mb-6 md:w-1/2 h-80 bg-slate-50  p-3 shadow-inner border m-2">
+            <h2 className="text-xl font-semibold mb-2">Included Items</h2>
+            <div className="flex items-center gap-2">
+              <Input
+                value={newIncludedItem}
+                onChange={handleIncludedItemChange}
+                placeholder="Add included item"
+                fullWidth
+              />
+              <Button color="success" type="button" onClick={addIncludedItem}>
+                Add
+              </Button>
+            </div>
+            <p className="text-red-500 text-xs py-2">{includedError || ""}</p>
+            <ul className="list-disc pl-5">
+              {includedItems.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center space-y-2"
+                >
+                  <div className="flex items-center">
+                    <FiCircle size={12} className="text-gray-500 mr-5 mt-1" />
+                    <span>{item}</span>
+                  </div>
+                  <Button
+                    color="danger"
+                    onClick={() => removeIncluded(index)}
+                    className="w-10 h-7"
+                  >
+                    <FiTrash2 size={10} color="white" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mb-6 md:w-1/2 h-80 bg-slate-50  p-3 shadow-inner border m-2">
+            <h2 className="text-xl font-semibold mb-2">Excluded Items</h2>
+            <div className="flex items-center gap-2 mb-4">
+              <Input
+                value={newExcludedItem}
+                onChange={handleExcludedItemChange}
+                placeholder="Add excluded item"
+                fullWidth
+                autoCapitalize="words"
+              />
+              <Button color="success" type="button" onClick={addExcludedItem}>
+                Add
+              </Button>
+            </div>
+            <p className="text-red-500 text-xs">{excludedError || ""}</p>
+            <ul className="list-disc pl-5">
+              {excludedItems.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center space-y-2"
+                >
+                  <div className="flex items-center">
+                    <FiCircle size={12} className="text-gray-500 mr-5 mt-1" />
+                    <span>{item}</span>
+                  </div>
+                  <Button
+                    color="danger"
+                    onClick={() => removeExcluded(index)}
+                    className="w-10 h-7"
+                  >
+                    <FiTrash2 size={10} color="white" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl mt-8">
         <h1 className="text-2xl font-bold mb-4">Images</h1>
         <p className="text-gray-600 mb-4">
           Upload images related to the package.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full  h-[450px] bg-slate-100 p-4 shadow-inner">
           {images.map((image, index) => (
-            <div key={index} className="relative">
+            <div
+              key={index}
+              className="relative group w-[300px] h-[200px] overflow-hidden rounded-md border border-gray-300"
+            >
               {image instanceof File ? (
                 <Image
                   src={URL.createObjectURL(image)}
                   alt={`Uploaded image ${index + 1}`}
                   width={300}
                   height={200}
-                  className="rounded-md"
+                  className="object-cover w-full h-full"
                   onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
                 />
               ) : (
-                <p>Invalid image file</p>
+                <p className="flex items-center justify-center w-full h-full">
+                  Invalid image file
+                </p>
               )}
 
-              <Button
-                type="button"
-                color="danger"
-                onClick={() => handleDelete(index)}
-                className="absolute top-0 right-0"
-              >
-                Remove
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleChange(index)}
-                className="absolute top-0 left-0"
-              >
-                Change
-              </Button>
+              <input
+                type="file"
+                id={`image-input-${index}`}
+                onChange={(e) => handleImageChange(e)}
+                className="hidden"
+              />
+
+              {/* Centered Icons */}
+              <div className="absolute inset-0 flex justify-center items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
+                <Button
+                  onClick={() => handleChange(index)}
+                  className="bg-white/80 p-2 rounded-full"
+                >
+                  <FiEdit2 size={20} color="black" />
+                </Button>
+
+                <Button
+                  onClick={() => handleDelete(index)}
+                  className="bg-white/80 p-2 rounded-full"
+                >
+                  <FiTrash2 size={20} color="black" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
-        <Input
+
+        <label htmlFor="upload-input" className="mt-4 cursor-pointer flex ">
+          <FiUpload size={24} className="inline-block mr-2" /> Upload Images
+        </label>
+        <input
           type="file"
+          id="upload-input"
           onChange={handleImageChange}
           multiple
-          className="mt-4"
+          className="hidden"
         />
+
+        <p className="text-red-500 text-xs py-2">{imageError || ""}</p>
       </div>
 
       <div className=" mx-auto  p-8  mt-8 flex justify-end">

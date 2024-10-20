@@ -8,6 +8,7 @@ import Table from "@/components/Table";
 import Category from "@/interfaces/category";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import axiosInstance from "@/lib/axiosInstence";
 
 export default function Categories() {
   const [category, setCategory] = useState<Category[]>([]);
@@ -80,8 +81,8 @@ export default function Categories() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/admin/category"
+        const response = await axiosInstance.get(
+          "/category"
         );
         const { categories } = response.data;
         setCategory(categories);
@@ -106,8 +107,8 @@ export default function Categories() {
     if (selectedCategory) {
       try {
         const newStatus = !selectedCategory.is_block;
-        const res = await axios.patch(
-          "http://localhost:5000/admin/category/block",
+        const res = await axiosInstance.patch(
+          "/category/block",
           {
             id: selectedCategory.category_name,
             is_block: newStatus,
@@ -148,8 +149,8 @@ export default function Categories() {
       if (selectedFile) {
         formData.append("image", selectedFile);
       }
-      const response = await axios.post(
-        "http://localhost:5000/admin/category/add",
+      const response = await axiosInstance.post(
+        "/category/add",
         formData,
         {
           headers: {
@@ -191,8 +192,8 @@ export default function Categories() {
       if (selectedFile) {
         formData.append("image", selectedFile);
       }
-      const response = await axios.post(
-        `http://localhost:5000/admin/category/update/${selectedCategory?._id}`,
+      const response = await axiosInstance.post(
+        `/category/update/${selectedCategory?._id}`,
         formData,
         {
           headers: {

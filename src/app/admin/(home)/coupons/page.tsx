@@ -3,11 +3,11 @@ import BlockModal from "@/components/modal/blockModal";
 import Table, { TableColumn } from "@/components/Table";
 import Coupon from "@/interfaces/coupon";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CouponModal from "@/components/coupon/modal";
 import { Button } from "@nextui-org/react";
+import axiosInstance from "@/lib/axiosInstence";
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -78,7 +78,7 @@ export default function CouponsPage() {
     const fetchCoupons = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/admin/coupon");
+        const response = await axiosInstance.get("/coupon");
         if (response.status === 200) {
           const { coupons } = response.data;
           setCoupons(coupons);
@@ -104,8 +104,8 @@ export default function CouponsPage() {
 
   const confirmBlockUser = async () => {
     try {
-      const response = await axios.patch(
-        `http://localhost:5000/admin/coupon/block/${selectedCoupon?._id}`,
+      const response = await axiosInstance.patch(
+        `/coupon/block/${selectedCoupon?._id}`,
         {
           is_active: !selectedCoupon?.is_active,
         }
@@ -131,11 +131,11 @@ export default function CouponsPage() {
     try {
       const url =
         modalMode === "add"
-          ? "http://localhost:5000/admin/coupon/create"
-          : `http://localhost:5000/admin/coupon/edit/${selectedCoupon?._id}`;
+          ? "/coupon/create"
+          : `/coupon/edit/${selectedCoupon?._id}`;
       const method = modalMode === "add" ? "post" : "put";
 
-      const response = await axios({ url, method, data });
+      const response = await axiosInstance({ url, method, data });
       if (response.status === 201) {
         const { couponCreated } = response.data;
         setCoupons((prevCoupons) => [...prevCoupons, couponCreated]);

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 
 // const api = "http://localhost:5000";
 
@@ -23,6 +24,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
       state.user = null;
       
     },

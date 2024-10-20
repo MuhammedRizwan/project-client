@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
+import axiosInstance from "@/lib/axiosInstence";
+import Script from "next/script";
 
 interface BookingData {
   first_name: string;
@@ -18,6 +20,36 @@ interface BookingData {
   members: { name: string; age: number }[];
   discountCode: string;
   start_date: Date;
+}
+interface RazorpayOptions {
+  key: string;
+  amount?: number;
+  currency?: string;
+  name?: string;
+  description?: string;
+  image?: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  prefill?: {
+    name?: string;
+    email?: string;
+    contact?: string;
+  };
+  theme?: {
+    color?: string;
+  };
+}
+
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => { open: () => void };
+  }
 }
 
 export default function BookingForm({
@@ -54,57 +86,83 @@ export default function BookingForm({
     formState: { errors },
   } = useForm<BookingData>();
 
-  const onSubmit = async (data: BookingData) => {
+  const onSubmit = async (bookingData: BookingData) => {
     try {
       const payload = {
         bill_details: {
-          first_name: data.first_name,
-          last_name: data.last_name,
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
+          first_name: bookingData.first_name,
+          last_name: bookingData.last_name,
+          email: bookingData.email,
+          phone: bookingData.phone,
+          address: bookingData.address,
         },
         members,
         package_id: params.packageId,
         user_id: user?._id,
         totalPrice,
         discount,
-        start_date: data.start_date,
+        start_date: bookingData.start_date,
       };
-      console.log(payload);
-      // Send the data to your backend API
-      const response = await axios.post(
-        "http://localhost:5000/booking",
-        payload
-      );
-      console.log(response.data);
-      if (response.status === 201) {
-        console.log("Booking successful:", response.data);
-        router.push(`/payment/${params.packageId}`);
-      } else {
-        toast.error("Something went wrong. Please try again later.");
-      }
+      const res = await axiosInstance.post("/booking/createOrder", {
+        amount: totalPrice * 100,
+      });
+      if (!res.data) throw new Error("Failed to create order");
+
+      const data = await res.data.order;
+      const paymentData: RazorpayOptions = {
+        key: process.env.RAZORPAY_KEY_ID as string,
+        order_id: data.id,
+        handler: async (response: RazorpayResponse) => {
+          console.log("Payment Response:", response);
+          const res = await axiosInstance.post("/booking/verifyOrder", {
+            orderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+          const data = await res.data;
+          if (data.successpayment) {
+            const response = await axiosInstance.post(
+              "/booking",
+              payload
+            );
+            console.log(response.data);
+            if (response.status === 201) {
+              console.log("Booking successful:", response.data);
+              router.push(`/payment/${params.packageId}`);
+            } else {
+              toast.error("Something went wrong. Please try again later.");
+            }
+          } else {
+            router.push("/cancel");
+          }
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+      const payment = new window.Razorpay(paymentData);
+      payment.open();
     } catch (error) {
-      console.error("Error submitting booking:", error);
-      alert("Something went wrong. Please try again later.");
+      console.error("Error creating order:", error);
+      alert("Order creation failed. Please try again.");
     }
   };
 
   const handleAddMember = () => {
-  if (packageData && members.length >= packageData.max_person) {
-    toast.error(`You can only add up to ${packageData.max_person} members.`);
-    return;
-  }
+    if (packageData && members.length >= packageData.max_person) {
+      toast.error(`You can only add up to ${packageData.max_person} members.`);
+      return;
+    }
 
-  // Add a new member object with initial empty values
-  setMembers([...members, { name: "", age: "" }]);
-};  
+    // Add a new member object with initial empty values
+    setMembers([...members, { name: "", age: "" }]);
+  };
 
   const handleMemberChange = (index: number, field: string, value: string) => {
-  const updatedMembers = [...members];
-  updatedMembers[index] = { ...updatedMembers[index], [field]: value };
-  setMembers(updatedMembers);
-};
+    const updatedMembers = [...members];
+    updatedMembers[index] = { ...updatedMembers[index], [field]: value };
+    setMembers(updatedMembers);
+  };
 
   const handleApplyDiscount = (code: string) => {
     let discountValue = 0;
@@ -129,6 +187,7 @@ export default function BookingForm({
 
   return (
     <div className="container mx-auto p-4">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <h1 className="text-3xl font-bold mb-4">Book Now</h1>
       <p className="text-gray-600 mb-6">
         Please fill out the form below to book your trip.
@@ -280,42 +339,49 @@ export default function BookingForm({
             <h2 className="text-xl font-semibold mb-4">Add Members</h2>
 
             {members.map((member, index) => (
-  <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    <div>
-      <label
-        htmlFor={`memberName-${index}`}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        Name
-      </label>
-      <input
-        type="text"
-        id={`memberName-${index}`}
-        className="w-full p-2 border rounded-md"
-        placeholder="Input member's name"
-        value={member.name}
-        onChange={(e) => handleMemberChange(index, "name", e.target.value)}
-      />
-    </div>
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
+              >
+                <div>
+                  <label
+                    htmlFor={`memberName-${index}`}
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id={`memberName-${index}`}
+                    className="w-full p-2 border rounded-md"
+                    placeholder="Input member's name"
+                    value={member.name}
+                    onChange={(e) =>
+                      handleMemberChange(index, "name", e.target.value)
+                    }
+                  />
+                </div>
 
-    <div>
-      <label
-        htmlFor={`memberAge-${index}`}
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        Age
-      </label>
-      <input
-        type="text"
-        id={`memberAge-${index}`}
-        className="w-full p-2 border rounded-md"
-        placeholder="Input member's age"
-        value={member.age}
-        onChange={(e) => handleMemberChange(index, "age", e.target.value)}
-      />
-    </div>
-  </div>
-))}
+                <div>
+                  <label
+                    htmlFor={`memberAge-${index}`}
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Age
+                  </label>
+                  <input
+                    type="text"
+                    id={`memberAge-${index}`}
+                    className="w-full p-2 border rounded-md"
+                    placeholder="Input member's age"
+                    value={member.age}
+                    onChange={(e) =>
+                      handleMemberChange(index, "age", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            ))}
 
             <button
               type="button"
@@ -328,7 +394,8 @@ export default function BookingForm({
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="startDate"
+                <label
+                  htmlFor="startDate"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   When do you want to start your journey?

@@ -19,7 +19,7 @@ export default function AgentNavbar() {
   const pathname=usePathname()
   const accessToken=Cookies.get("agentToken")
   return (
-    <Navbar shouldHideOnScroll maxWidth={"full"}>
+    <Navbar maxWidth={"full"}>
       <NavbarBrand>
         <Logo />
         <p className="font-bold text-inherit">HEAVEN FINDER</p>
@@ -29,7 +29,6 @@ export default function AgentNavbar() {
         <NavbarItem>
           {accessToken?( <Button 
           onClick={()=>{
-            Cookies.remove('agentToken');
             dispatch(logout())
             router.push('/agent');
           }}

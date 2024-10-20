@@ -4,7 +4,7 @@ import PackageForm, {
   PackageFormValues,
 } from "@/components/package/PackageForm";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // If you're using Next.js router
+import { useRouter } from "next/navigation";
 import  Category  from "@/interfaces/category";
 import axiosInstance from "@/lib/axiosInstence";
 
@@ -15,17 +15,16 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
 
-  // Fetch the existing package data from API
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axiosInstance.get(`/agent/package/${params.pid}`);
+      const response = await axiosInstance.get(`/package/${params.pid}`);
       console.log(response);
       const { packageData } = response.data;
       setInitialData(packageData);
     };
 
     const fetchCategories = async () => {
-      const response = await axiosInstance.get("/agent/category");
+      const response = await axiosInstance.get("/category");
       const { categories: categoriesData } = response.data;
       setCategories(categoriesData);
     };
@@ -34,14 +33,13 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
     fetchCategories();
   }, [params.pid]);
 
-  // Handle form submission
   const handleFormSubmit = async (data: PackageFormValues) => {
     const response = await axiosInstance.put(
-      `/agent/package/edit/${params.pid}`,
+      `/package/edit/${params.pid}`,
       data
     );
     if (response.status === 200) {
-      router.push("/agent/travel-packages");
+      router.push("/travel-packages");
     } else {
       alert("Failed to update the package.");
     }

@@ -82,13 +82,13 @@ export default function BookingsPage() {
   ];
   
   const viewDetialsClick = (booking: Booking) => {
-    router.push(`/agent/bookings/${booking._id}`);
+    router.push(`/bookings/${booking._id}`);
   };
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`/agent/booking/travel-agency/${agent?._id}`);
+        const response = await axiosInstance.get(`/booking/travel-agency/${agent?._id}`);
         console.log(response.data);
         if (response.status === 200) {
           const { bookings } = response.data;

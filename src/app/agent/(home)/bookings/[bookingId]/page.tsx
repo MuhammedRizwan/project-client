@@ -12,7 +12,7 @@ export default function BookingDetails({params}:{params:{bookingId:string}}) {
 
     useEffect(()=>{
         const fetchBooking = async () => {
-          const response = await axiosInstance.get(`http://localhost:5000/agent/booking/${params.bookingId}`);
+          const response = await axiosInstance.get(`/booking/${params.bookingId}`);
           const { booking } = response.data;
           const packageData = 
           typeof booking.package_id === 'object' && booking.package_id 

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import BlockModal from "@/components/modal/blockModal";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import axiosInstance from "@/lib/axiosInstence";
 
 export default function ProfileCard({ params }: { params: { id: string } }) {
   const [agent, setAgent] = useState<Agent | null>(null);
@@ -17,8 +18,8 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/admin/travel-agencies/${params.id}`
+        const response = await axiosInstance.get(
+          `/travel-agencies/${params.id}`
         );
         setAgent(response.data.agent);
         setIsBlocked(response.data.is_block);
@@ -40,13 +41,13 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const toggleBlockStatus = async () => {
     try {
-      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/block", {
+      const res = await axiosInstance.patch("/travel-agencies/block", {
         id: params.id,
         is_block: !isBlocked,
       });
-      if(res.status==200){
+      if (res.status == 200) {
         setIsBlocked((prev) => !prev);
-        toast.success(res.data.message)
+        toast.success(res.data.message);
       }
     } catch (error) {
       setError("Error updating block status");
@@ -67,12 +68,12 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleAccept = async () => {
     try {
-      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
+      const res = await axiosInstance.patch("/travel-agencies/verify", {
         id: params.id,
         admin_verified: "accept",
       });
-      if(res.status==200){
-        toast.success(res.data.message)
+      if (res.status == 200) {
+        toast.success(res.data.message);
         setAgent((prev) => prev && { ...prev, admin_verified: "accept" });
       }
     } catch (error) {
@@ -90,12 +91,12 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleReject = async () => {
     try {
-      const res=await axios.patch("http://localhost:5000/admin/travel-agencies/verify", {
+      const res = await axiosInstance.patch("/travel-agencies/verify", {
         id: params.id,
         admin_verified: "reject",
       });
-      if(res.status==200){
-        toast.success(res.data.message)
+      if (res.status == 200) {
+        toast.success(res.data.message);
         setAgent((prev) => prev && { ...prev, admin_verified: "reject" });
       }
     } catch (error) {
@@ -186,7 +187,9 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
           <button
             onClick={handleBlockClick}
             className={`px-4 py-2 rounded-md shadow ${
-              isBlocked ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"
+              isBlocked
+                ? "bg-red-200 text-red-700"
+                : "bg-green-200 text-green-700"
             }`}
           >
             {isBlocked ? "Unblock" : "Block"}
@@ -211,9 +214,15 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
               </button>
             </>
           ) : (
-            <h3 className={`font-serif font-semibold ${agent?.admin_verified === "accept" ? "text-green-700" : "text-red-700"}`}>
-            {agent?.admin_verified === "accept" ? "Accepted" : "Rejected"}
-          </h3>
+            <h3
+              className={`font-serif font-semibold ${
+                agent?.admin_verified === "accept"
+                  ? "text-green-700"
+                  : "text-red-700"
+              }`}
+            >
+              {agent?.admin_verified === "accept" ? "Accepted" : "Rejected"}
+            </h3>
           )}
         </div>
       </div>
@@ -225,11 +234,11 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
           onConfirm={toggleBlockStatus}
         >
           <p>
-            Are you sure you want to {isBlocked ? "unblock" : "block"} this agency?
+            Are you sure you want to {isBlocked ? "unblock" : "block"} this
+            agency?
           </p>
         </BlockModal>
       )}
     </div>
   );
 }
-

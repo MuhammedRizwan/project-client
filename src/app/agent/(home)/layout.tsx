@@ -16,7 +16,7 @@ export default function AdminLayout({
     <ProtectedRouter>
       <div className="flex bg-gray-100">
         <Agentsidebar />
-        <div className="flex-1 p-3">{children}</div>
+        <div className="fleX p-3 w-full">{children}</div>
       </div>
     </ProtectedRouter>
   );

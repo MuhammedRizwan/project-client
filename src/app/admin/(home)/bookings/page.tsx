@@ -1,13 +1,12 @@
 "use client";
 import Table, { TableColumn } from "@/components/Table";
 import Booking from "@/interfaces/booking";
+import axiosInstance from "@/lib/axiosInstence";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function BookingsPage() {
-  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,8 +79,8 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          "http://localhost:5000/admin/booking/admin"
+        const response = await axiosInstance.get(
+          "/booking/admin"
         );
         console.log(response.data);
         if (response.status === 200) {

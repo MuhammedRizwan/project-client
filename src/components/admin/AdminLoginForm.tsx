@@ -33,7 +33,8 @@ export default function AdminLoginForm() {
       const res = await axios.post("http://localhost:5000/admin/login", data);
       if (res.status === 200) {
         const { admin,refreshToken,accessToken } = res.data;
-        Cookies.set("refreshToken",refreshToken)
+        console.log(res.data)
+        Cookies.set("adminRefreshToken",refreshToken)
         Cookies.set("adminToken",accessToken)
         dispatch(addAdmin(admin));
         toast.success(res.data.message);

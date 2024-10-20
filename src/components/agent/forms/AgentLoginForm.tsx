@@ -36,7 +36,7 @@ export default function AgentLoginForm() {
       const res = await axios.post("http://localhost:5000/agent/login", data);
       if (res.status === 200) {
         const { agent,refreshToken,accessToken } = res.data;
-        Cookies.set("refreshToken",refreshToken)
+        Cookies.set("agentRefreshToken",refreshToken)
         Cookies.set("agentToken",accessToken)
         dispatch(addAgent(agent));
         router.push("/agent/Dashboard");

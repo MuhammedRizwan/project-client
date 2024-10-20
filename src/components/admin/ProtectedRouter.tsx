@@ -14,7 +14,7 @@ export default function ProtectedRouter({
   const token = Cookies.get("adminToken");
   useEffect(() => {
     if (!token) {
-      router.back();
+      router.push('/admin');
     }
     setLoading(false);
   }, [router, token]);

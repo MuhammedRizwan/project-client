@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-// const api = "http://localhost:5000";
+import Cookies from "js-cookie";
 
 interface Admin {
   _id?: string;
@@ -19,6 +18,8 @@ const adminSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      Cookies.remove("adminToken");
+      Cookies.remove("adminRefreshToken");
       state.admin = null;
     },
     addAdmin: (state, action) => {      

@@ -13,7 +13,7 @@ type CouponModalProps = {
 
 export default function CouponModal({ isOpen, onClose, onSubmit, coupon, mode }: CouponModalProps) {
     console.log(coupon)
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<Coupon>();
+  const { register, handleSubmit, formState: { errors }} = useForm<Coupon>();
   const [validUpto, setValidUpto] = useState<string>("");
 
   // Helper functions for date formatting

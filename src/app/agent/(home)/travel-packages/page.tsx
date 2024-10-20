@@ -23,7 +23,7 @@ export default function Packages() {
           return;
         }
         const response = await axiosInstance.get(
-          `/agent/package/agent/${agent?._id}`
+          `/package/agent/${agent?._id}`
         );
         console.log(response.data);
 
