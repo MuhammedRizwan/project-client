@@ -9,6 +9,7 @@ import Category from "@/interfaces/category";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import axiosInstance from "@/lib/axiosInstence";
+import { Button, Input, Textarea } from "@nextui-org/react";
 
 export default function Categories() {
   const [category, setCategory] = useState<Category[]>([]);
@@ -81,9 +82,7 @@ export default function Categories() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          "/category"
-        );
+        const response = await axiosInstance.get("/category");
         const { categories } = response.data;
         setCategory(categories);
       } catch (error) {
@@ -107,13 +106,10 @@ export default function Categories() {
     if (selectedCategory) {
       try {
         const newStatus = !selectedCategory.is_block;
-        const res = await axiosInstance.patch(
-          "/category/block",
-          {
-            id: selectedCategory.category_name,
-            is_block: newStatus,
-          }
-        );
+        const res = await axiosInstance.patch("/category/block", {
+          id: selectedCategory.category_name,
+          is_block: newStatus,
+        });
         if (res.status === 200) {
           const updatedCategory = res.data.category;
           toast.success(res.data.message);
@@ -149,15 +145,11 @@ export default function Categories() {
       if (selectedFile) {
         formData.append("image", selectedFile);
       }
-      const response = await axiosInstance.post(
-        "/category/add",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axiosInstance.post("/category/add", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201) {
         const addedCategory = response.data.category;
@@ -264,43 +256,62 @@ export default function Categories() {
           onClose={() => setShowAddCategoryModal(false)}
         >
           <form onSubmit={handleSubmit(handleAddCategory)}>
-            <label className="block mb-2">Category Name</label>
-            <input
+            <label className="block mb-2 font-bold px-4">Category Name</label>
+            <Input
               {...register("category_name", {
                 required: "Category Name is required",
+                minLength: {
+                  value: 5,
+                  message: "Category Name must be at least 5 characters",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "Category Name must be at most 30 characters",
+                },
               })}
-              className="border px-4 py-2 rounded w-full"
+              className="px-4 pt-2 rounded w-full"
+              placeholder="Enter Category Name"
             />
-            {errors.category_name && (
-              <p className="text-red-600">{errors.category_name.message}</p>
-            )}
-
-            <label className="block mt-4 mb-2">Description</label>
-            <textarea
+            <p className="text-red-600 text-xs px-4 my-3">
+              {errors.category_name?.message || " "}
+            </p>
+            <label className="block mt-4 mb-2 font-bold px-4">
+              Description
+            </label>
+            <Textarea
               {...register("description", {
-                required: "Description is required",
+                required: "Description Name is required",
+                minLength: {
+                  value: 5,
+                  message: "Description Name must be at least 5 characters",
+                },
+                maxLength: {
+                  value: 30,
+                  message: "Description Name must be at most 30 characters",
+                },
               })}
-              className="border px-4 py-2 rounded w-full"
+              className=" px-4 pt-2 rounded w-full"
             />
-            {errors.description && (
-              <p className="text-red-600">{errors.description.message}</p>
-            )}
 
-            <label className="block mt-4 mb-2">Image</label>
-            <input
+            <p className="text-red-600 text-xs px-4 my-3">
+              {errors.description?.message || " "}
+            </p>
+
+            <label className="block mt-4 mb-2 font-bold px-4">Image</label>
+            <Input
               type="file"
               onChange={(e) =>
                 setSelectedFile(e.target.files ? e.target.files[0] : null)
               }
-              className="border px-4 py-2 rounded w-full"
+              className=" px-4 py-2 rounded w-full"
             />
 
-            <button
+            <Button
               type="submit"
-              className="px-4 py-2 mt-4 bg-green-500 text-white rounded"
+              className="py-2 mt-4 bg-green-500 text-white rounded"
             >
               Add Category
-            </button>
+            </Button>
           </form>
         </AddModal>
       )}
@@ -311,27 +322,44 @@ export default function Categories() {
           onClose={() => setShowEditCategoryModal(false)}
         >
           <form onSubmit={handleSubmit(handleEditCategory)}>
-            <label className="block mb-2">Category Name</label>
-            <input
+            <label className="block mb-2 font-bold px-4">Category Name</label>
+            <Input
               {...register("category_name", {
                 required: "Category Name is required",
+                minLength: {
+                  value: 5,
+                  message: "Category Name must be at least 5 characters",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "Category Name must be at most 30 characters",
+                },
               })}
-              className="border px-4 py-2 rounded w-full"
+              className="px-4 pt-2 rounded w-full"
+              placeholder="Enter Category Name"
             />
-            {errors.category_name && (
-              <p className="text-red-600">{errors.category_name.message}</p>
-            )}
 
-            <label className="block mt-4 mb-2">Description</label>
-            <textarea
+            <label className="block mt-4 mb-2 font-bold px-4">
+              Description
+            </label>
+            <Textarea
               {...register("description", {
-                required: "Description is required",
+                required: "Description Name is required",
+                minLength: {
+                  value: 5,
+                  message: "Description Name must be at least 5 characters",
+                },
+                maxLength: {
+                  value: 30,
+                  message: "Description Name must be at most 30 characters",
+                },
               })}
-              className="border px-4 py-2 rounded w-full"
+              className=" px-4 pt-2 rounded w-full"
             />
-            {errors.description && (
-              <p className="text-red-600">{errors.description.message}</p>
-            )}
+
+            <p className="text-red-600 text-xs px-4 my-3">
+              {errors.description?.message || " "}
+            </p>
 
             {selectedCategory.image && !selectedFile && (
               <div className="mt-4">
@@ -362,10 +390,11 @@ export default function Categories() {
 
             {/* File Input */}
             <label className="block mt-4 mb-2">Change Image</label>
-            <input
+            <label className="block mt-4 mb-2 font-bold px-4">Image</label>
+            <Input
               type="file"
               onChange={handleFileChange}
-              className="border px-4 py-2 rounded w-full"
+              className=" px-4 py-2 rounded w-full"
             />
 
             <button

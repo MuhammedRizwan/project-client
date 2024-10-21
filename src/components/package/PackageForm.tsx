@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
+  Textarea,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { useState, useEffect, useMemo, ChangeEvent } from "react";
@@ -28,6 +29,8 @@ export interface PackageFormValues {
   }[];
   includedItems: string[];
   excludedItems: string[];
+  description: string;
+  departure_place: string;
   images: File[];
 }
 
@@ -62,6 +65,7 @@ export default function PackageForm({
     setValue,
     getValues,
     reset,
+    setError,
   } = useForm<PackageFormValues>({
     defaultValues: {
       destinations: [""],
@@ -78,24 +82,22 @@ export default function PackageForm({
   const [newExcludedItem, setNewExcludedItem] = useState<string>("");
   const [includedError, setIncludedError] = useState<string>("");
   const [excludedError, setExcludedError] = useState<string>("");
-  const [imageError, setImageError] = useState<string>("");
-  const [noOfDays, setNoOfDays] = useState<number>(1);
+  const [, setNoOfDays] = useState<number>(1);
   const [activityError, setActivityError] = useState<string>("");
   const [errorMessages, setErrorMessages] = useState<string[][]>([]);
-  const [destinationError, setDestinationError] = useState<string|null>(null);
+  const [destinationError, setDestinationError] = useState<string | null>(null);
   const [itineraries, setItineraries] = useState<Itinerary[]>([
     { day: 1, activities: [{ time: "", activity: "" }] },
   ]);
   useEffect(() => {
-    if (includedError || excludedError || imageError) {
+    if (includedError || excludedError) {
       const timer = setTimeout(() => {
         setIncludedError("");
         setExcludedError("");
-        setImageError("");
       }, 15000);
       return () => clearTimeout(timer);
     }
-  }, [includedError, excludedError, imageError]);
+  }, [includedError, excludedError]);
 
   useEffect(() => {
     if (initialData) {
@@ -128,7 +130,9 @@ export default function PackageForm({
     setNoOfDays(days);
     const newItineraries = Array.from({ length: days }, (_, index) => ({
       day: index + 1,
-      activities: itineraries[index]?.activities || [{ time: "", activity: "" }],
+      activities: itineraries[index]?.activities || [
+        { time: "", activity: "" },
+      ],
     }));
     setItineraries(newItineraries);
     setValue("itineraries", newItineraries);
@@ -179,14 +183,16 @@ export default function PackageForm({
       updatedErrors[dayIndex] = [];
     }
     updatedErrors[dayIndex][activityIndex] = message;
-    setErrorMessages(updatedErrors);  
+    setErrorMessages(updatedErrors);
   };
 
   const handleAddActivity = (dayIndex: number) => {
     const updatedItineraries = [...itineraries];
 
     if (updatedItineraries[dayIndex].activities.length >= 5) {
-      setActivityError(`You can only add up to 5 activities for Day ${dayIndex + 1}`);
+      setActivityError(
+        `You can only add up to 5 activities for Day ${dayIndex + 1}`
+      );
       return;
     }
 
@@ -196,7 +202,7 @@ export default function PackageForm({
   };
 
   const handleRemoveActivity = (dayIndex: number, activityIndex: number) => {
-    if (activityIndex === 0){
+    if (activityIndex === 0) {
       setActivityError(`cannot remove first activity for Day ${dayIndex + 1}`);
       return;
     }
@@ -214,25 +220,25 @@ export default function PackageForm({
   const handleAddDestination = () => {
     if (destinations.length < 4) {
       setDestinations([...destinations, ""]);
-    }else{
+    } else {
       setDestinationError("You can only add up to 4 destinations");
     }
     setTimeout(() => {
       setDestinationError(null);
-    },15000)
+    }, 15000);
   };
 
   const handleRemoveDestination = (index: number) => {
-    if (index !== 0) { 
+    if (index !== 0) {
       const updatedDestinations = destinations.filter((_, i) => i !== index);
       setDestinations(updatedDestinations);
       setValue("destinations", updatedDestinations);
-    }else{
+    } else {
       setDestinationError("cannot remove first destination");
     }
-    setTimeout(()=>{
-      setDestinationError(null)
-    },15000)
+    setTimeout(() => {
+      setDestinationError(null);
+    }, 15000);
   };
 
   const handleChangeDestination = (index: number, value: string) => {
@@ -256,7 +262,7 @@ export default function PackageForm({
       }
       if (newIncludedItem)
         setIncludedItems((prev) => [...prev, newIncludedItem]);
-      setValue("includedItems", includedItems);
+      setValue("includedItems", [...includedItems, newIncludedItem]);
       setNewIncludedItem(""); // Clear input field
     }
   };
@@ -264,7 +270,7 @@ export default function PackageForm({
   // Remove included item
   const removeIncluded = (index: number) => {
     setIncludedItems((prev) => prev.filter((_, i) => i !== index));
-    setValue("includedItems", [...includedItems,newIncludedItem]);
+    setValue("includedItems", includedItems);
   };
 
   // Add excluded item
@@ -282,7 +288,7 @@ export default function PackageForm({
         return;
       }
       setExcludedItems((prev) => [...prev, newExcludedItem]);
-      setValue("excludedItems", [...excludedItems,newExcludedItem]);
+      setValue("excludedItems", [...excludedItems, newExcludedItem]);
       setNewExcludedItem(""); // Clear input field
     }
   };
@@ -298,7 +304,7 @@ export default function PackageForm({
 
     // Check if the current images have reached the maximum limit
     if (images.length >= 6) {
-      setImageError("Maximum 6 images allowed");
+      setError("images", { type: "manual", message: "maximum 6 images" });
       return;
     }
 
@@ -321,7 +327,10 @@ export default function PackageForm({
         setImages((prevImages) => [...prevImages, ...imagesToAdd]);
         setValue("images", [...images, ...imagesToAdd]);
       } else {
-        setImageError("Please select valid images");
+        setError("images", {
+          type: "manual",
+          message: "Please select valid image",
+        });
       }
     }
   };
@@ -353,7 +362,10 @@ export default function PackageForm({
 
         const newImageFile = target.files[0];
         if (!acceptedFileTypes.includes(newImageFile.type)) {
-          setImageError("Please select a valid image");
+          setError("images", {
+            type: "manual",
+            message: "Please select valid image",
+          });
           return;
         }
         const updatedImages = [...images];
@@ -364,7 +376,10 @@ export default function PackageForm({
 
         toast.success("Image uploaded successfully");
       } else {
-        toast.error("Please select an image");
+        setError("images", {
+          type: "manual",
+          message: "Please select an image",
+        });
       }
     };
 
@@ -385,6 +400,28 @@ export default function PackageForm({
   // Submit handler
   const onSubmitHandler = (data: PackageFormValues) => {
     console.log(data);
+    if (data.images.length <= 0) {
+      console.log(images);
+      setError("images", {
+        type: "manual",
+        message: "Please add at least one image",
+      });
+      return;
+    }
+    if (includedItems.length <= 0) {
+      setError("includedItems", {
+        type: "manual",
+        message: "Please add at least one included item",
+      });
+      return;
+    }
+    if (excludedItems.length <= 0) {
+      setError("excludedItems", {
+        type: "manual",
+        message: "Please add at least one excluded item",
+      });
+      return;
+    }
     const formData = new FormData();
     formData.append("packageName", data.package_name);
     formData.append("maxPerson", data.max_person.toString());
@@ -396,6 +433,8 @@ export default function PackageForm({
     formData.append("itineraries", JSON.stringify(data.itineraries));
     formData.append("includedItems", JSON.stringify(data.includedItems));
     formData.append("excludedItems", JSON.stringify(data.excludedItems));
+    formData.append("description", JSON.stringify(data.description));
+    formData.append("departure", JSON.stringify(data.departure_place));
     images.forEach((file, index) => {
       formData.append(`images[${index}]`, file);
     });
@@ -410,6 +449,8 @@ export default function PackageForm({
       itineraries: JSON.parse(formData.get("itineraries") as string),
       includedItems: JSON.parse(formData.get("includedItems") as string),
       excludedItems: JSON.parse(formData.get("excludedItems") as string),
+      description: JSON.parse(formData.get("description") as string),
+      departure_place: JSON.parse(formData.get("departure") as string),
       images: images,
     };
     onSubmit(packageFormValues);
@@ -440,8 +481,8 @@ export default function PackageForm({
                 },
                 validate: {
                   noSpecialChars: (value) =>
-                    /^[A-Za-z0-9_]+$/.test(value) ||
-                    "No special characters allowed",
+                    /^[A-Za-z0-9_ ]+$/.test(value) ||
+                    "No special characters allowed, except spaces and one underscore",
                   singleUnderscore: (value) =>
                     (value.match(/_/g)?.length || 0) <= 1 ||
                     "Only one underscore is allowed",
@@ -449,7 +490,10 @@ export default function PackageForm({
                     const capitalizedValue = value.replace(/\b\w/g, (char) =>
                       char.toUpperCase()
                     );
-                    setValue("package_name", capitalizedValue);
+                    setValue("package_name", capitalizedValue, {
+                      shouldValidate: false,
+                      shouldDirty: true,
+                    });
                     return true;
                   },
                 },
@@ -612,56 +656,26 @@ export default function PackageForm({
               className="block text-gray-700 font-bold mb-2"
               htmlFor="max-person"
             >
-              Destination
+              Departure Place
             </label>
-            {destinations.map((destination, index) => (
-              <div
-                key={index}
-                className="flex items-start mb-2 justify-between "
-              >
-                <div className="flex-grow w-2/3">
-                  <Input
-                    {...register(`destinations.${index}`, {
-                      required: "Destination is required",
-                      pattern: {
-                        value: /^[A-Za-z0-9 ]+$/,
-                        message:
-                          "No special characters allowed in destination name",
-                      },
-                    })}
-                    value={destination}
-                    placeholder="Destination"
-                    className="flex-grow w-full"
-                    onChange={(e) =>
-                      handleChangeDestination(index, e.target.value)
-                    }
-                  />
-
-                  <p className="text-red-500 text-xs min-h-[20px]">
-                    {errors.destinations?.[index]?.message}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  onClick={() => handleRemoveDestination(index)}
-                  className=""
-                  color="danger"
-                  isIconOnly
-                >
-                  X
-                </Button>
-              </div>
-            ))}
-            <p className="text-red-500 text-xs">
-                    {destinationError || ""}
-                  </p>
-            <Button
-              type="button"
-              onClick={handleAddDestination}
-              color="primary"
-            >
-              + Add Destination
-            </Button>
+            <Input
+              type="text"
+              {...register("departure_place", {
+                required: "Departure place is required",
+                maxLength: {
+                  value: 30,
+                  message: "Departure place must be at most 30 characters",
+                },
+                pattern: {
+                  value: /^[a-zA-Z0-9\s]*$/,
+                  message: "Only letters and spaces are allowed",
+                },
+              })}
+              placeholder="Departure place"
+            />
+            <p className="text-red-500 text-xs min-h-[20px]">
+              {errors.original_price?.message || ""}
+            </p>
           </div>
 
           <div className="mb-4">
@@ -686,6 +700,100 @@ export default function PackageForm({
               {errors.original_price?.message || ""}
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl mt-8">
+        <h1 className="text-2xl font-bold mb-4">Destination And Description</h1>
+        <p className="text-gray-600 mb-4">
+          Upload images related to the package.
+        </p>
+
+        <div className=" w-full">
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-bold mb-2"
+              htmlFor="max-person"
+            >
+              Destination
+            </label>
+            <div className="grid grid-cols-2 gap-x-4">
+              {destinations.map((destination, index) => (
+                <div
+                  key={index}
+                  className="flex items-start mb-2 justify-between "
+                >
+                  <div className="flex-grow w-2/3">
+                    <Input
+                      {...register(`destinations.${index}`, {
+                        required: "Destination is required",
+                        pattern: {
+                          value: /^[A-Za-z0-9 ]+$/,
+                          message:
+                            "No special characters allowed in destination name",
+                        },
+                      })}
+                      value={destination}
+                      placeholder="Destination"
+                      className="flex-grow w-full"
+                      onChange={(e) =>
+                        handleChangeDestination(index, e.target.value)
+                      }
+                    />
+
+                    <p className="text-red-500 text-xs min-h-[20px]">
+                      {errors.destinations?.[index]?.message}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => handleRemoveDestination(index)}
+                    className=""
+                    color="danger"
+                    isIconOnly
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <p className="text-red-500 text-xs">{destinationError || ""}</p>
+            <Button
+              type="button"
+              onClick={handleAddDestination}
+              color="primary"
+            >
+              + Add Destination
+            </Button>
+          </div>
+        </div>
+
+        <div className="mb-4 w-full">
+          <label
+            className="block text-gray-700 font-bold mb-2"
+            htmlFor="Description"
+          >
+            Description
+          </label>
+          <Textarea
+            rows={10}
+            type="text"
+            {...register("description", {
+              required: "Description is required",
+              minLength: {
+                value: 10,
+                message: "Description must be at least 10 characters long",
+              },
+              maxLength: {
+                value: 500,
+                message: "Description cannot exceed 500 characters",
+              },
+            })}
+            placeholder="Description for the package"
+          />
+          <p className="text-red-500 text-xs min-h-[20px]">
+            {errors.description?.message || ""}
+          </p>
         </div>
       </div>
 
@@ -745,7 +853,7 @@ export default function PackageForm({
                 <div>
                   {errorMessages[dayIndex]?.[activityIndex] && (
                     <p className="text-red-500 text-sm mt-1">
-                      {errorMessages[dayIndex][activityIndex] ||" "}
+                      {errorMessages[dayIndex][activityIndex] || " "}
                     </p>
                   )}
                 </div>
@@ -772,16 +880,21 @@ export default function PackageForm({
         <div className="md:flex">
           <div className="mb-6 md:w-1/2 h-80 bg-slate-50  p-3 shadow-inner border m-2">
             <h2 className="text-xl font-semibold mb-2">Included Items</h2>
-            <div className="flex items-center gap-2">
-              <Input
-                value={newIncludedItem}
-                onChange={handleIncludedItemChange}
-                placeholder="Add included item"
-                fullWidth
-              />
-              <Button color="success" type="button" onClick={addIncludedItem}>
-                Add
-              </Button>
+            <div>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={newIncludedItem}
+                  onChange={handleIncludedItemChange}
+                  placeholder="Add included item"
+                  fullWidth
+                />
+                <Button color="success" type="button" onClick={addIncludedItem}>
+                  Add
+                </Button>
+              </div>
+              <p className="text-red-500 text-xs">
+                {errors.includedItems?.message}
+              </p>
             </div>
             <p className="text-red-500 text-xs py-2">{includedError || ""}</p>
             <ul className="list-disc pl-5">
@@ -807,17 +920,22 @@ export default function PackageForm({
           </div>
           <div className="mb-6 md:w-1/2 h-80 bg-slate-50  p-3 shadow-inner border m-2">
             <h2 className="text-xl font-semibold mb-2">Excluded Items</h2>
-            <div className="flex items-center gap-2 mb-4">
-              <Input
-                value={newExcludedItem}
-                onChange={handleExcludedItemChange}
-                placeholder="Add excluded item"
-                fullWidth
-                autoCapitalize="words"
-              />
-              <Button color="success" type="button" onClick={addExcludedItem}>
-                Add
-              </Button>
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Input
+                  value={newExcludedItem}
+                  onChange={handleExcludedItemChange}
+                  placeholder="Add excluded item"
+                  fullWidth
+                  autoCapitalize="words"
+                />
+                <Button color="success" type="button" onClick={addExcludedItem}>
+                  Add
+                </Button>
+              </div>
+              <p className="text-red-500 text-xs">
+                {errors.excludedItems?.message}
+              </p>
             </div>
             <p className="text-red-500 text-xs">{excludedError || ""}</p>
             <ul className="list-disc pl-5">
@@ -909,7 +1027,9 @@ export default function PackageForm({
           className="hidden"
         />
 
-        <p className="text-red-500 text-xs py-2">{imageError || ""}</p>
+        <p className="text-red-500 text-xs py-2">
+          {errors.images?.message || ""}
+        </p>
       </div>
 
       <div className=" mx-auto  p-8  mt-8 flex justify-end">

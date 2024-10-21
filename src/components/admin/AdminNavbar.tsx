@@ -13,17 +13,18 @@ export default function AdminNavbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Check for admin token and handle unauthorized access
-  const handleAuth = () => {
-    const token = Cookies.get("adminToken");
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      dispatch(logout());
-      router.push("/admin");
-    }
-  };
-
+ 
   useEffect(() => {
+    const handleAuth = () => {
+      const token = Cookies.get("adminToken");
+      if (token) {
+        setIsLoggedIn(true);
+      } else {
+        dispatch(logout());
+        router.push("/admin");
+      }
+    };
+  
     handleAuth();
   }, [dispatch, router]);
 

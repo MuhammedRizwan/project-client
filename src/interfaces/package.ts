@@ -21,5 +21,5 @@ export default interface Package  {
   includedItems: string[];
   excludedItems: string[];
   description: string;
-  departure:string
+  departure_place:string
 }

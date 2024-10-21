@@ -5,7 +5,7 @@ import { LogOut, LayoutDashboard, Package, BookOpen, Tag, Bell } from "lucide-re
 import { useDispatch } from "react-redux"
 import { logout } from "@/store/reducer/agentReducer"
 
-export default function AgentSidebar({ name = "HEAVEN FINDER" }) {
+export default function AgentSidebar({ name = "HEAVEN FINDER"}) {
   const pathname = usePathname()
   const dispatch = useDispatch()
   const router = useRouter()
@@ -14,7 +14,7 @@ export default function AgentSidebar({ name = "HEAVEN FINDER" }) {
     { href: "/agent/Dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/agent/travel-packages", label: "Travel Packages", icon: Package },
     { href: "/agent/bookings", label: "Bookings", icon: BookOpen },
-    { href: "/admin/bookings", label: "Coupons", icon: Tag },
+    { href: "/agent/coupons", label: "Coupons", icon: Tag },
     { href: "/admin/notifications", label: "Notifications", icon: Bell },
   ]
 
