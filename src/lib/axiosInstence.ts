@@ -2,25 +2,21 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import refreshToken from "./refreshToken";
 
-// Helper to Get Base URL Based on Role Token
 const getBaseUrl = () => {
   if (Cookies.get("adminToken")) return "http://localhost:5000/admin";
   if (Cookies.get("agentToken")) return "http://localhost:5000/agent";
-  return "http://localhost:5000"; // Default base URL
+  return "http://localhost:5000";
 };
 
-// Helper to Get the Correct Token for Authorization
 const getToken = () =>
   Cookies.get("accessToken") ||
   Cookies.get("adminToken") ||
   Cookies.get("agentToken");
-
-// Create Axios Instance
+ 
 const axiosInstance = axios.create({
   baseURL: getBaseUrl()
 });
 
-// Request Interceptor to Add Authorization Header
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();

@@ -5,13 +5,12 @@ import Agent from "@/interfaces/agent";
 import axiosInstance from "@/lib/axiosInstence";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function TravelAgencies() {
   const router = useRouter();
-  const [agent, setAgent] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+
   const [error, setError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -61,29 +60,29 @@ export default function TravelAgencies() {
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get("/travel-agencies");
-        const { agencies } = response.data;
-        setAgent(agencies);
-      } catch (error) {
-        setError("Error fetching users");
-        if (axios.isAxiosError(error)) {
-          const errorMessage = error.response?.data || "Fetching Failed";
-          toast.error(errorMessage.message);
-        } else {
-          toast.error("An unknown error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axiosInstance.get("/travel-agencies");
+  //       const { agencies } = response.data;
+  //       setAgent(agencies);
+  //     } catch (error) {
+  //       setError("Error fetching users");
+  //       if (axios.isAxiosError(error)) {
+  //         const errorMessage = error.response?.data || "Fetching Failed";
+  //         toast.error(errorMessage.message);
+  //       } else {
+  //         toast.error("An unknown error occurred");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
-  if (loading) return <div>Loading...</div>;
+  // if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   const handleBlockClick = (agent: Agent) => {
     setSelectedAgent(agent);
@@ -98,14 +97,14 @@ export default function TravelAgencies() {
           is_block: newStatus,
         });
         if (res.status === 200) {
-          const updatedAgent = res.data.agent;
+        
           toast.success(res.data.message);
 
-          setAgent((prevAgent) =>
-            prevAgent.map((agent) =>
-              agent._id === updatedAgent._id ? updatedAgent : agent
-            )
-          );
+          // setAgent((prevAgent) =>
+          //   prevAgent.map((agent) =>
+          //     agent._id === updatedAgent._id ? updatedAgent : agent
+          // //   )
+          // );
         }
       } catch (error) {
         setError("Error fetching users");
@@ -123,10 +122,10 @@ export default function TravelAgencies() {
   const viewDetialsClick = (agent: Agent) => {
     router.push(`/admin/travel-agencies/${agent._id}`);
   };
-
+  const apiUrl="/travel-agencies"
   return (
     <div>
-      <Table columns={agentColumns} data={agent} />
+      <Table<Agent> columns={agentColumns} apiUrl={apiUrl}/>
       {showModal && selectedAgent && (
         <BlockModal
           title="Confirm Block/Unblock"

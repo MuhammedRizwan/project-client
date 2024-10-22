@@ -3,21 +3,18 @@ import BlockModal from "@/components/modal/blockModal";
 import Table, { TableColumn } from "@/components/Table";
 import Coupon from "@/interfaces/coupon";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import CouponModal from "@/components/coupon/modal";
 import { Button } from "@nextui-org/react";
 import axiosInstance from "@/lib/axiosInstence";
 
 export default function CouponsPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setCoupons] = useState<Coupon[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showBlockModal, setShowBlockModal] = useState<boolean>(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
-
-  // Table columns definition
   const couponColumns: TableColumn<Coupon>[] = [
     { key: "coupon_code", label: "Coupon Code" },
     { key: "percentage", label: "Percentage" },
@@ -32,17 +29,6 @@ export default function CouponsPage() {
             month: "long",
             day: "numeric",
           })}
-        </span>
-      ),
-    },
-    {
-      key: "is_active",
-      label: "Is Active",
-      render: (coupon: Coupon) => (
-        <span
-          className={coupon.is_active ? "text-green-500" : "text-yellow-500"}
-        >
-          {coupon.is_active ? "Active" : "Inactive"}
         </span>
       ),
     },
@@ -73,25 +59,6 @@ export default function CouponsPage() {
       ),
     },
   ];
-
-  useEffect(() => {
-    const fetchCoupons = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/coupon");
-        if (response.status === 200) {
-          const { coupons } = response.data;
-          setCoupons(coupons);
-        }
-      } catch (error) {
-        handleAxiosError(error, "Error fetching coupons");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCoupons();
-  }, []);
   const openModal = (mode: "add" | "edit", coupon?: Coupon) => {
     setSelectedCoupon(coupon || null);
     setModalMode(mode);
@@ -112,7 +79,6 @@ export default function CouponsPage() {
       );
       if (response.status === 200) {
         const { coupons } = response.data;
-        console.log(coupons,"srguyifsdhguasifhgwyudagfashf8ygfahdusfgu");
         setCoupons((prevCoupons) =>
           prevCoupons.map((coupon) =>
             coupon._id === coupons._id ? coupons : coupon
@@ -166,7 +132,7 @@ export default function CouponsPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  const apiUrl = "/coupon";
   return (
     <div>
       <div className="mb-4 w-full flex justify-end"> 
@@ -178,7 +144,7 @@ export default function CouponsPage() {
       </Button>
       </div>
 
-      <Table columns={couponColumns} data={coupons} />
+      <Table<Coupon> columns={couponColumns} apiUrl={apiUrl} />
 
       {showModal && (
         <CouponModal

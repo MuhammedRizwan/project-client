@@ -1,16 +1,9 @@
 "use client";
 import Table, { TableColumn } from "@/components/Table";
 import Booking from "@/interfaces/booking";
-import axiosInstance from "@/lib/axiosInstence";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
   const bookingColumns: TableColumn<Booking>[] = [
     {
       key: "user_id", // Must match 'keyof Booking'
@@ -74,40 +67,11 @@ export default function BookingsPage() {
     },
   ];
 
-  
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(
-          "/booking/admin"
-        );
-        console.log(response.data);
-        if (response.status === 200) {
-          const { bookings } = response.data;
-          setBookings(bookings);
-        }
-      } catch (error) {
-        setError("Error fetching bookings");
-        if (axios.isAxiosError(error)) {
-          const errorMessage = error.response?.data || "Fetching failed";
-          toast.error(errorMessage.message);
-        } else {
-          toast.error("An unknown error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBookings();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const apiUrl="/booking/admin"
 
   return (
     <div>
-      <Table columns={bookingColumns} data={bookings} />
+     <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} />
     </div>
   );
 }

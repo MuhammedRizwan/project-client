@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 export default function BookingsPage() {
     const router = useRouter();
   const {agent}=useSelector((state:RootState)=>state.agent)
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,7 +114,7 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <Table columns={bookingColumns} data={bookings} />
+      <Table<Booking> columns={bookingColumns} apiUrl="/booking/travel-agency"/>
     </div>
   );
 }

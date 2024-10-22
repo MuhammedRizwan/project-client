@@ -6,12 +6,11 @@ import User from "@/interfaces/user";
 import axiosInstance from "@/lib/axiosInstence";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function userList() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -49,31 +48,6 @@ export default function userList() {
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get("/users");
-        if (response.status == 200) {
-          const { users } = response.data;
-          setUsers(users);
-        }
-      } catch (error) {
-        setError("Error fetching users");
-        if (axios.isAxiosError(error)) {
-          const errorMessage = error.response?.data || "Fetching Failed";
-          toast.error(errorMessage.message);
-        } else {
-          toast.error("An unknown error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   const handleBlockClick = (user: User) => {
     setSelectedUser(user);
@@ -109,10 +83,10 @@ export default function userList() {
       }
     }
   };
-
+const apiUrl="/users"
   return (
     <div>
-      <Table columns={userColumns} data={users} />
+      <Table<User> columns={userColumns} apiUrl={apiUrl}/>
       {showModal && selectedUser && (
         <BlockModal
           title="Confirm Block/Unblock"

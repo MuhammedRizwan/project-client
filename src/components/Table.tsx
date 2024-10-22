@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axiosInstance from "@/lib/axiosInstence";
+import React, { useState, useEffect } from "react";
 
 export interface TableColumn<T extends object> {
   key: keyof T;
@@ -8,28 +9,35 @@ export interface TableColumn<T extends object> {
 
 interface TableProps<T extends object> {
   columns: TableColumn<T>[];
-  data: T[];
+  apiUrl: string; 
 }
 
-const Table = <T extends object>({ columns, data }: TableProps<T>) => {
-  console.log(data)
+const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
+  const [data, setData] = useState<T[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 3;
 
-  const filteredData = data.filter((row) =>
-    columns.some((column) =>
-      String(row[column.key]).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+   const fetchData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}` 
+      )
+      
+      const {filterData,totalPages}=response.data
+      setData(filterData);
+      setTotalPages(totalPages);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  useEffect(() => {
+    fetchData();
+  }, [searchTerm, currentPage,columns]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -55,7 +63,6 @@ const Table = <T extends object>({ columns, data }: TableProps<T>) => {
         />
       </div>
 
-    
       <div className="overflow-x-auto">
         <table className="min-w-full border-collapse rounded-lg shadow-sm">
           <thead>
@@ -71,8 +78,8 @@ const Table = <T extends object>({ columns, data }: TableProps<T>) => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {paginatedData.length > 0 ? (
-              paginatedData.map((row, index) => (
+            {data.length > 0 ? (
+              data.map((row, index) => (
                 <tr
                   key={index}
                   className={`${

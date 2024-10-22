@@ -33,7 +33,7 @@ export default function GoogleLogin() {
     };
 
     login();
-  }, [status, session, router]); // Dependencies: re-run effect when status or session changes
+  }, [status, session,router]); // Dependencies: re-run effect when status or session changes
 
   return <div>Logging in...</div>; // You can customize this or add a loading indicator
 }

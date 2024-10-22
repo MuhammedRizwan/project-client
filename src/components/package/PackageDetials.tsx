@@ -31,7 +31,7 @@ export default function PackageDetials({packageData}:{packageData:Package|null})
         <div className="flex justify-between">
 
         <div className="mb-6">
-          <p className="text-sm text-gray-500">Start From {packageData?.departure}</p>
+          <p className="text-sm text-gray-500">Start From {packageData?.departure_place}</p>
           <p className="text-3xl font-bold">
             ₹{packageData?.offer_price}<span className="text-base font-normal">/Person</span>
           </p>
