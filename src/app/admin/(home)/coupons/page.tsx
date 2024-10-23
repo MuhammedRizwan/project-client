@@ -93,7 +93,7 @@ export default function CouponsPage() {
   };
 
   const handleCouponSubmit = async (data: Coupon) => {
-    console.log("data",data)
+    console.log("data", data);
     try {
       const url =
         modalMode === "add"
@@ -135,13 +135,13 @@ export default function CouponsPage() {
   const apiUrl = "/coupon";
   return (
     <div>
-      <div className="mb-4 w-full flex justify-end"> 
-      <Button
-        className="px-4 py-2 bg-yellow-600 text-white rounded"
-        onClick={() => openModal("add")}
-      >
-        Add Coupon
-      </Button>
+      <div className="mb-4 w-full flex justify-end">
+        <Button
+          className="px-4 py-2 bg-yellow-600 text-white rounded"
+          onClick={() => openModal("add")}
+        >
+          Add Coupon
+        </Button>
       </div>
 
       <Table<Coupon> columns={couponColumns} apiUrl={apiUrl} />
@@ -164,7 +164,7 @@ export default function CouponsPage() {
         >
           <p>
             Are you sure you want to{" "}
-            {selectedCoupon.is_active ? "unblock" : "block"}{" "}
+            {selectedCoupon.is_active ? "block" : "unblock"}{" "}
             {selectedCoupon.coupon_code}?
           </p>
         </BlockModal>
