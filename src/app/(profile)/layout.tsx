@@ -1,6 +1,8 @@
+
 import Sidebar from "@/components/profile/Sidebar";
 import Header from "@/components/user/Navbar";
 import UserWrapper from "@/components/wrapper/userwrapper";
+
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
