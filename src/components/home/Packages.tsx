@@ -15,7 +15,7 @@ export default function Packages() {
   useEffect(()=>{
     const fetchCategory=async()=>{
     try {
-        const response=await axios.get("http://localhost:5000/categories")
+        const response=await axios.get("http://localhost:5000/categories/unblocked")
         if(response.status===200){
           setPackages(response.data.categories)
         }

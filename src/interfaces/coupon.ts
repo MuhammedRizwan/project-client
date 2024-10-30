@@ -3,6 +3,7 @@ export default interface Coupon {
     coupon_code: string;
     description: string;
     percentage: string;
+    min_amount: string;
     max_amount: boolean;
     valid_upto: Date;
     is_active: boolean;

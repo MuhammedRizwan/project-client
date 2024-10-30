@@ -9,7 +9,7 @@ export interface TableColumn<T extends object> {
 
 interface TableProps<T extends object> {
   columns: TableColumn<T>[];
-  apiUrl: string; 
+  apiUrl: string;
 }
 
 const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
@@ -20,24 +20,22 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
 
   const rowsPerPage = 3;
 
-   const fetchData = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}` 
-      )
-      
-      const {filterData,totalPages}=response.data
-      setData(filterData);
-      setTotalPages(totalPages);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}`
+        );
+
+        const { filterData, totalPages } = response.data;
+        setData(filterData);
+        setTotalPages(totalPages);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
     fetchData();
-  }, [searchTerm, currentPage,columns]);
+  }, [searchTerm, currentPage, columns]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {

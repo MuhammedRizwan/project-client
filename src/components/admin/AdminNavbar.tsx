@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button } from "@nextui-org/react";
 import Logo from "../Logo";
 import { useRouter } from "next/navigation";
@@ -12,25 +12,22 @@ export default function AdminNavbar() {
   const dispatch = useDispatch();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Check for admin token and handle unauthorized access
  
+  const checkAuth = useCallback(() => {
+    const token = Cookies.get("adminToken");
+    setIsLoggedIn(!!token); 
+  }, []);
+
+
   useEffect(() => {
-    const handleAuth = () => {
-      const token = Cookies.get("adminToken");
-      if (token) {
-        setIsLoggedIn(true);
-      } else {
-        dispatch(logout());
-        router.push("/admin");
-      }
-    };
-  
-    handleAuth();
-  }, [dispatch, router]);
+    checkAuth(); 
+  }, [checkAuth,router,dispatch]);
 
   const handleLogout = () => {
+    Cookies.remove("adminToken"); 
     dispatch(logout());
-    router.push("/admin");
+    setIsLoggedIn(false); 
+    router.replace("/admin"); 
   };
 
   return (

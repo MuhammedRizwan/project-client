@@ -15,6 +15,7 @@ const AddPackagePage = () => {
   const agent:Agent|null=useSelector((state:RootState)=>state.agent.agent)
   const [categories, setCategories] = useState([]); 
   const handleAddPackage = async (data: PackageFormValues) => {
+    console.log(data,"add package Data");
     try {
       if(!agent){
         toast.error("Please login to add package");
@@ -26,7 +27,7 @@ const AddPackagePage = () => {
         }
       });
       if(res.status === 201) {
-        router.push("/travel-packages");
+        router.push("/agent/travel-packages");
         toast.success("Package added successfully");
       }else{
         console.log(res.data);
@@ -44,8 +45,9 @@ const AddPackagePage = () => {
   useEffect(() => {
     const fetchCategories=async()=>{
       try{
-        const res=await axiosInstance.get("/category")
+        const res=await axiosInstance.get("/category/unblocked")
         const {categories}=res.data
+        console.log(categories)
         setCategories(categories)
       }catch(error){
         if (axios.isAxiosError(error)) {

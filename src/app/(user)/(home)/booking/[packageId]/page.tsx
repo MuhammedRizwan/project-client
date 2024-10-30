@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Package from "@/interfaces/package";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -10,6 +9,10 @@ import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/axiosInstence";
 import Script from "next/script";
+import Coupon from "@/interfaces/coupon";
+import CouponListModal from "@/components/coupon/CouponModal";
+import { Button, Input } from "@nextui-org/react";
+import axios from "axios";
 
 interface BookingData {
   first_name: string;
@@ -62,12 +65,20 @@ export default function BookingForm({
   const [packageData, setPackageData] = useState<Package | null>(null);
   const [members, setMembers] = useState([{ name: "", age: "" }]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponId, setCouponId] = useState<string | undefined>("");
   const [discount, setDiscount] = useState<number>(0);
+  const [coupons, setCoupons] = useState<Coupon[] | null>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/packages/${params.packageId}`
+        const response = await axiosInstance.get(
+          `/packages/${params.packageId}`
         );
         const { packageData } = response.data;
         setPackageData(packageData);
@@ -87,6 +98,7 @@ export default function BookingForm({
   } = useForm<BookingData>();
 
   const onSubmit = async (bookingData: BookingData) => {
+    setLoading(true);
     try {
       const payload = {
         bill_details: {
@@ -99,8 +111,7 @@ export default function BookingForm({
         members,
         package_id: params.packageId,
         user_id: user?._id,
-        totalPrice,
-        discount,
+        coupon_id: couponId,
         start_date: bookingData.start_date,
       };
       const res = await axiosInstance.post("/booking/createOrder", {
@@ -121,10 +132,7 @@ export default function BookingForm({
           });
           const data = await res.data;
           if (data.successpayment) {
-            const response = await axiosInstance.post(
-              "/booking",
-              payload
-            );
+            const response = await axiosInstance.post("/booking", payload);
             console.log(response.data);
             if (response.status === 201) {
               console.log("Booking successful:", response.data);
@@ -143,8 +151,9 @@ export default function BookingForm({
       const payment = new window.Razorpay(paymentData);
       payment.open();
     } catch (error) {
-      console.error("Error creating order:", error);
-      alert("Order creation failed. Please try again.");
+      toast.error("Order creation failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,33 +165,59 @@ export default function BookingForm({
 
     // Add a new member object with initial empty values
     setMembers([...members, { name: "", age: "" }]);
+    if (packageData) {
+      setTotalPrice(packageData?.offer_price * members.length);
+    }
   };
 
   const handleMemberChange = (index: number, field: string, value: string) => {
+    if (field.length > 50) {
+      toast.error("Field value cannot exceed 50 characters.");
+      return;
+    }
+    if (!isNaN(Number(value)) && Number(value) > 150) {
+      toast.error("Value cannot exceed 150.");
+      return;
+    }
     const updatedMembers = [...members];
     updatedMembers[index] = { ...updatedMembers[index], [field]: value };
     setMembers(updatedMembers);
+    if (packageData) {
+      setTotalPrice(packageData.offer_price * members.length);
+    }
   };
 
-  const handleApplyDiscount = (code: string) => {
-    let discountValue = 0;
-    switch (code) {
-      case "FREE100":
-        discountValue = 100;
-        break;
-      case "NEW250":
-        discountValue = 250;
-        break;
-      case "AS500":
-        discountValue = 500;
-        break;
-      default:
-        alert("Invalid discount code.");
-        return;
+  useEffect(() => {
+    const fetchCoupon = async () => {
+      const respone = await axiosInstance.get(`/coupon/unblocked`);
+      const { coupons } = respone.data;
+      setCoupons(coupons);
+    };
+    fetchCoupon();
+  }, [params.packageId]);
+
+  const applyCoupon = async (coupon: Coupon) => {
+    try {
+      const response = await axiosInstance.post(`/coupon/used/${coupon._id}`, {
+        userId: user?._id,
+        totalPrice,
+      });
+      if (response.status == 200) {
+        const { discountAmount } = response.data;
+        console.log(discountAmount);
+        setDiscount(Number(discountAmount));
+        setCouponCode(coupon.coupon_code);
+        setCouponId(coupon._id);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data.message);
+      } else {
+        toast.error("Cannot apply coupon");
+      }
+    } finally {
+      closeModal();
     }
-    setDiscount(discountValue);
-    setTotalPrice((prevTotal) => Math.max(0, prevTotal - discountValue));
-    setValue("discountCode", code);
   };
 
   return (
@@ -406,21 +441,36 @@ export default function BookingForm({
                   className="w-full p-2 border rounded-md"
                   {...register("start_date", {
                     required: "Start date is required",
+                    validate: (value) => {
+                      const selectedDate = new Date(value);
+                      const today = new Date();
+                      const oneYearFromToday = new Date();
+                      oneYearFromToday.setFullYear(today.getFullYear() + 1);
+
+                      if (selectedDate < today) {
+                        return "Date cannot be in the past";
+                      }
+                      if (selectedDate > oneYearFromToday) {
+                        return "Date cannot be more than one year from today";
+                      }
+                      return true;
+                    },
                   })}
                 />
-                <p className="text-red-500  text-xs min-h-[20px]">
+                <p className="text-red-500 text-xs min-h-[20px]">
                   {(errors.start_date && errors.start_date.message) || ""}
                 </p>
               </div>
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             className="w-full py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+            isLoading={loading}
           >
             Continue to Payment
-          </button>
+          </Button>
         </form>
 
         <div className="w-full md:w-1/3">
@@ -454,21 +504,49 @@ export default function BookingForm({
             </div>
 
             <h3 className="text-lg font-semibold mb-2">Discount / promotion</h3>
-            <input
+            <Input
               type="text"
               name="discountCode"
               className="w-full p-2 border rounded-md mb-2"
               placeholder="Type Discout code"
+              value={couponCode}
+              onClear={() => {
+                setCouponCode(""), setCouponId(""), setDiscount(0);
+              }}
             />
-            {["FREE100", "NEW250", "AS500"].map((code) => (
-              <button
-                key={code}
-                onClick={() => handleApplyDiscount(code)}
-                className="mr-2 mb-2 px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-              >
-                {code}
-              </button>
-            ))}
+            {coupons && coupons.length > 0 ? (
+              <>
+                {coupons.slice(0, 3).map((code) => (
+                  <button
+                    key={code._id}
+                    onClick={() => applyCoupon(code)}
+                    className="mr-2 mb-2 px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                  >
+                    {code.coupon_code}
+                  </button>
+                ))}
+
+                {/* Show 'View More' button if more than 3 coupons exist */}
+                {coupons.length > 3 && (
+                  <button
+                    onClick={openModal}
+                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  >
+                    View More Coupons
+                  </button>
+                )}
+
+                {/* Modal for remaining coupons */}
+                <CouponListModal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  coupons={coupons}
+                  applyCoupon={applyCoupon}
+                />
+              </>
+            ) : (
+              <p className="text-gray-500">No coupons available</p>
+            )}
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md mt-10">
             <h1 className="text-2xl font-bold mb-2">Total Cost Summary</h1>
@@ -476,21 +554,24 @@ export default function BookingForm({
               <span>Total Price:</span>
               <span>₹{totalPrice.toFixed(2)}</span>
             </div>
+            {couponCode && (
+              <div className="flex justify-between text-lg mb-2">
+                <span>Applied Coupon:</span>
+                <p className="text-green-500 bg-green-100 p-1 text-center border text-xs border-green-600">
+                  {couponCode}
+                </p>
+              </div>
+            )}
 
             <div className="flex justify-between text-lg mb-2">
-              <span>Discount:</span>
+              <span>Discounted Amount:</span>
               <span>- ₹{discount.toFixed(2)}</span>
-            </div>
-
-            <div className="flex justify-between text-lg mb-2">
-              <span>Admin Fee (5%):</span>
-              <span>₹{(totalPrice * 0.05).toFixed(2)}</span>
             </div>
 
             <hr className="my-4" />
 
             <div className="flex justify-between font-bold text-xl">
-              <span>Final Amount:</span>
+              <span>Net Amount:</span>
               <span>₹{(totalPrice - discount).toFixed(2)}</span>
             </div>
           </div>

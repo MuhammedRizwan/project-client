@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -87,7 +87,7 @@ export default function CouponModal({
               type="number"
               label="Percentage"
               placeholder="Enter discount percentage"
-              defaultValue={coupon?.percentage || ""}
+              defaultValue={coupon?.percentage||" "}
             />
             <p className="text-red-500 text-xs">
               {errors.percentage?.message || ""}
@@ -108,6 +108,21 @@ export default function CouponModal({
               {errors.max_amount?.message || ""}
             </p>
             <Input
+              {...register("min_amount", {
+                required: "Min amount is required",
+                min: { value: 0, message: "Minimum value is 0" },
+                max: { value: 10000, message: "Maximum value is 10000" },
+              })}
+              type="number"
+              label="Min Amount"
+              placeholder="Enter minimum discount amount"
+              defaultValue={coupon?.max_amount.toString() || ""}
+              className="m-0"
+            />
+            <p className="text-red-500 text-xs">
+              {errors.min_amount?.message || ""}
+            </p>
+            <Input
               type="date"
               {...register("valid_upto", {
                 required: "Date is required",
@@ -124,7 +139,7 @@ export default function CouponModal({
               value={validUpto.toString().split("T")[0] || ""}
               onChange={(e) => setValidUpto(e.target.value)}
             />
-            <p className="text-red-500 text-xs">
+            <p className="text-red-500 text-xs m-0">
               {errors.valid_upto?.message || ""}
             </p>
             <div className="flex items-center justify-between">

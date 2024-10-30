@@ -18,13 +18,13 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axiosInstance.get(`/package/${params.pid}`);
-      console.log(response);
+      console.log(response.data,"package Data");
       const { packageData } = response.data;
       setInitialData(packageData);
     };
 
     const fetchCategories = async () => {
-      const response = await axiosInstance.get("/category");
+      const response = await axiosInstance.get("/category/agent");
       const { categories: categoriesData } = response.data;
       setCategories(categoriesData);
     };
@@ -34,12 +34,13 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
   }, [params.pid]);
 
   const handleFormSubmit = async (data: PackageFormValues) => {
+    console.log(data);
     const response = await axiosInstance.put(
       `/package/edit/${params.pid}`,
       data
     );
     if (response.status === 200) {
-      router.push("/travel-packages");
+      router.push("/agent/travel-packages");
     } else {
       alert("Failed to update the package.");
     }

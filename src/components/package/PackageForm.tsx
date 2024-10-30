@@ -10,7 +10,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import Image from "next/image";
-import { useState, useEffect, useMemo, ChangeEvent } from "react";
+import { useState, useEffect, useMemo} from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FiCircle, FiEdit2, FiTrash2, FiUpload } from "react-icons/fi";
@@ -32,6 +32,7 @@ export interface PackageFormValues {
   description: string;
   departure_place: string;
   images: File[];
+  category_id?:Category
 }
 
 interface Activity {
@@ -106,8 +107,9 @@ export default function PackageForm({
       setItineraries(initialData.itineraries || []);
       setIncludedItems(initialData.includedItems || []);
       setExcludedItems(initialData.excludedItems || []);
+      setValue('category',initialData.category_id ? [initialData.category_id] : [])
     }
-  }, [initialData, reset]);
+  }, []);
 
   const [selectedKeys, setSelectedKeys] = useState(
     new Set([initialData?.category?.[0].category_name || ""])
@@ -399,29 +401,6 @@ export default function PackageForm({
 
   // Submit handler
   const onSubmitHandler = (data: PackageFormValues) => {
-    console.log(data);
-    if (data.images.length <= 0) {
-      console.log(images);
-      setError("images", {
-        type: "manual",
-        message: "Please add at least one image",
-      });
-      return;
-    }
-    if (includedItems.length <= 0) {
-      setError("includedItems", {
-        type: "manual",
-        message: "Please add at least one included item",
-      });
-      return;
-    }
-    if (excludedItems.length <= 0) {
-      setError("excludedItems", {
-        type: "manual",
-        message: "Please add at least one excluded item",
-      });
-      return;
-    }
     const formData = new FormData();
     formData.append("packageName", data.package_name);
     formData.append("maxPerson", data.max_person.toString());
@@ -455,7 +434,7 @@ export default function PackageForm({
     };
     onSubmit(packageFormValues);
   };
-
+console.log(images)
   return (
     <form onSubmit={handleSubmit(onSubmitHandler)}>
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl">
@@ -505,7 +484,7 @@ export default function PackageForm({
             </p>
           </div>
 
-          <div className="mb-4">
+           <div className="mb-4">
             <label
               className="block text-gray-700 font-bold mb-2"
               htmlFor="category"
@@ -515,7 +494,7 @@ export default function PackageForm({
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="capitalize w-full">
-                  {selectedValue || "Select Category"}
+                  {selectedValue || initialData?.category_id?.category_name || "Select Category"}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -813,32 +792,60 @@ export default function PackageForm({
                     <Input
                       type="time"
                       value={activity.time}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleInputChange(
-                          dayIndex,
-                          activityIndex,
-                          "time",
-                          e.target.value
-                        )
-                      }
                       className="w-32"
+                      {...register(
+                        `itineraries.0.activities.${activityIndex}.time`,
+                        {
+                          required: "Time is required",
+                          onChange(e) {
+                            handleInputChange(
+                              dayIndex,
+                              activityIndex,
+                              "time",
+                              e.target.value
+                            );
+                          },
+                        }
+                      )}
                     />
+                    {errors.itineraries?.[0]?.activities?.[activityIndex]
+                      ?.time && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {
+                          errors.itineraries[0].activities[activityIndex].time
+                            ?.message
+                        }
+                      </p>
+                    )}
                   </div>
 
                   {/* Activity Description Input */}
-                  <Input
-                    value={activity.activity}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange(
-                        dayIndex,
-                        activityIndex,
-                        "activity",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Activity Description"
-                  />
-
+                  <div className="flex flex-col w-full">
+                    <Input
+                      value={activity.activity}
+                      placeholder="Activity Description"
+                      {...register(`itineraries.0.activities.${activityIndex}.activity`, {
+                        required: "Activity description is required",
+                        onChange(e) {
+                          handleInputChange(
+                            dayIndex,
+                            activityIndex,
+                            "activity",
+                            e.target.value
+                          )
+                        },
+                      })}
+                    />
+                    {errors.itineraries?.[0]?.activities?.[activityIndex]
+                      ?.activity && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {
+                          errors.itineraries[0].activities[activityIndex]
+                            .activity?.message
+                        }
+                      </p>
+                    )}
+                  </div>
                   {/* Remove Button */}
                   <Button
                     color="danger"
@@ -884,9 +891,13 @@ export default function PackageForm({
               <div className="flex items-center gap-2">
                 <Input
                   value={newIncludedItem}
-                  onChange={handleIncludedItemChange}
                   placeholder="Add included item"
                   fullWidth
+                  {...register("includedItems", {
+                     validate: (items: string[]) =>
+                      items.length > 0 || "At least one included item is required",
+                    onChange: handleIncludedItemChange,
+                  })}
                 />
                 <Button color="success" type="button" onClick={addIncludedItem}>
                   Add
@@ -896,7 +907,7 @@ export default function PackageForm({
                 {errors.includedItems?.message}
               </p>
             </div>
-            <p className="text-red-500 text-xs py-2">{includedError || ""}</p>
+            <p className="text-red-500 text-xs">{includedError || ""}</p>
             <ul className="list-disc pl-5">
               {includedItems.map((item, index) => (
                 <li
@@ -921,13 +932,17 @@ export default function PackageForm({
           <div className="mb-6 md:w-1/2 h-80 bg-slate-50  p-3 shadow-inner border m-2">
             <h2 className="text-xl font-semibold mb-2">Excluded Items</h2>
             <div>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 ">
                 <Input
                   value={newExcludedItem}
-                  onChange={handleExcludedItemChange}
                   placeholder="Add excluded item"
                   fullWidth
                   autoCapitalize="words"
+                  {...register("excludedItems", {
+                    validate: (items: string[]) =>
+                      items.length > 0 || "At least one excluded item is required",
+                    onChange: handleExcludedItemChange,
+                  })}
                 />
                 <Button color="success" type="button" onClick={addExcludedItem}>
                   Add
@@ -974,7 +989,7 @@ export default function PackageForm({
               key={index}
               className="relative group w-[300px] h-[200px] overflow-hidden rounded-md border border-gray-300"
             >
-              {image instanceof File ? (
+              { image instanceof File ? (
                 <Image
                   src={URL.createObjectURL(image)}
                   alt={`Uploaded image ${index + 1}`}
@@ -984,9 +999,14 @@ export default function PackageForm({
                   onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
                 />
               ) : (
-                <p className="flex items-center justify-center w-full h-full">
-                  Invalid image file
-                </p>
+                <Image
+                src={image}
+                alt={`Uploaded image ${index + 1}`}
+                width={300}
+                height={200}
+                className="object-cover w-full h-full"
+                onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
+              />
               )}
 
               <input
@@ -1022,9 +1042,16 @@ export default function PackageForm({
         <input
           type="file"
           id="upload-input"
-          onChange={handleImageChange}
           multiple
           className="hidden"
+          {...register("images", {
+            validate: {
+              // Ensure at least one file is selected
+              notEmpty: (files) =>
+                files?.length > 0 || "You must select at least one file.",  
+            },
+          })}
+          onChange={handleImageChange}
         />
 
         <p className="text-red-500 text-xs py-2">
