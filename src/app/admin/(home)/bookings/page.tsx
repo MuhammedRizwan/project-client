@@ -56,7 +56,7 @@ export default function BookingsPage() {
           className={`${
             booking.travel_status === "completed"
               ? "text-green-500"
-              : booking.travel_status === "in-progress"
+              : booking.travel_status === "on-going"
               ? "text-yellow-500"
               : "text-red-500"
           }`}

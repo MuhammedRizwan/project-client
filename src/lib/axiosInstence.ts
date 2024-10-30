@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import refreshToken from "./refreshToken";
+import toast from "react-hot-toast";
 
 const getBaseUrl = () => {
   if (Cookies.get("adminToken")) return "http://localhost:5000/admin";
@@ -43,6 +44,19 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+    if(error.response?.status === 403 && error.response?.data?.message === "User Blocked"){
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      toast.error(error.response?.data?.message)
+      window.location.replace('/login');
+    } 
+    if(error.response?.status===403 && error.response?.data?.message=="Agent Blocked"){
+      Cookies.remove("agentToken");
+      Cookies.remove("agentRefreshToken");
+      toast.error(error.response?.data?.message)
+      window.location.replace('/agent');
+    }
+
     return Promise.reject(error);
   }
 );

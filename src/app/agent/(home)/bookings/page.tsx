@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 export default function BookingsPage() {
-    const router = useRouter();
-  const {agent}=useSelector((state:RootState)=>state.agent)
+  const router = useRouter();
+  const { agent } = useSelector((state: RootState) => state.agent);
   const [, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,9 @@ export default function BookingsPage() {
       key: "user_id", // Must match 'keyof Booking'
       label: "Name",
       render: (booking: Booking) =>
-        typeof booking.user_id === "object" ? booking.user_id.username : booking.user_id,
+        typeof booking.user_id === "object"
+          ? booking.user_id.username
+          : booking.user_id,
     },
     {
       key: "package_id", // Must match 'keyof Booking'
@@ -51,44 +53,46 @@ export default function BookingsPage() {
       ),
     },
     {
-        key: "travel_status",
-        label: "Travel Status",
-        render: (booking: Booking) => (
-          <span
-            className={`${
-              booking.travel_status === "completed"
-                ? "text-green-500"
-                : booking.travel_status === "in-progress"
-                ? "text-yellow-500"
-                : "text-red-500"
-            }`}
-          >
-            {booking.travel_status}
-          </span>
-        ),
-      },
+      key: "travel_status",
+      label: "Travel Status",
+      render: (booking: Booking) => (
+        <span
+          className={`${
+            booking.travel_status === "completed"
+              ? "text-green-500"
+              : booking.travel_status === "on-going"
+              ? "text-yellow-500"
+              : "text-red-500"
+          }`}
+        >
+          {booking.travel_status}
+        </span>
+      ),
+    },
     {
-        key: "_id",
-        label: "view detials",
-        render: (booking: Booking) => (
-          <button
-            onClick={() => viewDetialsClick(booking)}
-            className={`px-4 py-2 w-32 bg-yellow-700 text-white rounded`}
-          >
-            view details
-          </button>
-        ),
-      },
+      key: "_id",
+      label: "view detials",
+      render: (booking: Booking) => (
+        <button
+          onClick={() => viewDetialsClick(booking)}
+          className={`px-4 py-2 w-32 bg-yellow-700 text-white rounded`}
+        >
+          view details
+        </button>
+      ),
+    },
   ];
-  
+
   const viewDetialsClick = (booking: Booking) => {
-    router.push(`/bookings/${booking._id}`);
+    router.push(`/agent/bookings/${booking._id}`);
   };
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`/booking/travel-agency/${agent?._id}`);
+        const response = await axiosInstance.get(
+          `/booking/travel-agency/${agent?._id}`
+        );
         console.log(response.data);
         if (response.status === 200) {
           const { bookings } = response.data;
@@ -107,14 +111,14 @@ export default function BookingsPage() {
       }
     };
     fetchBookings();
-  },[agent?._id]);
+  }, [agent?._id]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-
+  const apiUrl = `/booking/travel-agency/${agent?._id}`;
   return (
     <div>
-      <Table<Booking> columns={bookingColumns} apiUrl="/booking/travel-agency"/>
+      <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} />
     </div>
   );
 }

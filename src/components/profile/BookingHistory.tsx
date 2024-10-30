@@ -18,7 +18,7 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 3;
 
   useEffect(() => {
     const fetchData = async () => {

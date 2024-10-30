@@ -23,6 +23,7 @@ interface BookingData {
   members: { name: string; age: number }[];
   discountCode: string;
   start_date: Date;
+  payment_status: "pending"|"paid";
 }
 interface RazorpayOptions {
   key: string;
@@ -93,7 +94,6 @@ export default function BookingForm({
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<BookingData>();
 
@@ -113,9 +113,10 @@ export default function BookingForm({
         user_id: user?._id,
         coupon_id: couponId,
         start_date: bookingData.start_date,
+        payment_status: "pending",
       };
       const res = await axiosInstance.post("/booking/createOrder", {
-        amount: totalPrice * 100,
+        amount: (totalPrice-discount) * 100,
       });
       if (!res.data) throw new Error("Failed to create order");
 

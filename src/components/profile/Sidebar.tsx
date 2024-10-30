@@ -58,7 +58,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center mb-6">
               <Image
-                src={user?.profile_picture||"/logos/avatar.avif"}
+                src={user?.profile_picture}
                 alt="User Avatar"
                 width={64}
                 height={64}
