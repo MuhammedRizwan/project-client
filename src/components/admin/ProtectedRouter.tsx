@@ -11,12 +11,13 @@ export default function ProtectedRouter({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const token = Cookies.get("adminToken");
+  const agentToken = Cookies.get("agentToken");
+  const userToken = Cookies.get("accessToken");
   useEffect(() => {
-    if (!token) {
-      router.push('/admin');
+    if(agentToken || userToken){
+      router.back();
     }
     setLoading(false);
-  }, [router, token]);
+  }, [router, agentToken, userToken]);
   return <>{loading ? <Spinner label="Loading..." color="danger" />: children}</>;
 }

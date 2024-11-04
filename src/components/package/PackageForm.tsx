@@ -109,7 +109,7 @@ export default function PackageForm({
       setExcludedItems(initialData.excludedItems || []);
       setValue('category',initialData.category_id ? [initialData.category_id] : [])
     }
-  }, []);
+  }, [initialData, reset, setValue]);
 
   const [selectedKeys, setSelectedKeys] = useState(
     new Set([initialData?.category?.[0].category_name || ""])

@@ -1,4 +1,6 @@
 "use client";
+import { changepassword, resend_otp } from "@/api/user/authservice";
+import useUser from "@/hooks/useUser";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -6,13 +8,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-interface ForgetPassword {
+export interface ForgetPassword {
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 export default function ForgotPassword() {
+  useUser()
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
@@ -76,11 +79,11 @@ export default function ForgotPassword() {
   const handleSendOtp = async (data: ForgetPassword) => {
     try {
       setLoader((prev) => ({ ...prev, email: true }));
-      const res = await axios.post("http://localhost:5000/sendotp", {
+      const response = await resend_otp({
         email: data.email,
       });
-      if (res.status === 200) {
-        const { otp } = res.data.OTPData;
+      if (response.success) {
+        const { otp } = response.OTP;
         setOtpData(otp);
         setVerified((prev) => ({ ...prev, email: "verified" }));
         setTimer(60);
@@ -124,13 +127,13 @@ export default function ForgotPassword() {
   const handleChangePassword = async (data: ForgetPassword) => {
     try {
       setLoader((prev) => ({ ...prev, changepassword: true }));
-      const res = await axios.post("http://localhost:5000/changepassword", {
+      const response = await changepassword({
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
-      if (res.status == 200) {
-        toast.success(res.data.message);
+      if (response.success) {
+        toast.success(response.message);
         router.push("/login");
       }
     } catch (error) {

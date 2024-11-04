@@ -7,7 +7,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import CouponModal from "@/components/coupon/modal";
 import { Button } from "@nextui-org/react";
-import axiosInstance from "@/lib/axiosInstence";
+import { add_edit_coupon, block_coupon } from "@/api/admin/couponservice";
+
 
 export default function CouponsPage() {
   const [, setCoupons] = useState<Coupon[]>([]);
@@ -69,16 +70,11 @@ export default function CouponsPage() {
     setShowBlockModal(true);
   };
 
-  const confirmBlockUser = async () => {
+  const BlockCoupon = async () => {
     try {
-      const response = await axiosInstance.patch(
-        `/coupon/block/${selectedCoupon?._id}`,
-        {
-          is_active: !selectedCoupon?.is_active,
-        }
-      );
-      if (response.status === 200) {
-        const { coupons } = response.data;
+      const response = await block_coupon(selectedCoupon?._id,{is_active: !selectedCoupon?.is_active});
+      if (response.success) {
+        const { coupons } = response;
         setCoupons((prevCoupons) =>
           prevCoupons.map((coupon) =>
             coupon._id === coupons._id ? coupons : coupon
@@ -101,7 +97,7 @@ export default function CouponsPage() {
           : `/coupon/edit/${selectedCoupon?._id}`;
       const method = modalMode === "add" ? "post" : "put";
 
-      const response = await axiosInstance({ url, method, data });
+      const response = await add_edit_coupon(url, method, data );
       if (response.status === 201) {
         const { couponCreated } = response.data;
         setCoupons((prevCoupons) => [...prevCoupons, couponCreated]);
@@ -160,7 +156,7 @@ export default function CouponsPage() {
         <BlockModal
           title="Confirm Block/Unblock"
           onClose={() => setShowBlockModal(false)}
-          onConfirm={confirmBlockUser}
+          onConfirm={BlockCoupon}
         >
           <p>
             Are you sure you want to{" "}

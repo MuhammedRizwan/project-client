@@ -1,9 +1,17 @@
 'use client';
 import { ReactNode } from "react";
-import useUserLoggedIn from "@/hooks/useUserLoggedIn"; 
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 export default function UserWrapper({ children }: { children: ReactNode }) {
-  useUserLoggedIn(); 
+  const router = useRouter();
+  const token = Cookies.get("accessToken");
+  useEffect(() => {
+      if (!token) {
+          router.push("/login");
+      }
+  }, [token, router]);
 
   return <>{children}</>; 
 }

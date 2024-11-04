@@ -1,6 +1,6 @@
 import AgentNavbar from "@/components/agent/AgentNavbar";
+import ProtectedRouter from "@/components/agent/ProtectedRouter";
 import type { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title: "Heaven finder user",
@@ -14,9 +14,10 @@ export default function UserLayout({
 }>) {
   return (
     <>
-    <AgentNavbar/>
-      {children}
- 
+      <ProtectedRouter>
+        <AgentNavbar />
+        {children}
+      </ProtectedRouter>
     </>
   );
 }

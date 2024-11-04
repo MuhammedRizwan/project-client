@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import PackageTable from "@/components/package/PackageTable";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
-import axiosInstance from "@/lib/axiosInstence";
+import { fetch_agent_package } from "@/api/agent/packageservice";
 
 export default function Packages() {
   const { agent } = useAppSelector((state: RootState) => state.agent);
@@ -22,12 +22,9 @@ export default function Packages() {
           setLoading(false);
           return;
         }
-        const response = await axiosInstance.get(
-          `/package/agent/${agent?._id}`
-        );
-        console.log(response.data);
+        const response = await fetch_agent_package(agent?._id)
 
-        const { packageList } = response.data;
+        const { packageList } = response;
         if (packageList && Array.isArray(packageList)) {
           setPackages(packageList);
         } else {

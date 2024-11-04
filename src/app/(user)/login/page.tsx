@@ -1,10 +1,9 @@
 'use client'
 import LoginForm from "@/components/user/forms/LoginForm";
-
-
-
+import useUser from "@/hooks/useUser";
 
 export default function LoginPage() {
+  useUser()
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">

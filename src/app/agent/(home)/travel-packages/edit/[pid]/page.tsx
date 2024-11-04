@@ -6,7 +6,11 @@ import PackageForm, {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import  Category  from "@/interfaces/category";
-import axiosInstance from "@/lib/axiosInstence";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { edit_package, fetch_agent_one_package } from "@/api/agent/packageservice";
+import { fetch_category } from "@/api/agent/categoryservice";
+
 
 const EditPackagePage = ({ params }: { params: { pid: string } }) => {
   const [initialData, setInitialData] = useState<PackageFormValues | null>(
@@ -17,16 +21,33 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axiosInstance.get(`/package/${params.pid}`);
-      console.log(response.data,"package Data");
-      const { packageData } = response.data;
-      setInitialData(packageData);
+      try {
+        const response = await fetch_agent_one_package(params.pid);
+        if(response.success){
+          const { packageData } = response;
+          setInitialData(packageData);
+        }
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          toast.error(error.response?.data.message)
+        }else{
+          toast.error("couldn't get package")
+        }
+      }
     };
 
     const fetchCategories = async () => {
-      const response = await axiosInstance.get("/category/agent");
-      const { categories: categoriesData } = response.data;
-      setCategories(categoriesData);
+      try {
+        const response = await fetch_category();
+        const { categories: categoriesData } = response;
+        setCategories(categoriesData);
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          toast.error(error.response?.data.message)
+        }else{
+          toast.error("couldn't get category")
+        }
+      }
     };
 
     fetchData();
@@ -34,15 +55,17 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
   }, [params.pid]);
 
   const handleFormSubmit = async (data: PackageFormValues) => {
-    console.log(data);
-    const response = await axiosInstance.put(
-      `/package/edit/${params.pid}`,
-      data
-    );
-    if (response.status === 200) {
-      router.push("/agent/travel-packages");
-    } else {
-      alert("Failed to update the package.");
+    try {
+      const response = await edit_package(params.pid,data);
+      if (response.success) {
+        router.push("/agent/travel-packages");
+      } 
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data.message)
+      }else{
+        toast.error("couldn't update package")
+      }
     }
   };
 

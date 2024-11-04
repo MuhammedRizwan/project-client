@@ -7,8 +7,22 @@ import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/user/Footer";
 import LeftPackage from "@/components/home/LeftPackage";
 import RightPackage from "@/components/home/RightPackage";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Cookies from 'js-cookie'
 
 export default function Home() { 
+  const router=useRouter()
+  const agentToken=Cookies.get('agentToken')
+  const adminToken=Cookies.get('adminToken')
+  useEffect(() => {
+    if(agentToken){
+     router.push('/agent/Dashboard')
+    }
+    if(adminToken){
+      router.push('/admin/dashboard')
+    }
+  },[agentToken,adminToken,router])
   return (
     <div>
       <Header />

@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import axios from 'axios'
 import  Category  from '@/interfaces/category'
 import toast from 'react-hot-toast'
+import { fetch_category } from '@/api/agent/categoryservice'
 
 
 
@@ -15,9 +16,9 @@ export default function Packages() {
   useEffect(()=>{
     const fetchCategory=async()=>{
     try {
-        const response=await axios.get("http://localhost:5000/categories/unblocked")
-        if(response.status===200){
-          setPackages(response.data.categories)
+        const response=await fetch_category()
+        if(response.success){
+          setPackages(response.categories)
         }
     
     } catch (error) {

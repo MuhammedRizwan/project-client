@@ -1,32 +1,92 @@
-import Package from "@/interfaces/package";
-import { Button } from "@nextui-org/react";
-import Image from "next/image";
+'use client'
 
-export default function LeftPackage({packageData}: {packageData: Package|null}) {
+import React from 'react'
+import { Card, CardBody, CardHeader, Divider, Accordion, AccordionItem } from "@nextui-org/react"
+import { CheckCircle, XCircle, Calendar } from "lucide-react"
+import Package from "@/interfaces/package"
+
+export default function LeftPackage({ packageData }: { packageData: Package | null }) {
+  if (!packageData) {
+    return <div className="text-center p-8">Loading package details...</div>
+  }
+
   return (
-    <div className="py-16">
-      <div className="flex flex-col md:flex-row md:items-start gap-8">
-        <div className="w-full md:w-1/2">
-          <Image
-            src="/images/luxorios bg-1.webp"
-            alt="Machu Picchu during rainy season"
-            width={600}
-            height={400}
-            className="shadow-lg object-cover h-[400px] w-full md:h-[400px]"
-          />
-        </div>
-        <div className="w-full md:w-1/2 mx-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-10">
-            {packageData?.destinations.join(", ")}
-          </h2>
-          <p className="text-gray-700 mb-6">
-            {packageData?.description}
-          </p>
-          <Button className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded transition-colors">
-            Learn More
-          </Button>
-        </div>
-      </div>
+    <div className="py-10 px-16 space-y-8">
+      <Card className="bg-gradient-to-r from-blue-100 to-purple-100">
+        <CardHeader className="flex gap-3">
+          <div className="flex flex-col">
+            <p className="text-md font-semibold">Included & Excluded</p>
+            <p className="text-small text-default-500">What s in your package?</p>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+              <h4 className="font-semibold text-lg mb-2 flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
+                Included:
+              </h4>
+              <ul className="space-y-2">
+                {packageData.includedItems.map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-green-500 mr-2">•</span>
+                    <span className="text-gray-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Divider orientation="vertical" className="hidden md:block" />
+            <div className="flex-1">
+              <h4 className="font-semibold text-lg mb-2 flex items-center">
+                <XCircle className="w-5 h-5 mr-2 text-red-500" />
+                Excluded:
+              </h4>
+              <ul className="space-y-2">
+                {packageData.excludedItems.map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-red-500 mr-2">•</span>
+                    <span className="text-gray-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex gap-3">
+          <Calendar className="w-6 h-6 text-primary" />
+          <div className="flex flex-col">
+            <p className="text-md font-semibold">Itineraries</p>
+            <p className="text-small text-default-500">Your day-by-day adventure</p>
+          </div>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <Accordion variant="splitted">
+            {packageData.itineraries.map((itinerary) => (
+              <AccordionItem
+                key={itinerary.day}
+                aria-label={`Day ${itinerary.day}`}
+                title={`Day ${itinerary.day}`}
+                subtitle={`${itinerary.activities.length} activities`}
+                className="mb-2"
+              >
+                <ul className="space-y-2">
+                  {itinerary.activities.map((activity, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="font-semibold text-primary mr-2">{activity.time}</span>
+                      <span className="text-gray-700">{activity.activity}</span>
+                    </li>
+                  ))}
+                </ul>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </CardBody>
+      </Card>
     </div>
-  );
+  )
 }

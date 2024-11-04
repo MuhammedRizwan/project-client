@@ -11,8 +11,9 @@ import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { signin } from "@/api/user/authservice";
 
-interface SignupFormData {
+export interface SignupFormData {
   username: string;
   email: string;
   password: string;
@@ -33,12 +34,11 @@ export default function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/signup", data);
-      if (res.status === 201) {
-        const { user } = res.data;
-        dispatch(addUser(user));
-        if (!res.data.user.is_verified) {
-          toast.success(res.data.message);
+      const  response = await signin(data)
+      if (response.success) {
+        dispatch(addUser(response.user));
+        if (!response.user.is_verified) {
+          toast.success(response.message);
           router.push("/verification");
         }
       }

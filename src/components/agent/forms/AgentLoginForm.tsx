@@ -12,8 +12,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { addAgent } from "@/store/reducer/agentReducer";
 import Cookies from "js-cookie";
+import { agent_login } from "@/api/agent/authservice";
 
-interface LoginFormData {
+export interface LoginFormData {
   email: string;
   password: string;
 }
@@ -33,9 +34,9 @@ export default function AgentLoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true); 
     try {
-      const res = await axios.post("http://localhost:5000/agent/login", data);
-      if (res.status === 200) {
-        const { agent,refreshToken,accessToken } = res.data;
+      const response = await agent_login(data);
+      if (response.success) {
+        const { agent,refreshToken,accessToken } = response;
         Cookies.set("agentRefreshToken",refreshToken)
         Cookies.set("agentToken",accessToken)
         dispatch(addAgent(agent));

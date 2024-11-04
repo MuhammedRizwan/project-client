@@ -1,10 +1,9 @@
 'use client'
 import AgentLoginForm from "@/components/agent/forms/AgentLoginForm";
-import useAgentAuthRedirect from "@/hooks/useAgentAuthRedirect";
-
+import useAgent from "@/hooks/useAgent";
 
 export default function AgentLoginPage() {
-  useAgentAuthRedirect()
+  useAgent()
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">

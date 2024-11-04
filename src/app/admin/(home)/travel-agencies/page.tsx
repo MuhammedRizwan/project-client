@@ -1,8 +1,8 @@
 "use client";
+import { block_agent } from "@/api/admin/authservice";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import Agent from "@/interfaces/agent";
-import axiosInstance from "@/lib/axiosInstence";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -60,29 +60,7 @@ export default function TravelAgencies() {
     },
   ];
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axiosInstance.get("/travel-agencies");
-  //       const { agencies } = response.data;
-  //       setAgent(agencies);
-  //     } catch (error) {
-  //       setError("Error fetching users");
-  //       if (axios.isAxiosError(error)) {
-  //         const errorMessage = error.response?.data || "Fetching Failed";
-  //         toast.error(errorMessage.message);
-  //       } else {
-  //         toast.error("An unknown error occurred");
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-  // if (loading) return <div>Loading...</div>;
+ 
   if (error) return <div>{error}</div>;
   const handleBlockClick = (agent: Agent) => {
     setSelectedAgent(agent);
@@ -92,13 +70,13 @@ export default function TravelAgencies() {
     if (selectedAgent) {
       try {
         const newStatus = !selectedAgent.is_block;
-        const res = await axiosInstance.patch("/travel-agencies/block", {
+        const response = await block_agent( {
           id: selectedAgent._id,
           is_block: newStatus,
         });
-        if (res.status === 200) {
+        if (response.success) {
         
-          toast.success(res.data.message);
+          toast.success(response.message);
 
           // setAgent((prevAgent) =>
           //   prevAgent.map((agent) =>

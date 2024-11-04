@@ -7,14 +7,16 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
-import axiosInstance from "@/lib/axiosInstence";
 import Script from "next/script";
 import Coupon from "@/interfaces/coupon";
 import CouponListModal from "@/components/coupon/CouponModal";
 import { Button, Input } from "@nextui-org/react";
 import axios from "axios";
+import { booking, create_order, verify_order } from "@/api/user/bookingservice";
+import { fetch_one_package } from "@/api/user/packageservice";
+import { apply_coupon, fetch_unblocked_coupon } from "@/api/user/couponservice";
 
-interface BookingData {
+export interface BookingData {
   first_name: string;
   last_name: string;
   email: string;
@@ -44,7 +46,7 @@ interface RazorpayOptions {
   };
 }
 
-interface RazorpayResponse {
+export interface RazorpayResponse {
   razorpay_payment_id: string;
   razorpay_order_id: string;
   razorpay_signature: string;
@@ -78,10 +80,8 @@ export default function BookingForm({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/packages/${params.packageId}`
-        );
-        const { packageData } = response.data;
+        const response = await fetch_one_package(params.packageId);
+        const { packageData } = response;
         setPackageData(packageData);
         setTotalPrice(packageData.offer_price);
       } catch (error) {
@@ -115,29 +115,27 @@ export default function BookingForm({
         start_date: bookingData.start_date,
         payment_status: "pending",
       };
-      const res = await axiosInstance.post("/booking/createOrder", {
+      const response = await create_order({
         amount: (totalPrice-discount) * 100,
       });
-      if (!res.data) throw new Error("Failed to create order");
+      if (!response) throw new Error("Failed to create order");
 
-      const data = await res.data.order;
+      const data =await response.order;
       const paymentData: RazorpayOptions = {
         key: process.env.RAZORPAY_KEY_ID as string,
         order_id: data.id,
         handler: async (response: RazorpayResponse) => {
           console.log("Payment Response:", response);
-          const res = await axiosInstance.post("/booking/verifyOrder", {
+          const res= await verify_order( {
             orderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
           });
-          const data = await res.data;
+          const data = await res;
           if (data.successpayment) {
-            const response = await axiosInstance.post("/booking", payload);
-            console.log(response.data);
-            if (response.status === 201) {
-              console.log("Booking successful:", response.data);
-              router.push(`/payment/${params.packageId}`);
+            const response = await booking( payload);
+            if (response.success) {
+              router.push(`/payment/${response.booking._id }`);
             } else {
               toast.error("Something went wrong. Please try again later.");
             }
@@ -190,8 +188,8 @@ export default function BookingForm({
 
   useEffect(() => {
     const fetchCoupon = async () => {
-      const respone = await axiosInstance.get(`/coupon/unblocked`);
-      const { coupons } = respone.data;
+      const respone = await fetch_unblocked_coupon();
+      const { coupons } = respone;
       setCoupons(coupons);
     };
     fetchCoupon();
@@ -199,12 +197,10 @@ export default function BookingForm({
 
   const applyCoupon = async (coupon: Coupon) => {
     try {
-      const response = await axiosInstance.post(`/coupon/used/${coupon._id}`, {
-        userId: user?._id,
-        totalPrice,
-      });
-      if (response.status == 200) {
-        const { discountAmount } = response.data;
+      const userId=user?._id
+      const response = await apply_coupon(coupon._id,userId,totalPrice,);
+      if (response.success) {
+        const { discountAmount } = response;
         console.log(discountAmount);
         setDiscount(Number(discountAmount));
         setCouponCode(coupon.coupon_code);
@@ -389,6 +385,17 @@ export default function BookingForm({
                   <input
                     type="text"
                     id={`memberName-${index}`}
+                    {...register(`members.${index}.name`, {
+                      required: "Name is required",
+                      maxLength: {
+                        value: 50,
+                        message: "Name cannot exceed 50 characters",
+                      },
+                      pattern: {
+                        value: /^[a-zA-Z\s]{1,50}$/,
+                        message: "Only letters and spaces are allowed, no special characters",
+                      },
+                    })}
                     className="w-full p-2 border rounded-md"
                     placeholder="Input member's name"
                     value={member.name}
@@ -396,6 +403,9 @@ export default function BookingForm({
                       handleMemberChange(index, "name", e.target.value)
                     }
                   />
+                    <p className="text-red-500  text-xs min-h-[20px]">
+                    {(errors?.members?.[index]?.name?.message) || ""}
+                  </p>
                 </div>
 
                 <div>
@@ -408,6 +418,21 @@ export default function BookingForm({
                   <input
                     type="text"
                     id={`memberAge-${index}`}
+                    {...register(`members.${index}.age`, {
+                      required: "Age is required",
+                      pattern: {
+                        value: /^[0-9]+$/,
+                        message: "Age must be a valid number",
+                      },
+                      min: {
+                        value: 0,
+                        message: "Age must be at least 0",
+                      },
+                      max: {
+                        value: 120,
+                        message: "Age must be 120 or below",
+                      },
+                    })}
                     className="w-full p-2 border rounded-md"
                     placeholder="Input member's age"
                     value={member.age}
@@ -415,6 +440,9 @@ export default function BookingForm({
                       handleMemberChange(index, "age", e.target.value)
                     }
                   />
+                     <p className="text-red-500  text-xs min-h-[20px]">
+                {(errors?.members?.[index]?.age?.message) || ""}
+              </p>
                 </div>
               </div>
             ))}

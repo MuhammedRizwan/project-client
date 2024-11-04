@@ -7,6 +7,9 @@ import PackageDetials from "@/components/package/PackageDetials";
 import PackageDescription from "@/components/package/PackageDescription";
 import PackageCard from "@/components/package/PackageCard";
 import toast from "react-hot-toast";
+import { fetch_one_package, similar_packages } from "@/api/user/packageservice";
+import PackageImages from "@/components/package/PackageImages";
+
 
 export default function PackagePage({
   params,
@@ -18,11 +21,8 @@ export default function PackagePage({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/packages/${params.packageId}`
-        );
-        console.log(response.data);
-        const { packageData } = response.data;
+        const response = await fetch_one_package(params.packageId);
+        const { packageData } = response;
         setPackageData(packageData);
       } catch (error) {
         console.error(error);
@@ -33,10 +33,8 @@ export default function PackagePage({
   useEffect(() => {
     const fetchSimilarPackages = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/packages/similar/${params.packageId}`
-        );
-        const { packageList } = response.data;
+        const response = await similar_packages(params.packageId);
+        const { packageList } = response;
         setPackages(packageList);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -54,6 +52,7 @@ export default function PackagePage({
     <div className="min-h-screen bg-white">
         <Header/>
       <PackageDetials packageData={packageData} />
+      <PackageImages packageData={packageData}/>
       <PackageDescription packageData={packageData} />
       <div className="container mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold px-10 mb-2">Similar Packages</h2>

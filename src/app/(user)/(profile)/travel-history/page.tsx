@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import axiosInstance from "@/lib/axiosInstence";
 import Booking from "@/interfaces/booking";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -18,6 +17,7 @@ import {
 import Package from "@/interfaces/package";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { cancel_booking, user_booking } from "@/api/user/bookingservice";
 
 export default function TravelBookings() {
   const user = useSelector((state: RootState) => state.user.user);
@@ -28,11 +28,9 @@ export default function TravelBookings() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/booking/travel-history/${user?._id}`
-        );
-        if (response.status === 200) {
-          const { travelHistory } = response.data;
+        const response = await user_booking(user?._id);
+        if (response.success) {
+          const { travelHistory } = response;
           setTravelHistory(travelHistory);
         }
       } catch (error) {
@@ -55,15 +53,12 @@ export default function TravelBookings() {
     if (!selectedBooking) return;
 
     try {
-      const response = await axiosInstance.patch(
-        `/booking/cancel/${selectedBooking._id}`,
-        { booking_status: "cancelled" }
-      );
-      if (response.status === 200) {
+      const response = await cancel_booking(selectedBooking._id,{ booking_status: "canceled" });
+      if (response.success) {
         setTravelHistory((prev) =>
           prev.map((b) =>
             b._id === selectedBooking._id
-              ? { ...b, booking_status: "cancelled", travel_status: "cancelled", payment_status: "refunded" }
+              ? { ...b, booking_status: "canceled", travel_status: "canceled", payment_status: "refunded" }
               : b
           )
         );
@@ -153,19 +148,19 @@ export default function TravelBookings() {
                     <div>
                       <Button
                         className={`text-white px-4 py-2 rounded-lg ${
-                          booking.booking_status === "cancelled" ||
+                          booking.booking_status === "canceled" ||
                           booking.travel_status === "on-going"
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-yellow-400 hover:bg-yellow-500"
                         }`}
                         disabled={
-                          booking.booking_status === "cancelled" ||
+                          booking.booking_status === "canceled" ||
                           booking.travel_status === "on-going"
                         }
                         onClick={() => handleCancelClick(booking)}
                       >
-                        {booking.booking_status === "cancelled"
-                          ? "Cancelled"
+                        {booking.booking_status === "canceled"
+                          ? "Canceled"
                           : "Cancel"}
                       </Button>
                     </div>

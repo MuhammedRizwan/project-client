@@ -12,20 +12,21 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { addAgent } from "@/store/reducer/agentReducer";
 import toast from "react-hot-toast";
-import useAgentAuthRedirect from "@/hooks/useAgentAuthRedirect";
+import useAgent from "@/hooks/useAgent";
+import { signup } from "@/api/agent/authservice";
 
-interface SignupFormData {
+export interface SignupFormData {
   username: string;
   email: string;
   password: string;
   confirmPassword: string;
   phone: string;
   location: string;
-  document: FileList;
+  document: File|null;
 }
 
 export default function SignupForm() {
-  useAgentAuthRedirect()
+  useAgent()
   const router = useRouter();
   const {
     register,
@@ -43,32 +44,25 @@ export default function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("agency_name", data.username);
-      formData.append("email", data.email);
-      formData.append("phone", data.phone);
-      formData.append("location", data.location);
-      formData.append("password", data.password);
+      // const formData = new FormData();
+      // formData.append("agency_name", data.username);
+      // formData.append("email", data.email);
+      // formData.append("phone", data.phone);
+      // formData.append("location", data.location);
+      // formData.append("password", data.password);
 
-      if (uploadedFile) {
-        formData.append("document", uploadedFile);
-      }else{
-        toast.error("Please Add Any Document")
-        return
-      }
-      const res = await axios.post(
-        "http://localhost:5000/agent/signup",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (res.status === 201) {        
-        const { agent } = res.data;
+      // if (uploadedFile) {
+      //   formData.append("document", uploadedFile);
+      // }else{
+      //   toast.error("Please Add Any Document")
+      //   return
+      // }
+      data.document=uploadedFile
+      const response = await signup(data);
+      if (response.success) {        
+        const { agent } = response;
         dispatch(addAgent(agent));
-        toast.success(res.data.message);
+        toast.success(response.message);
         router.push("/agent/verification");
       }
     } catch (error) {

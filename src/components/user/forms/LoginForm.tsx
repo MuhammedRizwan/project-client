@@ -10,15 +10,14 @@ import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import { useState } from "react";
 import axios from "axios";
-import { addUser} from "@/store/reducer/userReducer";
+import { addUser } from "@/store/reducer/userReducer";
 import toast from "react-hot-toast";
 import { SignIn } from "@/lib/auth-action";
 import Cookies from "js-cookie";
+import { login } from "@/api/user/authservice";
+import User from "@/interfaces/user";
 
-
-
-
-interface LoginFormData {
+export interface LoginFormData {
   email: string;
   password: string;
 }
@@ -27,7 +26,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -39,28 +38,35 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setLoading(true)
-      const res = await axios.post("http://localhost:5000/login", data);
-      if (res.status === 200) {
-        const { user,refreshToken,accessToken } = res.data;
-       Cookies.set("refreshToken",refreshToken)
-       Cookies.set("accessToken",accessToken)
+      setLoading(true);
+      const response: {
+        success: boolean;
+        message: string;
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+      } = await login({ data });
+
+      if (response.success) {
+        const { user, refreshToken, accessToken } = response;
+        Cookies.set("refreshToken", refreshToken);
+        Cookies.set("accessToken", accessToken);
         dispatch(addUser(user));
         if (user.is_verified) {
-          toast.success(res.data.message)
-          router.back(); 
-        } 
+          toast.success(response.message);
+          router.back();
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.data.redirect) {
-          const { user} = error.response.data;
+          const { user } = error.response.data;
           dispatch(addUser(user));
           router.push(error.response.data.redirect);
-        } else{
+        } else {
           const errorMessage = error?.response?.data || "Login failed";
-        toast.error(errorMessage.message);
-        setLoading(false)
+          toast.error(errorMessage.message);
+          setLoading(false);
         }
       } else {
         toast.error("An unknown error occurred");
@@ -142,37 +148,36 @@ export default function LoginForm() {
         </div>
 
         <div className="w-1/2 text-end my-3">
-        {loading && loading?(
-          <Button
-          isLoading
-            type="submit"
-            className="bg-yellow-600 text-black w-36"
-            variant="flat"
-          >
-            Sign in
-          </Button>
-        ):(
-          <Button
-            type="submit"
-            className="bg-yellow-600 text-black w-36"
-            variant="flat"
-          >
-            Sign in
-          </Button>
-        )}
-          
+          {loading && loading ? (
+            <Button
+              isLoading
+              type="submit"
+              className="bg-yellow-600 text-black w-36"
+              variant="flat"
+            >
+              Sign in
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="bg-yellow-600 text-black w-36"
+              variant="flat"
+            >
+              Sign in
+            </Button>
+          )}
         </div>
-        
 
         <div className="flex items-start text-start p- text-sm">
           <div className="text-slate-500 font-semibold w-1/2 flex">
-          <Button onClick={() => {
-        SignIn()
-      }}>
-          <FcGoogle className="m-1" />
-          Sign in with Google
-          </Button>
-          
+            <Button
+              onClick={() => {
+                SignIn();
+              }}
+            >
+              <FcGoogle className="m-1" />
+              Sign in with Google
+            </Button>
           </div>
           <div className="text-slate-500 font-semibold">
             Do not have an account?{" "}

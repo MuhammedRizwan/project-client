@@ -8,10 +8,10 @@ export default function PackageDetials({packageData}:{packageData:Package|null})
   return (
     <div className="min-h-screen flex">
       <div className="w-2/3 flex flex-col justify-center px-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">
           {packageData?.package_name}
         </h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 mb-8">
           {packageData?.description}
         </p>
         <div className="flex space-x-6 mb-6">
@@ -63,7 +63,7 @@ export default function PackageDetials({packageData}:{packageData:Package|null})
           src={packageData?.images[0]||""}
           alt="Aerial view of coastal landscape"
           width={700}
-          className="w-full h-[600px] rounded-none"
+          className="w-full h-[500px] rounded-none"
           height={610}
           />
       </div>

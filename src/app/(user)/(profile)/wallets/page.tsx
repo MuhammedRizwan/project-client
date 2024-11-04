@@ -15,41 +15,41 @@ import {
   ScrollShadow
 } from "@nextui-org/react";
 import { ArrowUpRight, ArrowDownLeft, Plus } from 'lucide-react';
-import axiosInstance from '@/lib/axiosInstence';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { fetch_wallet } from '@/api/user/walletservice';
+import { Transaction } from '@/interfaces/wallet';
 
-// Define an interface for individual transactions
-interface Transaction {
-  _id: string;
-  date: string;
-  reason: string;
-  amount: number;
-  transactionType: "credit" | "debit";
-}
-
-// Define the WalletPage component
 export default function WalletPage() {
   const user = useSelector((state: RootState) => state.user.user);
   const [balance, setBalance] = useState(0); 
   const [amount, setAmount] = useState('');
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]); // Use the Transaction interface here
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     const fetchWallet = async () => {
-      if (user?._id) {
-        const response = await axiosInstance.get(`/wallet/${user._id}`);
-        if (response.status === 200) {
-          const { wallet } = response.data;
-          console.log(wallet);
-          setBalance(wallet.walletBalance);
-          setTransactions(wallet.transaction);
+      try {
+        if (user?._id) {
+          const response = await fetch_wallet(user._id);
+          if (response.success) {
+            const { wallet } = response;
+            setBalance(wallet.walletBalance);
+            setTransactions(wallet.transaction);
+          }
+        }
+      } catch (error) {
+        if(axios.isAxiosError(error)){
+          toast.error(error.response?.data.message)
+        }else{
+          toast.error("could get wallet data ")
         }
       }
     };
     fetchWallet();
-  }, [user?._id]); // Fetch wallet whenever user._id changes
+  }, [user?._id]);
 
   return (
     <div className="container mx-auto p-4">

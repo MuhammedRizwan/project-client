@@ -1,11 +1,9 @@
 'use client'
 import AdminLoginForm from "@/components/admin/AdminLoginForm";
-import useAdminAuthRedirect from "@/hooks/useAdminAuthRedirect";
-
-
+import useAdmin from "@/hooks/useAdmin";
 
 export default function AdminLoginPage() {
-  useAdminAuthRedirect()
+  useAdmin()
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">

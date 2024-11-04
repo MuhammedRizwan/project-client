@@ -1,13 +1,8 @@
+import Admin from "@/interfaces/admin";
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
-interface Admin {
-  _id?: string;
-  username?: string;
-  email: string;
-  phone?: string;
-  password: string;
-}
+
 
 const initialState = {
   admin: null as Admin | null,

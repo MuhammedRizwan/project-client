@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
+import { block_user } from "@/api/admin/authservice";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import User from "@/interfaces/user";
-import axiosInstance from "@/lib/axiosInstence";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useState } from "react";
@@ -57,13 +57,10 @@ export default function userList() {
     if (selectedUser) {
       try {
         const newStatus = !selectedUser.is_block;
-        const res = await axiosInstance.patch("/user/block", {
-          id: selectedUser._id,
-          is_block: newStatus,
-        });
-        if (res.status === 200) {
-          const updatedUser = res.data.user;
-          toast.success(res.data.message);
+        const response = await block_user( {id: selectedUser._id,is_block: newStatus});
+        if (response.success) {
+          const updatedUser = response.user;
+          toast.success(response.message);
           setUsers((prevUsers) =>
             prevUsers.map((user) =>
               user._id === updatedUser._id ? updatedUser : user

@@ -1,5 +1,7 @@
-import axiosInstance from "@/lib/axiosInstence";
+import { filtered_data } from "@/api/user/authservice";
+import axios from "axios";
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 export interface TableColumn<T extends object> {
   key: keyof T;
@@ -18,24 +20,25 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  const rowsPerPage = 3;
+  const rowsPerPage = 10;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}`
-        );
-
-        const { filterData, totalPages } = response.data;
+        const response = await filtered_data(apiUrl,searchTerm,currentPage,rowsPerPage);
+        const { filterData, totalPages } = response;
         setData(filterData);
         setTotalPages(totalPages);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        if(axios.isAxiosError(error)){
+          toast.error(error?.response?.data.message)
+      }else{
+          toast.error("something went wrong")
+      }
       }
     };
     fetchData();
-  }, [searchTerm, currentPage, columns]);
+  }, [searchTerm, currentPage, columns,apiUrl]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {

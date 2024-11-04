@@ -1,5 +1,5 @@
 import ProtectedRouter from "@/components/admin/ProtectedRouter";
-import Sidebar from "@/components/admin/SideBar";
+import AdminSidebar from "@/components/admin/AdminSideBar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function AdminLayout({
     <>
     <ProtectedRouter>
     <div className="flex min-h-screen bg-gray-100"> 
-      <Sidebar Name="DASHBOARD" />
+      <AdminSidebar Name="DASHBOARD" />
       <div className="flex-1 p-8">
         {children}
       </div>

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import BlockModal from "@/components/modal/blockModal";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import axiosInstance from "@/lib/axiosInstence";
+import { agent_data, block_agent, verify_agent } from "@/api/admin/authservice";
 
 export default function ProfileCard({ params }: { params: { id: string } }) {
   const [agent, setAgent] = useState<Agent | null>(null);
@@ -18,11 +18,8 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/travel-agencies/${params.id}`
-        );
-        setAgent(response.data.agent);
-        setIsBlocked(response.data.is_block);
+        const response = await agent_data(params.id)
+        setAgent(response.agent);
       } catch (error) {
         setError("Error fetching agent details");
         if (axios.isAxiosError(error)) {
@@ -41,13 +38,13 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const toggleBlockStatus = async () => {
     try {
-      const res = await axiosInstance.patch("/travel-agencies/block", {
+      const response = await block_agent({
         id: params.id,
         is_block: !isBlocked,
       });
-      if (res.status == 200) {
+      if (response.success) {
         setIsBlocked((prev) => !prev);
-        toast.success(res.data.message);
+        toast.success(response.message);
       }
     } catch (error) {
       setError("Error updating block status");
@@ -68,12 +65,9 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleAccept = async () => {
     try {
-      const res = await axiosInstance.patch("/travel-agencies/verify", {
-        id: params.id,
-        admin_verified: "accept",
-      });
-      if (res.status == 200) {
-        toast.success(res.data.message);
+      const response = await verify_agent({id: params.id,admin_verified: "accept"})
+      if (response.success) {
+        toast.success(response.message);
         setAgent((prev) => prev && { ...prev, admin_verified: "accept" });
       }
     } catch (error) {
@@ -91,12 +85,9 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
 
   const handleReject = async () => {
     try {
-      const res = await axiosInstance.patch("/travel-agencies/verify", {
-        id: params.id,
-        admin_verified: "reject",
-      });
-      if (res.status == 200) {
-        toast.success(res.data.message);
+      const response = await verify_agent({id: params.id,admin_verified: "reject"} );
+      if (response.success) {
+        toast.success(response.message);
         setAgent((prev) => prev && { ...prev, admin_verified: "reject" });
       }
     } catch (error) {

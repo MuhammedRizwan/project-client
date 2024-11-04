@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import axiosInstance from "@/lib/axiosInstence";
 import toast from "react-hot-toast";
 import BlockModal from "@/components/modal/blockModal";
 import CategoryModal, {
@@ -10,6 +9,8 @@ import Table, { TableColumn } from "@/components/Table";
 import Image from "next/image";
 import Category from "@/interfaces/category";
 import { Button } from "@nextui-org/react";
+import { add_category, block_category, edit_category } from "@/api/admin/categoryservice";
+import axios from "axios";
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -27,18 +28,18 @@ export default function Categories() {
   const handleAddCategory = async (data: CategoryFormValues) => {
     try {
       setButtonLoading(true);
-      const formData = new FormData();
-      formData.append("category_name", data.category_name);
-      formData.append("description", data.description);
-      if (data.image) formData.append("image", data.image);
-
-      const response = await axiosInstance.post("/category/add", formData);
-      if (response.status === 201) {
-        setCategories([...categories, response.data.category]);
+      //changed formData check after
+      const response = await add_category(data);
+      if (response.success) {
+        setCategories([...categories, response.category]);
         toast.success("Category added successfully");
       }
     } catch (error) {
-      toast.error("Failed to add category");
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data.message)
+      }else{
+        toast.error("Failed to add category");
+      }
     } finally {
       setShowAddCategoryModal(false);
       setButtonLoading(false);
@@ -49,21 +50,17 @@ export default function Categories() {
     if (!selectedCategory) return;
     try {
       setButtonLoading(true);
-      const formData = new FormData();
-      formData.append("category_name", data.category_name);
-      formData.append("description", data.description);
-      if (data.image) formData.append("image", data.image);
+      // const formData = new FormData();
+      // formData.append("category_name", data.category_name);
+      // formData.append("description", data.description);
+      // if (data.image) formData.append("image", data.image);
 
-      const response = await axiosInstance.post(
-        `/category/update/${selectedCategory._id}`,
-        formData
-      );
-
-      if (response.status === 200) {
+      const response = await edit_category(selectedCategory._id,data);
+      if (response.success) {
         setCategories((prev) =>
           prev.map((cat) =>
-            cat._id === response.data.category._id
-              ? response.data.category
+            cat._id === response.category._id
+              ? response.category
               : cat
           )
         );
@@ -86,20 +83,20 @@ export default function Categories() {
     if (!selectedCategory) return;
     try {
       const newStatus = !selectedCategory.is_block;
-      const response = await axiosInstance.patch("/category/block", {
+      const response = await block_category( {
         id: selectedCategory._id,
         is_block: newStatus,
       });
 
-      if (response.status === 200) {
+      if (response.success) {
         setCategories((prev) =>
           prev.map((cat) =>
-            cat._id === response.data.category._id
-              ? response.data.category
+            cat._id === response.category._id
+              ? response.category
               : cat
           )
         );
-        toast.success(response.data.message);
+        toast.success(response.message);
       }
     } catch {
       toast.error("Failed to update category status");

@@ -1,4 +1,5 @@
 "use client";
+import { otp_verification, resend_otp } from "@/api/user/authservice";
 import { useAppSelector } from "@/store/hooks";
 import { addUser } from "@/store/reducer/userReducer";
 import { AppDispatch } from "@/store/store";
@@ -8,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import Cookies from 'js-cookie'
 
 export default function OTPInputs() {
   const router = useRouter();
@@ -60,14 +62,13 @@ export default function OTPInputs() {
   const handleSubmit = async () => {
     try {
       const enteredOtp = otp.join("");
-      const res = await axios.post("http://localhost:5000/otpVerification", {
-        Otp: enteredOtp,
-        user,
-      });
-      if (res.status === 200) {
-        const { user } = res.data;
+      const response = await otp_verification({otp: enteredOtp,user});
+      if (response.success) {
+        const { user, refreshToken, accessToken } = response;
+        Cookies.set("refreshToken", refreshToken);
+        Cookies.set("accessToken", accessToken);
         dispatch(addUser(user));
-        toast.success(res.data.message);
+        toast.success(response.message);
         router.back();
       }
     } catch (error) {
@@ -82,11 +83,11 @@ export default function OTPInputs() {
   const handleResendOtp = async () => {
     if (user) {
       try {
-        const res = await axios.post("http://localhost:5000/sendotp", {
+        const response = await resend_otp( {
           email: user.email,
         });
-        if (res.status == 200) {
-          toast.success(res.data.message);
+        if (response.success) {
+          toast.success(response.message);
           setIsResendDisabled(true);
           setTimer(30);
         }

@@ -1,11 +1,11 @@
 export default interface User {
-    _id:string;
+    _id?:string;
     username?: string;
     lastname?:string;
     email: string;
     phone?: string;
     password: string;
-    address:string;
+    address?:string;
     friends?: string[];
     is_verified?: boolean;
     is_block?: boolean;

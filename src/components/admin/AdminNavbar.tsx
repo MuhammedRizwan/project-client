@@ -1,6 +1,12 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button } from "@nextui-org/react";
+import React, { useEffect } from "react";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Button,
+} from "@nextui-org/react";
 import Logo from "../Logo";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -10,24 +16,16 @@ import { logout } from "@/store/reducer/adminReducer";
 export default function AdminNavbar() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
- 
-  const checkAuth = useCallback(() => {
-    const token = Cookies.get("adminToken");
-    setIsLoggedIn(!!token); 
-  }, []);
-
-
+  const token = Cookies.get("adminToken");
   useEffect(() => {
-    checkAuth(); 
-  }, [checkAuth,router,dispatch]);
-
+    if (!token) {
+      router.push("/admin");
+    }
+  },[token,router])
   const handleLogout = () => {
-    Cookies.remove("adminToken"); 
+    Cookies.remove("adminToken");
     dispatch(logout());
-    setIsLoggedIn(false); 
-    router.replace("/admin"); 
+    router.push("/admin");
   };
 
   return (
@@ -38,13 +36,9 @@ export default function AdminNavbar() {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
-          {isLoggedIn ? (
+          {token && (
             <Button onClick={handleLogout} color="primary" variant="flat">
               Logout
-            </Button>
-          ) : (
-            <Button onClick={() => router.push("/admin")} color="primary" variant="flat">
-              Login
             </Button>
           )}
         </NavbarItem>

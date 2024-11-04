@@ -1,16 +1,13 @@
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-
-const useUser=()=>{
+export default function useUser() {
     const router = useRouter();
-    const accessToken = Cookies.get("accessToken");
+    const token = Cookies.get("accessToken");
     useEffect(() => {
-      if (accessToken) {
-        router.back();
-      }
-    }, [accessToken, router]);
-  };
-
-export default useUser;
+        if (token) {
+            router.replace("/");
+        }
+    },[token,router])
+}

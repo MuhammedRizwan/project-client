@@ -1,7 +1,7 @@
 "use client";
+import { fetch_agent_booking } from "@/api/agent/bookingservice";
 import Table, { TableColumn } from "@/components/Table";
 import Booking from "@/interfaces/booking";
-import axiosInstance from "@/lib/axiosInstence";
 import { RootState } from "@/store/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -90,12 +90,9 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(
-          `/booking/travel-agency/${agent?._id}`
-        );
-        console.log(response.data);
-        if (response.status === 200) {
-          const { bookings } = response.data;
+        const response = await fetch_agent_booking(agent?._id);
+        if (response.success) {
+          const { bookings } = response;
           setBookings(bookings);
         }
       } catch (error) {

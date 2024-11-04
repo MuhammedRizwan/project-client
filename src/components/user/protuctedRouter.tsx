@@ -10,14 +10,15 @@ export default function ProtectedRouter({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const token = Cookies.get("accessToken");
+  const agentToken = Cookies.get("agentToken");
+  const adminToken = Cookies.get("adminToken");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
+    if (agentToken || adminToken) {
       router.back();
     }
     setLoading(false);
-  }, [token, router]);
+  }, [agentToken, adminToken, router]);
   return <>{loading ? <Spinner label="Loading..." color="danger" />: children}</>;
 }

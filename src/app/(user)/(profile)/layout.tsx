@@ -1,6 +1,4 @@
-
 import Sidebar from "@/components/profile/Sidebar";
-import Header from "@/components/user/Navbar";
 import UserWrapper from "@/components/wrapper/userwrapper";
 
 import type { Metadata } from "next";
@@ -17,11 +15,9 @@ export default function UserLayout({
 }>) {
   return (
     <>
-     <UserWrapper>
-      <Header />
-     <Sidebar>{children}</Sidebar>
+      <UserWrapper>
+        <Sidebar>{children}</Sidebar>
       </UserWrapper>
-      
     </>
   );
 }

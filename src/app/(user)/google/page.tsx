@@ -1,39 +1,55 @@
 "use client";
-import axios from "axios";
+import { google_login } from "@/api/user/authservice";
+import useUser from "@/hooks/useUser";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+export interface GoogleData {
+  email: string | undefined | null;
+  name: string | undefined | null;
+  picture: string | undefined | null;
+  expiresIn: string;
+}
 
 export default function GoogleLogin() {
-  const { data: session, status } = useSession(); 
-
+  useUser();
+  const { data: session, status } = useSession();
   const router = useRouter();
-  
+  const [isProcessing, setIsProcessing] = useState(false);
+
   useEffect(() => {
     const login = async () => {
-      if (status === "authenticated") {
-        const user = session?.user;
+      if (status === "authenticated" && session?.user && !isProcessing) {
+        setIsProcessing(true); 
         try {
-          const response = await axios.post("http://localhost:5000/googleLogin", {
-            email: user?.email,
-            name: user?.name,
-            picture: user?.image,
-            expiresIn: session?.expires,
+          const response = await google_login({
+            email: session.user.email,
+            name: session.user.name,
+            picture: session.user.image,
+            expiresIn: session.expires,
           });
 
-          console.log("Response from backend:", response.data);
-          router.push("/"); // Redirect on successful login
+          if (response.success) {
+            router.push("/");
+          } else {
+            throw new Error("Login failed");
+          }
         } catch (error) {
           console.error("Error during login:", error);
-          router.push("/login"); // Redirect to login on error
+          router.push("/login"); 
+        } finally {
+          setIsProcessing(false); 
         }
       } else if (status === "unauthenticated") {
-        router.push("/login"); // Redirect if not authenticated
+        router.push("/login"); 
       }
     };
 
-    login();
-  }, [status, session,router]); // Dependencies: re-run effect when status or session changes
+    if (status === "authenticated" && !isProcessing) {
+      login();
+    }
+  }, []); 
 
-  return <div>Logging in...</div>; // You can customize this or add a loading indicator
+  return <div>Logging in...</div>; 
 }

@@ -1,10 +1,9 @@
 'use client'
 import AgentOTPInputs from "@/components/agent/forms/agentOTPForm";
-import useAgentAuthRedirect from "@/hooks/useAgentAuthRedirect";
-// import useAuthRedirect from "@/hooks/useAuthRedirect";
+import useAgent from "@/hooks/useAgent";
 
 export default function VerificationPage() {
-useAgentAuthRedirect()
+  useAgent()
   return (
     <div className="bg-gray-100">
       <div className="h-full w-full">

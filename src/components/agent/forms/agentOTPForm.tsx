@@ -1,4 +1,5 @@
 "use client";
+import { otp_verification, send_otp } from "@/api/agent/authservice";
 import { addAgent } from "@/store/reducer/agentReducer";
 import { AppDispatch, RootState } from "@/store/store";
 import { Button } from "@nextui-org/react";
@@ -15,7 +16,7 @@ export default function AgentOTPInputs() {
   const [otp, setOtp] = useState(["", "", "", ""]); // State to store OTP input
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const dispatch = useDispatch<AppDispatch>();
-  const { agent } = useSelector((state:RootState) => state.agent);
+  const { agent } = useSelector((state: RootState) => state.agent);
 
   useEffect(() => {
     if (timer > 0) {
@@ -61,47 +62,40 @@ export default function AgentOTPInputs() {
   const handleSubmit = async () => {
     try {
       const enteredOtp = otp.join("");
-      const res = await axios.post(
-        "http://localhost:5000/agent/otpVerification",
-        {
-          Otp: enteredOtp,
-          agent,
-        }
-      );
-      if (res.status === 200) {
-        const { agent } = res.data;
+      const Otp=enteredOtp
+      const response = await otp_verification({Otp,agent});
+      if (response.success) {
+        const { agent } = response;
         dispatch(addAgent(agent));
-        toast.success(res.data.message);
+        toast.success(response.message);
         router.push("/agent");
-      } 
+      }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            const errorMessage = error.response?.data || "Invalid OTP";
-            toast.error(errorMessage.message);
-          } else {
-            toast.error("An unknown error occurred");
-          }
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Invalid OTP";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
   const handleResendOtp = async () => {
     try {
       if (agent) {
-        const res = await axios.post("http://localhost:5000/agent/sendotp", {
-          email: agent.email,
-        });
-        if (res.status == 200) {
-          toast.success(res.data.message);
+        const response = await send_otp({ email: agent.email });
+        if (response.success) {
+          toast.success(response.message);
           setIsResendDisabled(true);
           setTimer(30);
         }
-      } 
+      }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            const errorMessage = error.response?.data || "couldn't send OTP";
-            toast.error(errorMessage.message);
-          } else {
-            toast.error("An unknown error occurred");
-          }
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "couldn't send OTP";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
   };
   return (

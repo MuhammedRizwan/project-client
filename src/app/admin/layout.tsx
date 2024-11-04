@@ -1,6 +1,7 @@
 import AdminNavbar from "@/components/admin/AdminNavbar";
+import ProtectedRouter from "@/components/admin/ProtectedRouter";
+import AdminWrapper from "@/components/wrapper/adminwrapper";
 import type { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title: "Heaven finder user",
@@ -14,9 +15,12 @@ export default function UserLayout({
 }>) {
   return (
     <>
-    <AdminNavbar/>
-      {children}
- 
+      <ProtectedRouter>
+        <AdminWrapper>
+          <AdminNavbar />
+          {children}
+        </AdminWrapper>
+      </ProtectedRouter>
     </>
   );
 }

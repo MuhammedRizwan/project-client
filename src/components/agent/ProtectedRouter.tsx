@@ -1,8 +1,8 @@
 "use client";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import {Spinner} from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 
 export default function ProtectedRouter({
   children,
@@ -10,14 +10,17 @@ export default function ProtectedRouter({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const token = Cookies.get("agentToken");
+  const userToken = Cookies.get("accessToken");
+  const adminToken = Cookies.get("adminToken");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
+    if (userToken || adminToken) {
       router.back();
     }
     setLoading(false);
-  }, [token, router]);
-  return <>{loading ? <Spinner label="Loading..." color="danger" />: children}</>;
+  }, [ router, userToken, adminToken]);
+  return (
+    <>{loading ? <Spinner label="Loading..." color="danger" /> : children}</>
+  );
 }

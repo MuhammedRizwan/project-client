@@ -1,7 +1,9 @@
 'use client'
 import OTPInputs from "@/components/user/forms/OTPInputs";
+import useUser from "@/hooks/useUser";
 
 export default function VerificationPage() {
+  useUser()
   return (
     <div className="bg-gray-100">
       <div className="h-full w-full">

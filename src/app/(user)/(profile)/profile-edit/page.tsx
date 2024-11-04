@@ -1,9 +1,9 @@
 "use client";
+import { change_password, fetch_user_profile, update_profile, validate_password } from "@/api/user/profileservice";
 import UserProfile, {
   PasswordChangeFormValues,
 } from "@/components/profile/UserProfile";
 import User from "@/interfaces/user";
-import axiosInstance from "@/lib/axiosInstence";
 import { addUser } from "@/store/reducer/userReducer";
 import { RootState } from "@/store/store";
 import axios from "axios";
@@ -19,13 +19,15 @@ export default function ProfileEdit() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosInstance.get(`/profile/${userData?._id}`);
-        if (response.status === 200) {
-          setUser(response.data.user);
+        const response = await fetch_user_profile(userData?._id);
+        if (response.success) {
+          setUser(response.user);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           toast.error(error.response?.data.message || "Failed to fetch profile");
+        }else{
+          toast.error("couldn't fetch user data")
         }
       }
     };
@@ -35,14 +37,11 @@ export default function ProfileEdit() {
 
   const handleSubmit = async (data: User) => {
     try {
-      const response = await axiosInstance.put(
-        `/update-profile/${userData?._id}`,
-        data
-      );
-      if (response.status === 200) {
-        toast.success(response.data.message);
-        dispatch(addUser(response.data.user));
-        setUser(response.data.user);
+      const response = await update_profile(userData?._id,data);
+      if (response.success) {
+        toast.success(response.message);
+        dispatch(addUser(response.user));
+        setUser(response.user);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -60,22 +59,16 @@ export default function ProfileEdit() {
         return;
       }
 
-      const validateResponse = await axiosInstance.post(
-        `/validate-password/${userData?._id}`,
-        { oldPassword: data.oldPassword }
-      );
+      const validateResponse = await validate_password(userData?._id,{ oldPassword: data.oldPassword });
 
-      if (validateResponse.status !== 200) {
+      if (validateResponse.success) {
         toast.error("Old password is incorrect");
         return;
       }
 
-      const updateResponse = await axiosInstance.put(
-        `/change-password/${userData?._id}`,
-        { newPassword: data.newPassword }
-      );
+      const updateResponse = await change_password(userData?._id,{ newPassword: data.newPassword });
 
-      if (updateResponse.status === 200) {
+      if (updateResponse.success) {
         toast.success("Password changed successfully!");
       }
     } catch (error) {

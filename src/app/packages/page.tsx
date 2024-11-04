@@ -1,4 +1,5 @@
 "use client";
+import { fetch_package } from "@/api/user/packageservice";
 import Spinnerpage from "@/app/loading";
 import Header from "@/components/home/Header";
 import PackageCard from "@/components/package/PackageCard";
@@ -17,11 +18,15 @@ export default function Component() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:5000/packages");
-        const { packageList } = response.data;
+        const response = await fetch_package();
+        const { packageList } = response;
         setPackages(packageList);
       } catch (error) {
-        toast.error("Failed to fetch packages");
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data.message);
+        } else {
+          toast.error("Failed to fetch packages");
+        }
       } finally {
         setLoading(false);
       }
@@ -72,7 +77,7 @@ export default function Component() {
       </div>
       <div className="container mx-auto px-16 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-10">
-        <PackageCard packages={packages} />
+          <PackageCard packages={packages} />
         </div>
       </div>
       <Footer />
