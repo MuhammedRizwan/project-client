@@ -1,4 +1,3 @@
-import Category from "./category";
 
 export interface Itinerary {
   day: number;
@@ -26,42 +25,4 @@ export default interface Package  {
   departure_place:string
 }
 
-
-export interface PackageFormValues {
-  package_name: string;
-  category: Category[];
-  max_person: number;
-  no_of_days: number;
-  no_of_nights: number;
-  destinations: string[];
-  original_price: number;
-  itineraries: {
-    day: number;
-    activities: { time: string; activity: string }[];
-  }[];
-  includedItems: string[];
-  excludedItems: string[];
-  description: string;
-  departure_place: string;
-  images: File[];
-  category_id?:string
-}
-
-export interface Activity {
-  time: string;
-  activity: string;
-}
-
-// Define the shape of an itinerary for a single day
-export interface Itinerary {
-  day: number;
-  activities: Activity[];
-}
-
-export interface PackageFormProps {
-  initialData?: PackageFormValues;
-  categories: Category[];
-  onSubmit: (data: PackageFormValues) => void;
-  formTitle: string;
-}
 

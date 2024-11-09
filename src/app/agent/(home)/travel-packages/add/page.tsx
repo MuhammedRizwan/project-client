@@ -1,10 +1,9 @@
 'use client'
 import { fetch_category } from "@/api/agent/categoryservice";
 import { add_package } from "@/api/agent/packageservice";
-import PackageForm from "@/components/package/add-edit-form/PackageForm";
+import PackageForm, { PackageFormValues } from "@/components/package/add-edit-form/PackageForm";
 import  Agent  from "@/interfaces/agent";
 import Category from "@/interfaces/category";
-import { PackageFormValues } from "@/interfaces/package";
 import { RootState } from "@/store/store";
 import axios from "axios";
 import { useRouter } from "next/navigation";
