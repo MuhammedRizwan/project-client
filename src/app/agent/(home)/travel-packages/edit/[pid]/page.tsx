@@ -2,7 +2,7 @@
 
 import PackageForm, {
   PackageFormValues,
-} from "@/components/package/PackageForm";
+} from "@/components/package/add-edit-form/PackageForm";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import  Category  from "@/interfaces/category";

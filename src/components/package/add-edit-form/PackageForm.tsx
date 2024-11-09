@@ -1,57 +1,17 @@
 "use client";
 import Category from "@/interfaces/category";
 import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Input,
-  Textarea,
-} from "@nextui-org/react";
-import Image from "next/image";
-import { useState, useEffect, useMemo} from "react";
+  Activity,
+  Itinerary,
+  PackageFormProps,
+  PackageFormValues,
+} from "@/interfaces/package";
+import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FiCircle, FiEdit2, FiTrash2, FiUpload } from "react-icons/fi";
-
-export interface PackageFormValues {
-  package_name: string;
-  category: Category[];
-  max_person: number;
-  no_of_days: number;
-  no_of_nights: number;
-  destinations: string[];
-  original_price: number;
-  itineraries: {
-    day: number;
-    activities: { time: string; activity: string }[];
-  }[];
-  includedItems: string[];
-  excludedItems: string[];
-  description: string;
-  departure_place: string;
-  images: File[];
-  category_id?:Category
-}
-
-interface Activity {
-  time: string;
-  activity: string;
-}
-
-// Define the shape of an itinerary for a single day
-interface Itinerary {
-  day: number;
-  activities: Activity[];
-}
-
-interface PackageFormProps {
-  initialData?: PackageFormValues;
-  categories: Category[];
-  onSubmit: (data: PackageFormValues) => void;
-  formTitle: string;
-}
+import { FiCircle, FiTrash2 } from "react-icons/fi";
+import ImageAddEdit from "./ImageAdd";
 
 export default function PackageForm({
   initialData,
@@ -107,25 +67,13 @@ export default function PackageForm({
       setItineraries(initialData.itineraries || []);
       setIncludedItems(initialData.includedItems || []);
       setExcludedItems(initialData.excludedItems || []);
-      setValue('category',initialData.category_id ? [initialData.category_id] : [])
+      setValue("category", initialData.category);
     }
   }, [initialData, reset, setValue]);
 
-  const [selectedKeys, setSelectedKeys] = useState(
-    new Set([initialData?.category?.[0].category_name || ""])
-  );
-
-  const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
-
-  const handleSelectionChange = (keys: unknown) => {
-    const selectedCategory = categories.find(
-      (category) => category._id === keys
-    );
-    setSelectedKeys(new Set([selectedCategory?.category_name ?? ""]));
-    setValue("category", selectedCategory ? [selectedCategory] : []);
+  const handleSelectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value)
+    setValue("category_id", e.target.value);
   };
 
   const handleDaysChange = (days: number) => {
@@ -301,92 +249,6 @@ export default function PackageForm({
     setValue("excludedItems", excludedItems);
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-
-    // Check if the current images have reached the maximum limit
-    if (images.length >= 6) {
-      setError("images", { type: "manual", message: "maximum 6 images" });
-      return;
-    }
-
-    if (files) {
-      const acceptedFileTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/svg+xml",
-        "image/jpg",
-      ];
-      const validImages = Array.from(files).filter((file) =>
-        acceptedFileTypes.includes(file.type)
-      );
-      const remainingSlots = 6 - images.length;
-      const imagesToAdd = validImages.slice(0, remainingSlots);
-
-      if (imagesToAdd.length > 0) {
-        setImages((prevImages) => [...prevImages, ...imagesToAdd]);
-        setValue("images", [...images, ...imagesToAdd]);
-      } else {
-        setError("images", {
-          type: "manual",
-          message: "Please select valid image",
-        });
-      }
-    }
-  };
-
-  const handleDelete = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-    setValue("images", updatedImages); // Adjust image names
-    toast.success("Image deleted successfully");
-  };
-
-  const handleChange = (index: number) => {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*"; // Only allow image selection
-
-    fileInput.onchange = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-
-      if (target && target.files && target.files[0]) {
-        const acceptedFileTypes = [
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-          "image/svg+xml",
-          "image/jpg",
-        ]; // Allowed image formats
-
-        const newImageFile = target.files[0];
-        if (!acceptedFileTypes.includes(newImageFile.type)) {
-          setError("images", {
-            type: "manual",
-            message: "Please select valid image",
-          });
-          return;
-        }
-        const updatedImages = [...images];
-        updatedImages[index] = newImageFile;
-
-        setImages(updatedImages); // Update state
-        setValue("images", updatedImages); // Sync with form state
-
-        toast.success("Image uploaded successfully");
-      } else {
-        setError("images", {
-          type: "manual",
-          message: "Please select an image",
-        });
-      }
-    };
-
-    fileInput.click(); // Open the file dialog
-  };
 
   const handleIncludedItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -483,51 +345,22 @@ export default function PackageForm({
             </p>
           </div>
 
-           <div className="mb-4">
+          <div className="mb-4">
             <label
               className="block text-gray-700 font-bold mb-2"
               htmlFor="category"
             >
               Category
             </label>
-            <Dropdown>
-              <DropdownTrigger>
-                <Button variant="bordered" className="capitalize w-full">
-                  {selectedValue || initialData?.category_id?.category_name || "Select Category"}
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                aria-label="Category Selection"
-                variant="flat"
-                disallowEmptySelection
-                selectionMode="single"
-                selectedKeys={selectedKeys}
-                onSelectionChange={(keys) => {
-                  const selectedCategory = Array.from(keys).join("");
-                  handleSelectionChange(selectedCategory);
-                }}
-                className="w-full"
-              >
-                {categories.map((category: Category) => (
-                  <DropdownItem
-                    key={category._id}
-                    className="capitalize w-full"
-                  >
-                    {category.category_name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-
-            <input
-              type="hidden"
-              value={selectedValue} // Pass the selected value here
-              {...register("category", {
-                required: "Category is required",
-              })}
-            />
-
-            {/* Validation error display */}
+            <Select
+              placeholder="Select an animal"
+              className="max-w-lg h-1"
+              onChange={handleSelectionChange}
+            >
+              {categories.map((cat) => (
+                <SelectItem key={cat._id}>{cat.category_name}</SelectItem>
+              ))}
+            </Select>
             <p className="text-red-500 text-xs min-h-[20px]">
               {errors.category?.message || ""}
             </p>
@@ -823,17 +656,20 @@ export default function PackageForm({
                     <Input
                       value={activity.activity}
                       placeholder="Activity Description"
-                      {...register(`itineraries.0.activities.${activityIndex}.activity`, {
-                        required: "Activity description is required",
-                        onChange(e) {
-                          handleInputChange(
-                            dayIndex,
-                            activityIndex,
-                            "activity",
-                            e.target.value
-                          )
-                        },
-                      })}
+                      {...register(
+                        `itineraries.0.activities.${activityIndex}.activity`,
+                        {
+                          required: "Activity description is required",
+                          onChange(e) {
+                            handleInputChange(
+                              dayIndex,
+                              activityIndex,
+                              "activity",
+                              e.target.value
+                            );
+                          },
+                        }
+                      )}
                     />
                     {errors.itineraries?.[0]?.activities?.[activityIndex]
                       ?.activity && (
@@ -893,8 +729,9 @@ export default function PackageForm({
                   placeholder="Add included item"
                   fullWidth
                   {...register("includedItems", {
-                     validate: (items: string[]) =>
-                      items.length > 0 || "At least one included item is required",
+                    validate: (items: string[]) =>
+                      items.length > 0 ||
+                      "At least one included item is required",
                     onChange: handleIncludedItemChange,
                   })}
                 />
@@ -939,7 +776,8 @@ export default function PackageForm({
                   autoCapitalize="words"
                   {...register("excludedItems", {
                     validate: (items: string[]) =>
-                      items.length > 0 || "At least one excluded item is required",
+                      items.length > 0 ||
+                      "At least one excluded item is required",
                     onChange: handleExcludedItemChange,
                   })}
                 />
@@ -976,87 +814,7 @@ export default function PackageForm({
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl mt-8">
-        <h1 className="text-2xl font-bold mb-4">Images</h1>
-        <p className="text-gray-600 mb-4">
-          Upload images related to the package.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full  h-[450px] bg-slate-100 p-4 shadow-inner">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="relative group w-[300px] h-[200px] overflow-hidden rounded-md border border-gray-300"
-            >
-              { image instanceof File ? (
-                <Image
-                  src={URL.createObjectURL(image)}
-                  alt={`Uploaded image ${index + 1}`}
-                  width={300}
-                  height={200}
-                  className="object-cover w-full h-full"
-                  onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
-                />
-              ) : (
-                <Image
-                src={image}
-                alt={`Uploaded image ${index + 1}`}
-                width={300}
-                height={200}
-                className="object-cover w-full h-full"
-                onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
-              />
-              )}
-
-              <input
-                type="file"
-                id={`image-input-${index}`}
-                onChange={(e) => handleImageChange(e)}
-                className="hidden"
-              />
-
-              {/* Centered Icons */}
-              <div className="absolute inset-0 flex justify-center items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
-                <Button
-                  onClick={() => handleChange(index)}
-                  className="bg-white/80 p-2 rounded-full"
-                >
-                  <FiEdit2 size={20} color="black" />
-                </Button>
-
-                <Button
-                  onClick={() => handleDelete(index)}
-                  className="bg-white/80 p-2 rounded-full"
-                >
-                  <FiTrash2 size={20} color="black" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <label htmlFor="upload-input" className="mt-4 cursor-pointer flex ">
-          <FiUpload size={24} className="inline-block mr-2" /> Upload Images
-        </label>
-        <input
-          type="file"
-          id="upload-input"
-          multiple
-          className="hidden"
-          {...register("images", {
-            validate: {
-              // Ensure at least one file is selected
-              notEmpty: (files) =>
-                files?.length > 0 || "You must select at least one file.",  
-            },
-          })}
-          onChange={handleImageChange}
-        />
-
-        <p className="text-red-500 text-xs py-2">
-          {errors.images?.message || ""}
-        </p>
-      </div>
+      <ImageAddEdit images={images} setImages={setImages} setError={setError} setValue={setValue} register={register}/>
 
       <div className=" mx-auto  p-8  mt-8 flex justify-end">
         <Button type="submit" className="bg-yellow-700 hover:bg-yellow-800">

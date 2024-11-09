@@ -1,4 +1,4 @@
-import { PackageFormValues } from "@/components/package/PackageForm";
+import { PackageFormValues } from "@/components/package/add-edit-form/PackageForm";
 import Package from "@/interfaces/package";
 import axiosInstance from "@/lib/axiosInstence";
 
