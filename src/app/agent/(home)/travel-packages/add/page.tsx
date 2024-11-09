@@ -17,7 +17,6 @@ const AddPackagePage = () => {
   const agent:Agent|null=useSelector((state:RootState)=>state.agent.agent)
   const [categories, setCategories] = useState<Category[]>([]); 
   const handleAddPackage = async (data: PackageFormValues) => {
-    console.log(data,"add package Data");
     try {
       if(!agent){
         toast.error("Please login to add package");
@@ -44,7 +43,6 @@ const AddPackagePage = () => {
       try{
         const response=await fetch_category()
         const {categories}=response
-        console.log(categories)
         setCategories(categories)
       }catch(error){
         if (axios.isAxiosError(error)) {
@@ -57,8 +55,7 @@ const AddPackagePage = () => {
       }
     }
     fetchCategories()
-  },[])
-
+  },[router])
   return (
     <div>
       <PackageForm 

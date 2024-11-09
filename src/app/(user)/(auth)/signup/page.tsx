@@ -1,9 +1,9 @@
-'use client'
+"use client";
 import SignupForm from "@/components/user/forms/SignupForm";
 import useUser from "@/hooks/useUser";
 
 export default function SignupPage() {
-  useUser()
+  useUser();
   return (
     <div className=" bg-gray-100">
       <div className="h-full w-full">

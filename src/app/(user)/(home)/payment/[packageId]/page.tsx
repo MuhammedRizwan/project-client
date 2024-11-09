@@ -20,7 +20,7 @@ import { fetch_user_booking } from "@/api/user/bookingservice";
 export default function ThankyouPage({
   params,
 }: {
-  params: { bookingId: string };
+  params: { packageId: string };
 }) {
   const [bookingData, setBookingData] = useState<Booking | null>(null);
   const [packageData, setPackageData] = useState<Package | null>(null);
@@ -28,8 +28,7 @@ export default function ThankyouPage({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch_user_booking(params.bookingId);
-        console.log(response);
+        const response = await fetch_user_booking(params.packageId);
         if (response.success) {
           const { booking } = response;
           setBookingData(booking);
@@ -44,7 +43,7 @@ export default function ThankyouPage({
       }
     };
     fetchData();
-  }, [params.bookingId]);
+  }, [params.packageId]);
 
   if (!bookingData) {
     return <div className="text-center p-8">Loading...</div>;

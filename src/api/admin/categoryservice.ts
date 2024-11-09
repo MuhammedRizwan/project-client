@@ -4,7 +4,11 @@ import axiosInstance from "@/lib/axiosInstence";
 
 export const add_category = async (data: CategoryFormValues) => {
   try {
-    const response = await axiosInstance.post("/category/add", data);
+    const response = await axiosInstance.post("/category/add", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data as {
       success: boolean;
       message: string;
@@ -14,16 +18,22 @@ export const add_category = async (data: CategoryFormValues) => {
     throw error;
   }
 };
-export const edit_category=async(id:string,data:CategoryFormValues)=>{
-    try {
-        const response = await axiosInstance.post(`/category/update/${id}`, data);
-        return response.data as{
-            success:boolean, message:string, category:Category 
-        }
-    } catch (error) {
-        throw error
-    }
-}
+export const edit_category = async (id: string, data: CategoryFormValues) => {
+  try {
+    const response = await axiosInstance.post(`/category/update/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data as {
+      success: boolean;
+      message: string;
+      category: Category;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
 export const block_category = async (data: {
   id: string;
   is_block: boolean;

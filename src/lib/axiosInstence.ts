@@ -13,48 +13,51 @@ const getToken = () =>
   Cookies.get("accessToken") ||
   Cookies.get("adminToken") ||
   Cookies.get("agentToken");
- 
-const axiosInstance = axios.create({
-  baseURL: getBaseUrl()
-});
 
+const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    config.baseURL = getBaseUrl(); 
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor to Handle 401 Errors
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
       try {
-        const newToken = await refreshToken(); // Refresh token on 401
+        const newToken = await refreshToken(); 
         const originalRequest = error.config;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return axiosInstance(originalRequest); // Retry original request
+        return axiosInstance(originalRequest); 
       } catch (refreshError) {
         console.error("Failed to refresh token:", refreshError);
         return Promise.reject(refreshError);
       }
     }
-    if(error.response?.status === 403 && error.response?.data?.message === "User Blocked"){
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.message === "User Blocked"
+    ) {
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
-      toast.error(error.response?.data?.message)
-      window.location.replace('/login');
-    } 
-    if(error.response?.status===403 && error.response?.data?.message=="Agent Blocked"){
+      toast.error(error.response?.data?.message);
+      window.location.replace("/login");
+    }
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.message === "Agent Blocked"
+    ) {
       Cookies.remove("agentToken");
       Cookies.remove("agentRefreshToken");
-      toast.error(error.response?.data?.message)
-      window.location.replace('/agent');
+      toast.error(error.response?.data?.message);
+      window.location.replace("/agent");
     }
 
     return Promise.reject(error);

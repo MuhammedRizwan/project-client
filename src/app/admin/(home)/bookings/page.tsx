@@ -71,7 +71,7 @@ export default function BookingsPage() {
 
   return (
     <div>
-     <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} />
+     <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} blockfilter={false}/>
     </div>
   );
 }

@@ -1,22 +1,20 @@
-'use client'
-import OTPInputs from "@/components/user/forms/OTPInputs";
+"use client";
+import LoginForm from "@/components/user/forms/LoginForm";
 import useUser from "@/hooks/useUser";
 
-export default function VerificationPage() {
-  useUser()
+export default function LoginPage() {
+  useUser();
   return (
-    <div className="bg-gray-100">
+    <div className=" bg-gray-100">
       <div className="h-full w-full">
         <div className="p-5 h-full w-full items-center"></div>
       </div>
       <div className="h-full w-full flex flex-col md:flex-row justify-between">
-        <div className="md:w-1/2 w-full p-20 m-4 ">
-          <div className="my-4">
-            <h1 className="text-3xl font-bold">OTP Verification</h1>
-            <p>enter the otp to confirm you</p>
-          </div>
-          <OTPInputs />
+        <div className="md:w-1/2 w-full p-10 m-2 ">
+          {" "}
+          <LoginForm />
         </div>
+
         <div
           className="flex justify-end items-end bg-cover bg-center w-ful rounded md:rounded-s-3xl md:w-1/2"
           style={{

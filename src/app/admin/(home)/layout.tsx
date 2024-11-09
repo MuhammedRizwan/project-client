@@ -18,7 +18,7 @@ export default function AdminLayout({
     <ProtectedRouter>
     <div className="flex min-h-screen bg-gray-100"> 
       <AdminSidebar Name="DASHBOARD" />
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-2">
         {children}
       </div>
     </div>

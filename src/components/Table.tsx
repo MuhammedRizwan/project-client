@@ -1,7 +1,14 @@
+import {
+  Pagination,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { fetch_table_data } from "@/api/admin/authservice";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import SearchInput from "./searchInput";
+
 
 export interface TableColumn<T extends object> {
   key: keyof T;
@@ -12,15 +19,29 @@ export interface TableColumn<T extends object> {
 interface TableProps<T extends object> {
   columns: TableColumn<T>[];
   apiUrl: string;
+  addButton?: () => void;
+  buttonName?: string;
+  blockfilter?: boolean;
 }
 
-const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
+const Table = <T extends object>({
+  columns,
+  apiUrl,
+  addButton,
+  buttonName,
+  blockfilter = true,
+}: TableProps<T>) => {
   const [data, setData] = useState<T[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [filter, setFilter] = useState<"all" | "blocked" | "unblocked">("all");
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 8;
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement> ) => {
+    setFilter(event.target.value as "all" | "blocked" | "unblocked");
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +50,8 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
           apiUrl,
           searchTerm,
           currentPage,
-          rowsPerPage
+          rowsPerPage,
+          filter
         );
         const { filterData, totalPages } = response;
         setData(filterData);
@@ -43,30 +65,42 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
       }
     };
     fetchData();
-  }, [searchTerm, currentPage, columns, apiUrl]);
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  }, [searchTerm, currentPage, columns, apiUrl, filter]);
 
   return (
-    <div className="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-      <div className="mb-4 flex justify-center">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded focus:outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+    <div className="max-w-6xl m-2 bg-white p-2 rounded-lg shadow-lg">
+      <div className="mb-4 flex justify-between">
+        <div className="w-1/2">
+          <SearchInput
+            onSearch={setSearchTerm}
+          />
+        </div>
+
+        {blockfilter && (
+          <div className="me-4">
+            <Select
+              placeholder="All"
+              value={filter}
+              onChange={handleFilterChange}
+              className="w-28"
+            >
+              <SelectItem value="all" key={"all"}>All</SelectItem>
+              <SelectItem value="blocked" key={"blocked"}>Blocked</SelectItem>
+              <SelectItem value="unblocked" key={"unblocked"}>Unblocked</SelectItem>
+            </Select>
+          </div>
+        )}
+
+        {buttonName && (
+          <div className="mb-2">
+            <button
+              onClick={addButton}
+              className="px-4 py-2 w-36 bg-yellow-600 text-white rounded"
+            >
+              {buttonName}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -112,24 +146,14 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 text-xs bg-gray-200 rounded-md disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <span className="text-sm">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 text-xs bg-gray-200 rounded-md disabled:opacity-50"
-        >
-          Next
-        </button>
+      <div className="flex justify-center items-center mt-4">
+        <Pagination
+          showControls
+          total={totalPages}
+          initialPage={1}
+          page={currentPage}
+          onChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </div>
   );

@@ -15,19 +15,20 @@ export const admin_login = async (data: LoginFormData) => {
       refreshToken: string;
     };
   } catch (error) {
-    console.log(error)
     throw error;
   }
 };
+
 export const fetch_table_data = async (
   apiUrl: string,
   searchTerm: string,
   currentPage: number,
-  rowsPerPage: number
+  rowsPerPage: number,
+  filter:"all" | "blocked" | "unblocked"
 ) => {
   try {
     const response = await axiosInstance.get(
-      `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}`
+      `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}&filter=${filter}`
     );
     return response.data;
   } catch (error) {

@@ -51,7 +51,7 @@ export const user_booking=async(id:string|undefined)=>{
   }
 }
 
-export const cancel_booking=async(id:string|undefined,data:{booking_status:string})=>{
+export const cancel_booking=async(id:string|undefined,data:{booking_status:string,cancellation_reason:string})=>{
   try {
     const response = await axiosInstance.patch(`/booking/cancel/${id}`,data);
     return response.data as {

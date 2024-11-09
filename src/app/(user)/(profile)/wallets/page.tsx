@@ -132,9 +132,6 @@ export default function WalletPage() {
                   Cancel
                 </Button>
                 <Button color="primary" onPress={() => {
-                  // Add logic to handle adding money
-                  console.log("Amount to add:", amount);
-                  // Close modal after adding money
                   setIsAddMoneyOpen(false);
                 }}>
                   Add Funds

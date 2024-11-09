@@ -79,8 +79,6 @@ export default function ForgotPassword() {
 
   const handleSendOtp = async (data: ForgetPassword) => {
     try {
-      console.log(data);
-      
       setLoader((prev) => ({ ...prev, email: true }));
       const response = await send_otp({email: data.email});
       if (response.success) {

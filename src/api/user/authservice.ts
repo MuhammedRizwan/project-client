@@ -1,5 +1,5 @@
-import { ForgetPassword } from "@/app/(user)/forget-password/page";
-import { GoogleData } from "@/app/(user)/google/page";
+import { ForgetPassword } from "@/app/(user)/(auth)/forget-password/page";
+import { GoogleData } from "@/app/(user)/(auth)/google/page";
 import { LoginFormData } from "@/components/user/forms/LoginForm";
 import { SignupFormData } from "@/components/user/forms/SignupForm";
 import OTP from "@/interfaces/otp";

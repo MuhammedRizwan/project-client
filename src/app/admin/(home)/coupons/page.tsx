@@ -6,7 +6,6 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import CouponModal from "@/components/coupon/modal";
-import { Button } from "@nextui-org/react";
 import { add_edit_coupon, block_coupon } from "@/api/admin/couponservice";
 
 
@@ -88,8 +87,9 @@ export default function CouponsPage() {
     }
   };
 
+ 
+
   const handleCouponSubmit = async (data: Coupon) => {
-    console.log("data", data);
     try {
       const url =
         modalMode === "add"
@@ -98,17 +98,17 @@ export default function CouponsPage() {
       const method = modalMode === "add" ? "post" : "put";
 
       const response = await add_edit_coupon(url, method, data );
-      if (response.status === 201) {
-        const { couponCreated } = response.data;
-        setCoupons((prevCoupons) => [...prevCoupons, couponCreated]);
+      if (response.success && response.message =="Coupon Created") {
+        const { couponData } = response;
+        setCoupons((prevCoupons) => [...prevCoupons, couponData]);
         setShowModal(false);
         toast.success(`Coupon added successfully`);
       }
-      if (response.status === 200) {
-        const { couponEdited } = response.data;
+      if (response.success && response.message=="Coupon Edited") {
+        const { couponData } = response;
         setCoupons((prevCoupons) =>
           prevCoupons.map((coupon) =>
-            coupon._id === couponEdited._id ? couponEdited : coupon
+            coupon._id === couponData._id ? couponData : coupon
           )
         );
         setShowModal(false);
@@ -127,20 +127,17 @@ export default function CouponsPage() {
       toast.error(defaultMessage);
     }
   };
+  const addCoupon=()=>{
+    openModal("add")
+ }
 
   const apiUrl = "/coupon";
   return (
-    <div>
-      <div className="mb-4 w-full flex justify-end">
-        <Button
-          className="px-4 py-2 bg-yellow-600 text-white rounded"
-          onClick={() => openModal("add")}
-        >
-          Add Coupon
-        </Button>
-      </div>
-
-      <Table<Coupon> columns={couponColumns} apiUrl={apiUrl} />
+    <>
+    
+      <Table<Coupon> columns={couponColumns} apiUrl={apiUrl} 
+        addButton={addCoupon}
+        buttonName="Add Coupon"/>
 
       {showModal && (
         <CouponModal
@@ -165,6 +162,6 @@ export default function CouponsPage() {
           </p>
         </BlockModal>
       )}
-    </div>
+    </>
   );
 }

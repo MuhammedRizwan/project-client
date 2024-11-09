@@ -28,7 +28,6 @@ export default function CouponModal({
   coupon,
   mode,
 }: CouponModalProps) {
-  console.log(coupon);
   const {
     register,
     handleSubmit,

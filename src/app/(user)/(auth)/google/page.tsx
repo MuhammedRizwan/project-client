@@ -21,7 +21,7 @@ export default function GoogleLogin() {
   useEffect(() => {
     const login = async () => {
       if (status === "authenticated" && session?.user && !isProcessing) {
-        setIsProcessing(true); 
+        setIsProcessing(true);
         try {
           const response = await google_login({
             email: session.user.email,
@@ -37,19 +37,19 @@ export default function GoogleLogin() {
           }
         } catch (error) {
           console.error("Error during login:", error);
-          router.push("/login"); 
+          router.push("/login");
         } finally {
-          setIsProcessing(false); 
+          setIsProcessing(false);
         }
       } else if (status === "unauthenticated") {
-        router.push("/login"); 
+        router.push("/login");
       }
     };
 
     if (status === "authenticated" && !isProcessing) {
       login();
     }
-  }, []); 
+  }, [isProcessing, router, status]);
 
-  return <div>Logging in...</div>; 
+  return <div>Logging in...</div>;
 }

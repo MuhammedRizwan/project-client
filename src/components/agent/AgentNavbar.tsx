@@ -16,7 +16,7 @@ import { RootState } from "@/store/store";
 
 export default function AgentNavbar() {
   const router = useRouter();
-  const agent = useSelector((state: RootState) => state.agent);
+  const agent = useSelector((state: RootState) => state.agent.agent);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const accessToken = Cookies.get("agentToken");
@@ -31,7 +31,24 @@ export default function AgentNavbar() {
         <Logo />
         <p className="font-bold text-inherit">HEAVEN FINDER</p>
       </NavbarBrand>
-
+      <NavbarContent className="hidden sm:flex gap-8" justify="end">
+        {/* <NavbarItem>
+          <Link color="foreground" href="/agent/Dashboard" aria-current="page">
+            Dashboard
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" href="/agent/travel-packages">
+            Packages
+          </Link>
+        </NavbarItem>
+       
+        <NavbarItem>
+          <Link color="foreground" href="/offer">
+            
+          </Link>
+        </NavbarItem> */}
+      </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
           {accessToken ? (

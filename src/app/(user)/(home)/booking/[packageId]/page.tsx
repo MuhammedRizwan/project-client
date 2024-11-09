@@ -15,42 +15,7 @@ import axios from "axios";
 import { booking, create_order, verify_order } from "@/api/user/bookingservice";
 import { fetch_one_package } from "@/api/user/packageservice";
 import { apply_coupon, fetch_unblocked_coupon } from "@/api/user/couponservice";
-
-export interface BookingData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  address: string;
-  members: { name: string; age: number }[];
-  discountCode: string;
-  start_date: Date;
-  payment_status: "pending"|"paid";
-}
-interface RazorpayOptions {
-  key: string;
-  amount?: number;
-  currency?: string;
-  name?: string;
-  description?: string;
-  image?: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  prefill?: {
-    name?: string;
-    email?: string;
-    contact?: string;
-  };
-  theme?: {
-    color?: string;
-  };
-}
-
-export interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
+import { BookingData, RazorpayOptions, RazorpayResponse } from "@/interfaces/booking";
 
 declare global {
   interface Window {
@@ -125,7 +90,6 @@ export default function BookingForm({
         key: process.env.RAZORPAY_KEY_ID as string,
         order_id: data.id,
         handler: async (response: RazorpayResponse) => {
-          console.log("Payment Response:", response);
           const res= await verify_order( {
             orderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
@@ -201,7 +165,6 @@ export default function BookingForm({
       const response = await apply_coupon(coupon._id,userId,totalPrice,);
       if (response.success) {
         const { discountAmount } = response;
-        console.log(discountAmount);
         setDiscount(Number(discountAmount));
         setCouponCode(coupon.coupon_code);
         setCouponId(coupon._id);

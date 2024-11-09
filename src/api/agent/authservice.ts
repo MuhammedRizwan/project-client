@@ -1,4 +1,4 @@
-import { ForgetPassword } from "@/app/(user)/forget-password/page";
+import { ForgetPassword } from "@/app/(user)/(auth)/forget-password/page";
 import { SignupFormData } from "@/app/agent/signup/page";
 import { LoginFormData } from "@/components/agent/forms/AgentLoginForm";
 import Agent from "@/interfaces/agent";

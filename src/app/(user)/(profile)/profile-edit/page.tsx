@@ -1,8 +1,7 @@
 "use client";
 import { change_password, fetch_user_profile, update_profile, validate_password } from "@/api/user/profileservice";
-import UserProfile, {
-  PasswordChangeFormValues,
-} from "@/components/profile/UserProfile";
+import { PasswordChangeFormValues } from "@/components/profile/form/PasswordChangeFrom";
+import UserProfile from "@/components/profile/UserProfile";
 import User from "@/interfaces/user";
 import { addUser } from "@/store/reducer/userReducer";
 import { RootState } from "@/store/store";
@@ -13,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileEdit() {
   const userData = useSelector((state: RootState) => state.user.user);
-  const [user, setUser] = useState<User | null>(null); // Type User | null
+  const [user, setUser] = useState<User | null>(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -33,8 +32,7 @@ export default function ProfileEdit() {
     };
 
     fetchUserData();
-  }, [userData?._id]); // Only refetch when userData._id changes
-
+  }, [userData?._id]);
   const handleSubmit = async (data: User) => {
     try {
       const response = await update_profile(userData?._id,data);

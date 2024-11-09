@@ -9,7 +9,11 @@ import Table, { TableColumn } from "@/components/Table";
 import Image from "next/image";
 import Category from "@/interfaces/category";
 import { Button } from "@nextui-org/react";
-import { add_category, block_category, edit_category } from "@/api/admin/categoryservice";
+import {
+  add_category,
+  block_category,
+  edit_category,
+} from "@/api/admin/categoryservice";
 import axios from "axios";
 
 export default function Categories() {
@@ -25,6 +29,10 @@ export default function Categories() {
     useState<boolean>(false);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
+  const addCategory = () => {
+    setShowAddCategoryModal(true);
+  };
+
   const handleAddCategory = async (data: CategoryFormValues) => {
     try {
       setButtonLoading(true);
@@ -35,9 +43,9 @@ export default function Categories() {
         toast.success("Category added successfully");
       }
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        toast.error(error.response?.data.message)
-      }else{
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
         toast.error("Failed to add category");
       }
     } finally {
@@ -55,13 +63,11 @@ export default function Categories() {
       // formData.append("description", data.description);
       // if (data.image) formData.append("image", data.image);
 
-      const response = await edit_category(selectedCategory._id,data);
+      const response = await edit_category(selectedCategory._id, data);
       if (response.success) {
         setCategories((prev) =>
           prev.map((cat) =>
-            cat._id === response.category._id
-              ? response.category
-              : cat
+            cat._id === response.category._id ? response.category : cat
           )
         );
         toast.success("Category updated successfully");
@@ -83,7 +89,7 @@ export default function Categories() {
     if (!selectedCategory) return;
     try {
       const newStatus = !selectedCategory.is_block;
-      const response = await block_category( {
+      const response = await block_category({
         id: selectedCategory._id,
         is_block: newStatus,
       });
@@ -91,9 +97,7 @@ export default function Categories() {
       if (response.success) {
         setCategories((prev) =>
           prev.map((cat) =>
-            cat._id === response.category._id
-              ? response.category
-              : cat
+            cat._id === response.category._id ? response.category : cat
           )
         );
         toast.success(response.message);
@@ -150,20 +154,16 @@ export default function Categories() {
     },
   ];
 
-  const apiUrl = "/category"; 
+  const apiUrl = "/category";
 
   return (
-    <div>
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => setShowAddCategoryModal(true)}
-          className="px-4 py-2 bg-yellow-600 text-white rounded"
-        >
-          Add Category
-        </button>
-      </div>
-
-      <Table<Category> columns={columns} apiUrl={apiUrl} />
+    <>
+      <Table<Category>
+        columns={columns}
+        apiUrl={apiUrl}
+        addButton={addCategory}
+        buttonName="Add Category"
+      />
 
       {showModal && selectedCategory && (
         <BlockModal
@@ -198,6 +198,6 @@ export default function Categories() {
           loading={buttonLoading}
         />
       )}
-    </div>
+    </>
   );
 }

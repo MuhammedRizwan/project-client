@@ -15,7 +15,7 @@ export interface ForgetPassword {
 }
 
 export default function ForgotPassword() {
-  useUser()
+  useUser();
   const router = useRouter();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
@@ -117,7 +117,7 @@ export default function ForgotPassword() {
         toast.error("Insert a valid otp");
       }
     } catch (error) {
-      const err=error as Error
+      const err = error as Error;
       toast.error(err.message);
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
@@ -137,12 +137,12 @@ export default function ForgotPassword() {
         router.push("/login");
       }
     } catch (error) {
-       if (axios.isAxiosError(error)) {
-    const errorMessage = error.response?.data || "Couldn't change password";
-    toast.error(errorMessage.message);
-  } else {
-    toast.error("An unknown error occurred");
-  }
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || "Couldn't change password";
+        toast.error(errorMessage.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoader((prev) => ({ ...prev, verify: false }));
     }
@@ -294,22 +294,22 @@ export default function ForgotPassword() {
                 </p>
               )}
             </div>
-            {loader.changepassword && loader.changepassword ? 
+            {loader.changepassword && loader.changepassword ? (
               <Button
-              isLoading
+                isLoading
                 type="submit"
                 className=" bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
               >
                 Change
               </Button>
-             : 
+            ) : (
               <Button
                 type="submit"
                 className=" bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
               >
                 Change
               </Button>
-            }
+            )}
           </form>
         )}
       </div>

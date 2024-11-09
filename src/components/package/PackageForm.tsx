@@ -434,7 +434,6 @@ export default function PackageForm({
     };
     onSubmit(packageFormValues);
   };
-console.log(images)
   return (
     <form onSubmit={handleSubmit(onSubmitHandler)}>
       <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl">
