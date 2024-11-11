@@ -17,13 +17,13 @@ export default function ProtectedRouter({
   useEffect(() => {
     setLoading(true)
     if (agentToken || adminToken) {
-      router.back();
+     return router.back();
     }
     setLoading(false)
   }, [router, agentToken, adminToken]);
 
   if (loading) {
-    return <div><Spinnerpage/></div>; 
+    return <Spinnerpage/>; 
   }
   return !(agentToken || adminToken) ? <>{children}</> : null;
 }

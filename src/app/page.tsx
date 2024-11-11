@@ -1,5 +1,4 @@
 'use client'
-
 import Header from "@/components/home/Header"
 import Hero from "@/components/home/Hero";
 import Packages from "@/components/home/Packages";
@@ -7,22 +6,10 @@ import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/user/Footer";
 import LeftPackage from "@/components/home/LeftPackage";
 import RightPackage from "@/components/home/RightPackage";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Cookies from 'js-cookie'
+import usePublicProtect from "@/hooks/usePublicProtect";
 
 export default function Home() { 
-  const router=useRouter()
-  const agentToken=Cookies.get('agentToken')
-  const adminToken=Cookies.get('adminToken')
-  useEffect(() => {
-    if(agentToken){
-     router.push('/agent/Dashboard')
-    }
-    if(adminToken){
-      router.push('/admin/dashboard')
-    }
-  },[agentToken,adminToken,router])
+  usePublicProtect()
   return (
     <div>
       <Header />

@@ -1,7 +1,12 @@
 
+export interface Activity {
+  time: string;
+  activity: string;
+}
+
 export interface Itinerary {
   day: number;
-  activities: { time: string; activity: string }[];
+  activities: Activity[];
 }
 
 
@@ -23,6 +28,27 @@ export default interface Package  {
   excludedItems: string[];
   description: string;
   departure_place:string
+}
+
+
+
+export interface PackageFormValues {
+  package_name: string;
+  category_id: string;
+  max_person: number;
+  no_of_days: number;
+  no_of_nights: number;
+  destinations: string[];
+  original_price: number;
+  itineraries: {
+    day: number;
+    activities: { time: string; activity: string }[];
+  }[];
+  includedItems: string[];
+  excludedItems: string[];
+  description: string;
+  departure_place: string;
+  images: File[];
 }
 
 
