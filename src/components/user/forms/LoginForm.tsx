@@ -1,6 +1,5 @@
 "use client";
 import { Button, Input } from "@nextui-org/react";
-import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -12,10 +11,10 @@ import { useState } from "react";
 import axios from "axios";
 import { addUser } from "@/store/reducer/userReducer";
 import toast from "react-hot-toast";
-import { SignIn } from "@/lib/auth-action";
 import Cookies from "js-cookie";
-import { login } from "@/api/user/authservice";
+import { login } from "@/config/user/authservice";
 import User from "@/interfaces/user";
+import GoogleLoginButton from "../GoogleLoginButton";
 
 export interface LoginFormData {
   email: string;
@@ -169,16 +168,7 @@ export default function LoginForm() {
         </div>
 
         <div className="flex items-start text-start p- text-sm">
-          <div className="text-slate-500 font-semibold w-1/2 flex">
-            <Button
-              onClick={() => {
-                SignIn();
-              }}
-            >
-              <FcGoogle className="m-1" />
-              Sign in with Google
-            </Button>
-          </div>
+         <GoogleLoginButton />
           <div className="text-slate-500 font-semibold">
             Do not have an account?{" "}
             <Link

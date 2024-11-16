@@ -10,12 +10,10 @@ import {
   CreditCard,
   CheckCircle,
 } from "lucide-react";
-import axios from "axios";
-import toast from "react-hot-toast";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 import Package from "@/interfaces/package";
 import Booking from "@/interfaces/booking";
-import { fetch_user_booking } from "@/api/user/bookingservice";
+import { fetch_user_booking } from "@/config/user/bookingservice";
 
 export default function ThankyouPage({
   params,
@@ -35,11 +33,7 @@ export default function ThankyouPage({
           setPackageData(booking.package_id as Package | null);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error.response?.data.message);
-        } else {
-          toast.error("couldn't fetch package");
-        }
+        console.error(error);
       }
     };
     fetchData();

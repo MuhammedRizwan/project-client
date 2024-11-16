@@ -1,4 +1,4 @@
-import { ForgetPassword } from "@/app/(user)/(auth)/forget-password/page";
+import { ForgetPassword } from "@/app/(user)/forget-password/page";
 import { SignupFormData } from "@/app/agent/signup/page";
 import { LoginFormData } from "@/components/agent/forms/AgentLoginForm";
 import Agent from "@/interfaces/agent";
@@ -73,3 +73,56 @@ export const change_password = async (data: ForgetPassword) => {
     throw error;
   }
 };
+
+export const fetch_agent_profile = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(`/${id}`);
+    return response.data as {
+      success: boolean;
+      message: string;
+      agent: Agent;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const update_agent_profile = async (id: string | undefined, data: Agent) => {
+  try {
+    const response = await axiosInstance.put(`/update/${id}`, data,{
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data as {
+      success: boolean;
+      message: string;
+      agent: Agent;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const validate_agent_password = async (id: string | undefined, data: { oldPassword: string|undefined }) => {
+  try {
+    const response = await axiosInstance.post(`/validate-password/${id}`, data);
+    return response.data as {
+      success: boolean;
+      message: string;
+      agent: Agent;
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+export const change_agent_password = async (id: string | undefined, data: { newPassword: string }) => {
+  try {
+    const response = await axiosInstance.patch(`/change-password/${id}`, data);
+    return response.data as {
+      success: boolean;
+      message: string;
+      agent: Agent;
+    };
+  } catch (error) {
+    throw error;
+  }
+}

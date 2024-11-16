@@ -12,7 +12,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { addAgent } from "@/store/reducer/agentReducer";
 import Cookies from "js-cookie";
-import { agent_login } from "@/api/agent/authservice";
+import { agent_login } from "@/config/agent/authservice";
 
 export interface LoginFormData {
   email: string;

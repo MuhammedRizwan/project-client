@@ -1,7 +1,5 @@
-import { filtered_data } from "@/api/user/authservice";
-import axios from "axios";
+import { filtered_data } from "@/config/user/authservice";
 import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 
 export interface TableColumn<T extends object> {
   key: keyof T;
@@ -30,11 +28,7 @@ const Table = <T extends object>({ columns, apiUrl }: TableProps<T>) => {
         setData(filterData);
         setTotalPages(totalPages);
       } catch (error) {
-        if(axios.isAxiosError(error)){
-          toast.error(error?.response?.data.message)
-      }else{
-          toast.error("something went wrong")
-      }
+       console.error("Error fetching data:", error);
       }
     };
     fetchData();

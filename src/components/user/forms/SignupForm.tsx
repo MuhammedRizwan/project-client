@@ -11,7 +11,7 @@ import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { signin } from "@/api/user/authservice";
+import { signin } from "@/config/user/authservice";
 
 export interface SignupFormData {
   username: string;

@@ -13,9 +13,9 @@ interface UserProfileProps {
 
 export default function UserProfile({ user, onSubmit, passwordSubmit }: UserProfileProps) {
   return (
-    <main className="w-full md:w-3/4 md:pl-8">
+    <main className="w-full">
       <PersonalInfoForm user={user} onSubmit={onSubmit} />
-      <PasswordChangeForm passwordSubmit={passwordSubmit} />
+      <PasswordChangeForm passwordSubmit={passwordSubmit} user={user} />
     </main>
   );
 }

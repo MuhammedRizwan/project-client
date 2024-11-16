@@ -1,5 +1,5 @@
 "use client";
-import { otp_verification, send_otp } from "@/api/agent/authservice";
+import { otp_verification, send_otp } from "@/config/agent/authservice";
 import { addAgent } from "@/store/reducer/agentReducer";
 import { AppDispatch, RootState } from "@/store/store";
 import { Button } from "@nextui-org/react";

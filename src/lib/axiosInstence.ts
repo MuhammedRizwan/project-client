@@ -47,6 +47,7 @@ axiosInstance.interceptors.response.use(
     ) {
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
+      
       toast.error(error.response?.data?.message);
       window.location.replace("/login");
     }

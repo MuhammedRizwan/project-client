@@ -72,3 +72,13 @@ export const fetch_user_booking=async(id:string|undefined)=>{
     throw error
   }
 }
+export const completed_travel=async(id:string|undefined)=>{
+  try {
+    const response = await axiosInstance.get(`/booking/travel-completed/${id}`);
+    return response.data as {
+      success:boolean,message:string,travelHistory:Booking[]
+    }
+  } catch (error) {
+    throw error
+  }
+}

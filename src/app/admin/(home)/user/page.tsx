@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import { block_user } from "@/api/admin/authservice";
+import { block_user } from "@/config/admin/authservice";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import User from "@/interfaces/user";

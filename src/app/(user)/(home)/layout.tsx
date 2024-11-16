@@ -12,9 +12,7 @@ export default function UserLayout({
 }>) {
   return (
     <>
-    <UserWrapper>
-      {children}
-      </UserWrapper>
+      <UserWrapper>{children}</UserWrapper>
     </>
   );
 }

@@ -6,7 +6,7 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import CouponModal from "@/components/coupon/modal";
-import { add_edit_coupon, block_coupon } from "@/api/admin/couponservice";
+import { add_edit_coupon, block_coupon } from "@/config/admin/couponservice";
 
 
 export default function CouponsPage() {

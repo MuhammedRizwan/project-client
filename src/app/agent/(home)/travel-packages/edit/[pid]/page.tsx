@@ -1,15 +1,15 @@
 "use client";
 
-import PackageForm, {
-  PackageFormValues,
-} from "@/components/package/add-edit-form/PackageForm";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import  Category  from "@/interfaces/category";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { edit_package, fetch_agent_one_package } from "@/api/agent/packageservice";
-import { fetch_category } from "@/api/agent/categoryservice";
+import { edit_package, fetch_agent_one_package } from "@/config/agent/packageservice";
+import { fetch_category } from "@/config/agent/categoryservice";
+import { PackageFormValues } from "@/interfaces/package";
+import PackageForm from "@/components/package/add-edit-form/PackageForm";
 
 
 const EditPackagePage = ({ params }: { params: { pid: string } }) => {
@@ -28,11 +28,7 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
           setInitialData(packageData);
         }
       } catch (error) {
-        if(axios.isAxiosError(error)){
-          toast.error(error.response?.data.message)
-        }else{
-          toast.error("couldn't get package")
-        }
+        console.log(error);
       }
     };
 
@@ -42,11 +38,7 @@ const EditPackagePage = ({ params }: { params: { pid: string } }) => {
         const { categories: categoriesData } = response;
         setCategories(categoriesData);
       } catch (error) {
-        if(axios.isAxiosError(error)){
-          toast.error(error.response?.data.message)
-        }else{
-          toast.error("couldn't get category")
-        }
+        console.log(error);
       }
     };
 

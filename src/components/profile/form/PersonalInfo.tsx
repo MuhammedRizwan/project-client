@@ -23,11 +23,12 @@ export default function PersonalInfoForm({
   user,
   onSubmit,
 }: PersonalInfoFormProps) {
-  const [image, setImage] = useState<string>(user.profile_picture || "");
+  const [image, setImage] = useState<string|File>(user.profile_picture || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<User>({
@@ -35,12 +36,13 @@ export default function PersonalInfoForm({
   });
 
   const onSubmitPersonalInfo: SubmitHandler<User> = (data) => {
-    onSubmit({ ...data, profile_picture: image });
+    onSubmit(data);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setValue("profile_picture", file);
       const reader = new FileReader();
       reader.onloadend = () => setImage(reader.result as string);
       reader.readAsDataURL(file);
@@ -53,10 +55,10 @@ export default function PersonalInfoForm({
       className="bg-white rounded-lg shadow p-6 mb-8"
     >
       <div className="relative flex flex-col items-center mb-6">
-        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200">
+        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 flex items-stretch justify-center">
           {image ? (
             <Image
-              src={image}
+              src={ typeof image === "string" ? image : URL.createObjectURL(image)}
               alt="Profile"
               className="object-cover w-full h-full"
             />
@@ -68,7 +70,7 @@ export default function PersonalInfoForm({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md"
+            className="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md z-10"
           >
             <Edit size={20} className="text-gray-600" />
           </button>
@@ -99,9 +101,8 @@ export default function PersonalInfoForm({
             })}
             label="First Name"
             placeholder="Enter your first name"
-            isInvalid={!!errors.username}
           />
-          <span className="text-xs text-red-500 h-[20px]">
+          <span className="text-xs text-red-500 h-[20px] ms-2">
             {errors.username?.message || " "}
           </span>
         </div>
@@ -121,9 +122,8 @@ export default function PersonalInfoForm({
             })}
             label="Last Name"
             placeholder="Enter your last name"
-            isInvalid={!!errors.lastname}
           />
-          <span className="text-xs text-red-500 h-[20px]">
+          <span className="text-xs text-red-500 h-[20px] ms-2">
             {errors.lastname?.message || " "}
           </span>
         </div>
@@ -138,40 +138,40 @@ export default function PersonalInfoForm({
             })}
             label="Email Address"
             placeholder="Enter your email address"
-            isInvalid={!!errors.email}
             className="md:col-span-2"
           />
-             <span className="text-xs text-red-500 h-[20px]">
+          <span className="text-xs text-red-500 h-[20px] ms-2">
             {errors.email?.message || " "}
           </span>
         </div>
-        <div className="flex items-center space-x-2">
-          <Dropdown>
-            <DropdownTrigger>
-              <Button variant="bordered" className="w-20 h-14">
-                +91 <ChevronDown size={16} />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Country codes">
-              <DropdownItem key="1">+1</DropdownItem>
-              <DropdownItem key="44">+44</DropdownItem>
-              <DropdownItem key="91">+91</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Input
-            {...register("phone", {
-              required: "Phone number is required",
-              pattern: {
-                value: /^\d{10}$/,
-                message: "Phone number must be exactly 10 digits",
-              },
-            })}
-            label="Phone Number"
-            placeholder="Enter your phone number"
-            isInvalid={!!errors.phone}
-            className="flex-grow"
-          />
-           <span className="text-xs text-red-500 h-[20px]">
+        <div>
+          <div className="flex items-center space-x-2">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered" className="w-20 h-14">
+                  +91 <ChevronDown size={16} />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Country codes">
+                <DropdownItem key="1">+1</DropdownItem>
+                <DropdownItem key="44">+44</DropdownItem>
+                <DropdownItem key="91">+91</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Input
+              {...register("phone", {
+                required: "Phone number is required",
+                pattern: {
+                  value: /^\d{10}$/,
+                  message: "Phone number must be exactly 10 digits",
+                },
+              })}
+              label="Phone Number"
+              placeholder="Enter your phone number"
+              className="flex-grow"
+            />
+          </div>
+          <span className="text-xs text-red-500 h-[20px] ms-2">
             {errors.phone?.message || " "}
           </span>
         </div>
@@ -192,7 +192,7 @@ export default function PersonalInfoForm({
             isInvalid={!!errors.address}
             className="md:col-span-2"
           />
-            <span className="text-xs text-red-500 h-[20px]">
+          <span className="text-xs text-red-500 h-[20px] ms-2">
             {errors.address?.message || " "}
           </span>
         </div>

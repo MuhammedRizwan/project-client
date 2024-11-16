@@ -11,7 +11,7 @@ import {
   change_booking_status,
   change_Travel_status,
   fetch_one_booking,
-} from "@/api/agent/bookingservice";
+} from "@/config/agent/bookingservice";
 import {
   Button,
   Modal,
@@ -66,11 +66,7 @@ export default function BookingDetails({
         setNewBookingStatus(booking.booking_status);
         setNewTravelStatus(booking.travel_status);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error?.response?.data.message);
-        } else {
-          toast.error("Something went wrong");
-        }
+        console.error("Error fetching booking:", error);
       }
     };
     fetchBooking();

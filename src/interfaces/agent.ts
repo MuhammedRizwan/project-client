@@ -10,5 +10,5 @@ export default interface Agent {
     is_verified?: boolean;
     admin_verified:string;
     is_block?: boolean;
-    profile_picture?: string;
+    profile_picture?: string|File;
   }

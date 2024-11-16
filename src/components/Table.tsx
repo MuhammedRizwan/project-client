@@ -3,10 +3,8 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-import { fetch_table_data } from "@/api/admin/authservice";
-import axios from "axios";
+import { fetch_table_data } from "@/config/admin/authservice";
 import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 import SearchInput from "./searchInput";
 
 
@@ -57,11 +55,7 @@ const Table = <T extends object>({
         setData(filterData);
         setTotalPages(totalPages);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error.response?.data.message);
-        } else {
-          console.error("Error fetching data:", error);
-        }
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();

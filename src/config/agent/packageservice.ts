@@ -1,5 +1,5 @@
-import { PackageFormValues } from "@/components/package/add-edit-form/PackageForm";
-import Package from "@/interfaces/package";
+
+import Package, { PackageFormValues } from "@/interfaces/package";
 import axiosInstance from "@/lib/axiosInstence";
 
 export const fetch_agent_package = async (

@@ -1,6 +1,6 @@
 "use client";
-import { fetch_category } from "@/api/agent/categoryservice";
-import { fetch_package } from "@/api/user/packageservice";
+import { fetch_category } from "@/config/agent/categoryservice";
+import { fetch_package } from "@/config/user/packageservice";
 import Header from "@/components/home/Header";
 import PackageCard from "@/components/package/PackageCard";
 import SearchInput from "@/components/searchInput";
@@ -8,10 +8,8 @@ import Footer from "@/components/user/Footer";
 import Category from "@/interfaces/category";
 import Package from "@/interfaces/package";
 import { Pagination, Select, SelectItem } from "@nextui-org/react";
-import axios from "axios";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 export default function Component() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -34,7 +32,9 @@ export default function Component() {
           currentPage,
           rowsPerPage,
           categoryId,
-          days,startRange,endRange
+          days,
+          startRange,
+          endRange
         );
         if (response.success) {
           const { packages, totalPages } = response;
@@ -42,11 +42,7 @@ export default function Component() {
           setTotalPages(totalPages);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error.response?.data.message);
-        } else {
-          toast.error("Failed to fetch packages");
-        }
+        console.log(error);
       }
     };
     fetchData();
@@ -60,16 +56,15 @@ export default function Component() {
           setCategory(response.categories);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error.response?.data.message);
-        } else {
-          toast.error("Failed to fetch packages");
-        }
+        console.log(error);
       }
     };
     fetchCategory();
   }, []);
   const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value === "all") {
+      setCategoryId("");
+    }
     setCategoryId(event.target.value);
   };
   const handlePriceRangeChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -79,20 +74,24 @@ export default function Component() {
     if (matches && matches.length >= 2) {
       setStartRange(matches[0]);
       setEndRange(matches[1]);
-    }else if(matches && matches.length === 1){
+    } else if (matches && matches.length === 1) {
       setStartRange(matches[0]);
+    } else {
+      setStartRange("");
+      setEndRange("");
     }
   };
   const handleDaysChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value === "all") {
+      setDays("");
+    }
     setDays(event.target.value);
   };
 
   useEffect(() => {
     const contentInterval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % category.length);
-    }, 10000); // 10 seconds
-
-    // Clean up the interval on component unmount
+    }, 10000); 
     return () => clearInterval(contentInterval);
   }, [category.length]);
   return (
@@ -123,9 +122,9 @@ export default function Component() {
               onChange={handlePriceRangeChange}
             >
               <SelectItem key={""}>All Prices</SelectItem>
-              <SelectItem key={"₹10000 - ₹20000"}>₹10000 - ₹20000</SelectItem>
-              <SelectItem key={"₹20000 - ₹30000"}>₹20000 - ₹30000</SelectItem>
-              <SelectItem key={"₹30000+"}>₹30000+</SelectItem>
+              <SelectItem key={"₹1000 - ₹5000"}>₹1000 - ₹5000</SelectItem>
+              <SelectItem key={"₹6000 - ₹10000"}>₹6000 - ₹10000</SelectItem>
+              <SelectItem key={"₹10001 +"}>₹10001+</SelectItem>
             </Select>
           </div>
           <div className="mb-3">
@@ -148,11 +147,14 @@ export default function Component() {
               labelPlacement="outside"
               onChange={handleCategoryChange}
             >
-              {category.map((cat) => (
-                <SelectItem key={cat._id} className="w-full">
-                  {cat.category_name}
-                </SelectItem>
-              ))}
+              <SelectItem key={""}>All Categories</SelectItem>
+              {
+                category.map((cat) => (
+                  <SelectItem key={cat._id} value={cat._id}>
+                    {cat.category_name}
+                  </SelectItem>
+                )) as unknown as JSX.Element
+              }
             </Select>
           </div>
         </div>

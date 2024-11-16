@@ -1,4 +1,4 @@
-import { apply_coupon, fetch_unblocked_coupon } from "@/api/user/couponservice";
+import { apply_coupon, fetch_unblocked_coupon } from "@/config/user/couponservice";
 import Coupon from "@/interfaces/coupon";
 import { Image, Input } from "@nextui-org/react";
 import axios from "axios";

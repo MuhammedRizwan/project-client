@@ -1,8 +1,8 @@
 "use client";
-import { otp_verification, resend_otp } from "@/api/user/authservice";
+import { otp_verification, resend_otp } from "@/config/user/authservice";
 import { useAppSelector } from "@/store/hooks";
 import { addUser } from "@/store/reducer/userReducer";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ export default function OTPInputs() {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const dispatch = useDispatch<AppDispatch>();
-  const { user} = useAppSelector((state) => state.user);
+  const { user} = useAppSelector((state:RootState) => state.user);
 
   useEffect(() => {
     if (timer > 0) {

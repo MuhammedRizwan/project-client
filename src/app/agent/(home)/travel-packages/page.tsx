@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import PackageTable from "@/components/package/PackageTable";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
-import { fetch_agent_package, block_package } from "@/api/agent/packageservice";
+import { fetch_agent_package, block_package } from "@/config/agent/packageservice";
 import BlockModal from "@/components/modal/blockModal";
 
 export default function Packages() {
@@ -39,12 +39,7 @@ export default function Packages() {
         }
       } catch (error) {
         setError("Error fetching packages");
-        if (axios.isAxiosError(error)) {
-          const errorMessage = error.response?.data || "Fetching Failed";
-          toast.error(errorMessage.message || errorMessage);
-        } else {
-          toast.error("An unknown error occurred");
-        }
+        console.log(error);
       } finally {
         setLoading(false);
       }

@@ -1,22 +1,12 @@
+import User from "@/interfaces/user";
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
 // const api = "http://localhost:5000";
 
-interface Iuser {
-  _id?: string;
-  username?: string;
-  email: string;
-  phone?: string;
-  password: string;
-  friends?: string[];
-  is_verified?: boolean;
-  is_block?: boolean;
-  profile_picture?: string;
-}
 
 const initialState = {
-  user: null as Iuser | null,
+  user: null as User | null,
 };
 
 const userSlice = createSlice({

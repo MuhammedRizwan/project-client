@@ -1,14 +1,12 @@
 "use client";
-import { fetch_agent_booking } from "@/api/agent/bookingservice";
+import { fetch_agent_booking } from "@/config/agent/bookingservice";
 import { BookingCard } from "@/components/booking/BookingCard";
 import SearchInput from "@/components/searchInput";
 import Booking from "@/interfaces/booking";
 import { RootState } from "@/store/store";
 import { Pagination } from "@nextui-org/react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 export default function BookingByPackages({
@@ -39,11 +37,7 @@ export default function BookingByPackages({
           setTotalPages(totalPages);
         }
       } catch (error) {
-        toast.error(
-          axios.isAxiosError(error)
-            ? error.response?.data.message
-            : "Failed to fetch bookings"
-        );
+       console.log(error)
       }
     };
     fetchBookings();

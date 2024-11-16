@@ -8,8 +8,8 @@ import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
 import Script from "next/script";
 import { Button } from "@nextui-org/react";
-import { booking, create_order, verify_order } from "@/api/user/bookingservice";
-import { fetch_one_package } from "@/api/user/packageservice";
+import { booking, create_order, verify_order } from "@/config/user/bookingservice";
+import { fetch_one_package } from "@/config/user/packageservice";
 import {
   BookingData,
   RazorpayOptions,

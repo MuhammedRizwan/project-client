@@ -284,6 +284,7 @@ export default function BookingFormUser({packageData, members, setMembers, setTo
                 <input
                   type="date"
                   id="startDate"
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full p-2 border rounded-md"
                   {...register("start_date", {
                     required: "Start date is required",

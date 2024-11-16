@@ -1,5 +1,6 @@
 "use client";
-import { change_password, send_otp } from "@/api/agent/authservice";
+
+import { change_password, send_otp } from "@/config/agent/authservice";
 import useAgent from "@/hooks/useAgent";
 import { Button } from "@nextui-org/react";
 import axios from "axios";

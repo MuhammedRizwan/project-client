@@ -1,62 +1,160 @@
-import { User, Sun, Moon } from 'lucide-react'
-import { Button, Image } from '@nextui-org/react';
+'use client'
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import Booking from "@/interfaces/booking";
+import { user_booking, cancel_booking } from "@/config/user/bookingservice";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { BookingCard } from "@/components/booking/BookingCard";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Radio, RadioGroup, Textarea } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
-interface BookedTrip {
-  destination: string;
-  image: string;
-  persons: number;
-  days: number;
-  nights: number;
-  date: string;
-}
+const defaultReasons = [
+  "Change of plans",
+  "Found a better deal",
+  "Emergency situation",
+  "Unsatisfactory service",
+  "Other (please specify)"
+]
+export default function TravelBookings() {
+  const router=useRouter()
+  const user = useSelector((state: RootState) => state.user.user);
+  const [travelHistory, setTravelHistory] = useState<Booking[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [cancellationReason, setCancellationReason] = useState("")
+  const [selectedReason, setSelectedReason] = useState("")
 
-const bookedTrip: BookedTrip = {
-  destination: "Brazil, Iguazu waterfall",
-  image: "/placeholder.svg?height=200&width=300",
-  persons: 2,
-  days: 2,
-  nights: 1,
-  date: "30-11-2024"
-}
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await user_booking(user?._id);
+        if (response.success) {
+          setTravelHistory(response.travelHistory);
+        }
+      } catch (error) {
+       console.log(error);
+      }
+    };
+    fetchBookings();
+  }, [user]);
 
-export default function BookedTrip() {
+  const handleCancelClick = (booking: Booking) => {
+    setSelectedBooking(booking)
+    setIsModalOpen(true)
+    setSelectedReason("")
+    setCancellationReason("")
+  }
+
+  const confirmCancellation = async () => {
+    if (!selectedBooking) return
+    const finalReason = selectedReason === "Other (please specify)" ? cancellationReason : selectedReason
+
+    if (!finalReason.trim()) {
+      toast.error("Please provide a reason for cancellation")
+      return
+    }
+    try {
+      const response = await cancel_booking(selectedBooking._id, {
+        booking_status: "canceled",
+        cancellation_reason: finalReason
+      });
+      if (response.success) {
+        setTravelHistory((prev) =>
+          prev.map((b) =>
+            b._id === selectedBooking._id
+              ? {
+                  ...b,
+                  booking_status: "canceled",
+                  travel_status: "canceled",
+                  payment_status: "refunded",
+                }
+              : b
+          )
+        );
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      toast.error(
+        axios.isAxiosError(error)
+          ? error.response?.data.message
+          : "Failed to cancel booking"
+      );
+    }
+  };
+  const onviewDetails=(booking:Booking)=>{
+    router.push(`/booked/${booking._id}`)
+  }
+
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6">Booked</h2>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="flex">
-          <div className="w-1/3">
-            <Image
-              src={bookedTrip.image}
-              alt={bookedTrip.destination}
-              width={300}
-              height={200}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div className="w-2/3 p-4">
-            <h3 className="text-xl font-semibold mb-2">{bookedTrip.destination}</h3>
-            <div className="flex items-center space-x-4 text-gray-600 mb-2">
-              <div className="flex items-center">
-                <User className="w-4 h-4 mr-1" />
-                <span>{bookedTrip.persons} Person</span>
-              </div>
-              <div className="flex items-center">
-                <Sun className="w-4 h-4 mr-1" />
-                <span>{bookedTrip.days} Day</span>
-              </div>
-              <div className="flex items-center">
-                <Moon className="w-4 h-4 mr-1" />
-                <span>{bookedTrip.nights} Night</span>
-              </div>
-            </div>
-            <p className="text-gray-500 mb-4">Date: {bookedTrip.date}</p>
-            <Button color="secondary" className="bg-sky-400 hover:bg-sky-500 text-white">
-              Details
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div className="w-full h-full bg-white rounded-lg shadow-lg mx-2 px-3">
+      <h1 className="text-2xl font-bold mb-5 text-center">
+        Travel Packages from Bookings
+      </h1>
+      {travelHistory.length > 0 ? (
+        travelHistory.map((booking) => (
+          <BookingCard
+            key={booking._id}
+            booking={booking}
+            onCancel={handleCancelClick}
+            onViewDetails={onviewDetails}
+          />
+        ))
+      ) : (
+        <p>No Packages Found</p>
+      )}
+     <Modal 
+         isOpen={isModalOpen} 
+         onClose={() => {
+           setIsModalOpen(false)
+           setSelectedReason("")
+           setCancellationReason("")
+         }}
+         size="md"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Cancel Booking</ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to cancel this booking?</p>
+                <RadioGroup
+                  label="Reason for cancellation"
+                  value={selectedReason}
+                  onValueChange={setSelectedReason}
+                >
+                  {defaultReasons.map((reason) => (
+                    <Radio key={reason} value={reason}>{reason}</Radio>
+                  ))}
+                </RadioGroup>
+                {selectedReason === "Other (please specify)" && (
+                  <Textarea
+                    label="Please specify your reason"
+                    placeholder="Enter your reason for cancellation"
+                    value={cancellationReason}
+                    onChange={(e) => setCancellationReason(e.target.value)}
+                    minRows={2}
+                    maxRows={4}
+                  />
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button 
+                  color="primary" 
+                  onPress={confirmCancellation}
+                  isDisabled={!selectedReason || (selectedReason === "Other (please specify)" && !cancellationReason.trim())}
+                >
+                  Confirm Cancellation
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
-  )
+  );
 }

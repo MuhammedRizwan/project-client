@@ -11,7 +11,7 @@ import axios from "axios";
 import { addAdmin } from "@/store/reducer/adminReducer";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
-import { admin_login } from "@/api/admin/authservice";
+import { admin_login } from "@/config/admin/authservice";
 
 export interface LoginFormData {
   email: string;

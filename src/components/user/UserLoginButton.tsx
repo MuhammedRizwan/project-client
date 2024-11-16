@@ -7,7 +7,7 @@ import {
   DropdownTrigger,
   User,
 } from "@nextui-org/react";
-import { useSession, signOut as nextAuthSignOut } from "next-auth/react";
+import { signOut as nextAuthSignOut } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/store/reducer/userReducer";
@@ -16,19 +16,15 @@ import { RootState } from "@/store/store";
 
 export default function UserLoginButton() {
   const router = useRouter();
-  const userData = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user);
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const user = session?.user;
   const accessToken = Cookies.get("accessToken");
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    if (user) {
-      nextAuthSignOut({
-        callbackUrl: "/login",
-      });
-    } else if (accessToken) {
-      dispatch(logout());
+  const handleLogout = async () => {
+    dispatch(logout());
+    if (user?.google_authenticated) {
+      await nextAuthSignOut({ callbackUrl: "/login" });
+    } else {
       router.push("/login");
     }
   };
@@ -37,16 +33,29 @@ export default function UserLoginButton() {
       {accessToken || user ? (
         <Dropdown placement="bottom-start">
           <DropdownTrigger>
-            <User
+           {user?.profile_picture && typeof user?.profile_picture === "string" ?(
+              <User
               as="button"
               avatarProps={{
                 isBordered: true,
-                src: userData?.profile_picture || "https://images.unsplash.com/broken",
+                src:  user?.profile_picture ,
               }}
               className="transition-transform"
-              description={userData?.email || ""}
-              name={userData?.username || ""}
+              description={user?.email || ""}
+              name={user?.username || ""}
             />
+           ):(
+            <User
+            as="button"
+            avatarProps={{
+              isBordered: true,
+              src: "" ,
+            }}
+            className="transition-transform"
+            description={user?.email || ""}
+            name={user?.username || ""}
+          />
+           )}
           </DropdownTrigger>
           <DropdownMenu aria-label="User Actions" variant="flat">
             <DropdownItem key="profile" color="warning" onClick={()=>router.push("/profile-edit")}>profile</DropdownItem>

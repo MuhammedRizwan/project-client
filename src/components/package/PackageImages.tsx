@@ -1,31 +1,31 @@
-'use client'
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import { Card, CardBody, CardFooter, Button } from "@nextui-org/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Package from "@/interfaces/package";
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { Card, CardBody, CardFooter, Button } from "@nextui-org/react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import Package from '@/interfaces/package'
-
-
-
-export default function PackageImages({ packageData }: { packageData: Package|null }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
+export default function PackageImages({
+  packageData,
+}: {
+  packageData: Package | null;
+}) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   if (!packageData) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === packageData.images.length - 1 ? 0 : prevIndex + 1
-    )
-  }
+    );
+  };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? packageData.images.length - 1 : prevIndex - 1
-    )
-  }
+    );
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -34,7 +34,9 @@ export default function PackageImages({ packageData }: { packageData: Package|nu
           <div className="relative">
             <Image
               src={packageData.images[currentImageIndex]}
-              alt={`${packageData.destinations.join(", ")} - Image ${currentImageIndex + 1}`}
+              alt={`${packageData.destinations.join(", ")} - Image ${
+                currentImageIndex + 1
+              }`}
               width={1200}
               height={600}
               className="w-full h-[400px] md:h-[500px] object-cover"
@@ -60,7 +62,7 @@ export default function PackageImages({ packageData }: { packageData: Package|nu
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full ${
-                    index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                    index === currentImageIndex ? "bg-white" : "bg-white/50"
                   }`}
                 />
               ))}
@@ -72,12 +74,10 @@ export default function PackageImages({ packageData }: { packageData: Package|nu
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
               {packageData.destinations.join(", ")}
             </h2>
-            <p className="text-gray-700 mb-6">
-              {packageData.description}
-            </p>
+            <p className="text-gray-700 mb-6">{packageData.description}</p>
           </div>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

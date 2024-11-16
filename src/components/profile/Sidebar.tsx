@@ -57,19 +57,29 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         <aside className="w-full md:w-1/4 mb-8 md:mb-0">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center mb-6">
+             {user && typeof user?.profile_picture === "string"?(
+               <Image
+               src={user.profile_picture}
+               alt="User Avatar"
+               width={64}
+               height={64}
+               className="rounded-full mr-4"
+             />
+             ):(
               <Image
-                src={user?.profile_picture}
-                alt="User Avatar"
-                width={64}
-                height={64}
-                className="rounded-full mr-4"
-              />
+              src=''
+              alt="User Avatar"
+              width={64}
+              height={64}
+              className="rounded-full mr-4"
+            />
+             )}
               <h2 className="text-xl font-semibold">{user?.username}</h2>
             </div>
             <nav>
               <ul>
                 {sidebarItems.map((item, index) => (
-                  <li key={index} className="mb-2">
+                  <li key={index} className="mb-2 cursor-pointer">
                     <p
                       onClick={item.onClick}
                       className={`block py-2 px-4 rounded ${

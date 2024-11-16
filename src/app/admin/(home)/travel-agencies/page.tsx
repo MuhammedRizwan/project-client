@@ -1,5 +1,5 @@
 "use client";
-import { block_agent } from "@/api/admin/authservice";
+import { block_agent } from "@/config/admin/authservice";
 import BlockModal from "@/components/modal/blockModal";
 import Table from "@/components/Table";
 import Agent from "@/interfaces/agent";

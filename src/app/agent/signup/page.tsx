@@ -13,7 +13,7 @@ import Image from "next/image";
 import { addAgent } from "@/store/reducer/agentReducer";
 import toast from "react-hot-toast";
 import useAgent from "@/hooks/useAgent";
-import { signup } from "@/api/agent/authservice";
+import { signup } from "@/config/agent/authservice";
 
 export interface SignupFormData {
   username: string;

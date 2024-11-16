@@ -1,6 +1,6 @@
 'use client'
-import { fetch_category } from "@/api/agent/categoryservice";
-import { add_package } from "@/api/agent/packageservice";
+import { fetch_category } from "@/config/agent/categoryservice";
+import { add_package } from "@/config/agent/packageservice";
 import PackageForm from "@/components/package/add-edit-form/PackageForm";
 import  Agent  from "@/interfaces/agent";
 import Category from "@/interfaces/category";
@@ -46,13 +46,7 @@ const AddPackagePage = () => {
         const {categories}=response
         setCategories(categories)
       }catch(error){
-        if (axios.isAxiosError(error)) {
-          const errorMessage =
-            error.response?.data?.message || "Failed to add category";
-          toast.error(errorMessage);
-        } else {
-          toast.error("An unknown error occurred");
-        }
+        console.log(error)
       }
     }
     fetchCategories()

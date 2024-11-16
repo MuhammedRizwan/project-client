@@ -16,7 +16,9 @@ export const fetch_user_profile = async (id: string | undefined) => {
 
 export const update_profile = async (id: string | undefined, data: User) => {
   try {
-    const response = await axiosInstance.put(`/update-profile/${id}`, data);
+    const response = await axiosInstance.put(`/update-profile/${id}`, data,{
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data as {
       success: boolean;
       message: string;
@@ -29,7 +31,7 @@ export const update_profile = async (id: string | undefined, data: User) => {
 
 export const validate_password = async (
   id: string | undefined,
-  data: { oldPassword: string }
+  data: { oldPassword: string|undefined }
 ) => {
   try {
     const response = await axiosInstance.post(`/validate-password/${id}`, {

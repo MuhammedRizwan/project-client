@@ -13,7 +13,7 @@ import {
   add_category,
   block_category,
   edit_category,
-} from "@/api/admin/categoryservice";
+} from "@/config/admin/categoryservice";
 import axios from "axios";
 
 export default function Categories() {

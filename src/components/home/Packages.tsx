@@ -2,10 +2,8 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import axios from 'axios'
 import  Category  from '@/interfaces/category'
-import toast from 'react-hot-toast'
-import { fetch_category } from '@/api/agent/categoryservice'
+import { fetch_category } from '@/config/agent/categoryservice'
 
 
 
@@ -22,12 +20,7 @@ export default function Packages() {
         }
     
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data || "Action Failed";
-        toast.error(errorMessage.message);
-      } else {
-        toast.error("An unknown error occurred");
-      }
+      console.log(error);
     }
   }
   fetchCategory()

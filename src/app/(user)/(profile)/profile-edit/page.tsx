@@ -1,5 +1,5 @@
 "use client";
-import { change_password, fetch_user_profile, update_profile, validate_password } from "@/api/user/profileservice";
+import { change_password, fetch_user_profile, update_profile, validate_password } from "@/config/user/profileservice";
 import { PasswordChangeFormValues } from "@/components/profile/form/PasswordChangeFrom";
 import UserProfile from "@/components/profile/UserProfile";
 import User from "@/interfaces/user";
@@ -23,11 +23,7 @@ export default function ProfileEdit() {
           setUser(response.user);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error.response?.data.message || "Failed to fetch profile");
-        }else{
-          toast.error("couldn't fetch user data")
-        }
+       console.log(error);
       }
     };
 
@@ -59,7 +55,8 @@ export default function ProfileEdit() {
 
       const validateResponse = await validate_password(userData?._id,{ oldPassword: data.oldPassword });
 
-      if (validateResponse.success) {
+      if (!validateResponse.success) {
+
         toast.error("Old password is incorrect");
         return;
       }

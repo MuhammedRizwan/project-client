@@ -1,6 +1,7 @@
 import Agent from "./agent";
 import Package from "./package";
 import User from "./user";
+import Review from "./review";
 
 export default interface Booking {
   _id: string;
@@ -17,24 +18,25 @@ export default interface Booking {
   members: { name: string; age: number }[];
   payment_amount: number;
   payment_status: "pending" | "paid" | "refunded";
-  booking_status:  "pending" | "confirmed" | "canceled";
+  booking_status: "pending" | "confirmed" | "canceled";
   travel_status: "pending" | "on-going" | "completed" | "canceled";
-  start_date: string; // Use ISO string for date handling
-  booking_date: string; // ISO string for booking timestamp
+  start_date: string; 
+  booking_date: string; 
+  cancellation_reason?: string;
+  review_id?: string | Review;
 }
-
 
 export interface BookingPaload {
   bill_details: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      phone: string;
-      address: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    address: string;
   };
   members: {
-      name: string;
-      age: string;
+    name: string;
+    age: string;
   }[];
   package_id: string;
   user_id: string | undefined;
@@ -52,7 +54,7 @@ export interface BookingData {
   members: { name: string; age: number }[];
   discountCode: string;
   start_date: Date;
-  payment_status: "pending"|"paid";
+  payment_status: "pending" | "paid";
 }
 export interface RazorpayOptions {
   key: string;

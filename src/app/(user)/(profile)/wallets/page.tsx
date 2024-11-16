@@ -17,9 +17,7 @@ import {
 import { ArrowUpRight, ArrowDownLeft, Plus } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { fetch_wallet } from '@/api/user/walletservice';
+import { fetch_wallet } from '@/config/user/walletservice';
 import { Transaction } from '@/interfaces/wallet';
 
 export default function WalletPage() {
@@ -41,11 +39,7 @@ export default function WalletPage() {
           }
         }
       } catch (error) {
-        if(axios.isAxiosError(error)){
-          toast.error(error.response?.data.message)
-        }else{
-          toast.error("could get wallet data ")
-        }
+        console.error('Error fetching wallet:', error);
       }
     };
     fetchWallet();
