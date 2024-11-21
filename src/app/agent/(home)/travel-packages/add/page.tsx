@@ -52,14 +52,12 @@ const AddPackagePage = () => {
     fetchCategories()
   },[router])
   return (
-    <div>
       <PackageForm 
         initialData={undefined}
         categories={categories}
         onSubmit={handleAddPackage}
         formTitle="Add Package"
       />
-    </div>
   );
 };
 

@@ -1,22 +1,26 @@
 "use client";
-import BlockModal from "@/components/modal/blockModal";
+ import BlockModal from "@/components/modal/blockModal";
 import Table, { TableColumn } from "@/components/Table";
+import { block_offer } from "@/config/agent/offerservice";
 import Offer from "@/interfaces/offer";
+import { RootState } from "@/store/store";
+import { Button } from "@mui/joy";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 
-export default function CouponsPage() {
-  const [, setOffer] = useState<Offer[]>([]);
-  const [showModal, setShowModal] = useState<boolean>(false);
+export default function OfferPage() {
+    const router=useRouter();
+    const agent = useSelector((state: RootState) => state.agent.agent);
   const [showBlockModal, setShowBlockModal] = useState<boolean>(false);
-  const [selectedCoupon, setSelectedCoupon] = useState<Offer | null>(null);
-  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const offerColumns: TableColumn<Offer>[] = [
-    { key: "package_id", label: "Package Name" },
+    { key: "offer_name", label: "Offer Name" },
     { key: "percentage", label: "Percentage" },
-    { key: "max_amount", label: "Max Amount" },
+    { key: "max_offer", label: "Max Offer" },
     {
       key: "valid_upto",
       label: "Valid Upto",
@@ -49,7 +53,7 @@ export default function CouponsPage() {
       label: "Edit",
       render: (offer: Offer) => (
         <button
-          onClick={() => openModal("edit", offer)}
+          onClick={() => router.push(`/agent/offers/${offer._id}`)}
           className="px-4 py-2 bg-blue-500 text-white rounded w-20"
         >
           Edit
@@ -57,66 +61,25 @@ export default function CouponsPage() {
       ),
     },
   ];
-  const openModal = (mode: "add" | "edit", offer?: Offer) => {
-    setSelectedCoupon(offer || null);
-    setModalMode(mode);
-    setShowModal(true);
-  };
+
   const handleBlockClick = (offer: Offer) => {
-    setSelectedCoupon(offer);
+    setSelectedOffer(offer);
     setShowBlockModal(true);
   };
 
-  const BlockCoupon = async () => {
+  const Blockoffer = async () => {
     try {
-      const response = await block_coupon(selectedCoupon?._id,{is_active: !selectedCoupon?.is_active});
+      const response = await block_offer(selectedOffer?._id,{is_active: !selectedOffer?.is_active});
       if (response.success) {
-        const { offer } = response;
-        setOffer((prevOffer) =>
-          prevOffer.map((offer) =>
-            offer._id === offer._id ? offer : offer
-          )
-        );
+        toast.success(response.offer?.is_active ? "Offer blocked" : "Offer unblocked");
+       
       }
     } catch (error) {
-      handleAxiosError(error, "Error updating coupon");
+      handleAxiosError(error, "Error updating offer");
     } finally {
       setShowBlockModal(false);
     }
   };
-
- 
-
-  const handleCouponSubmit = async (data: Offer) => {
-    try {
-      const url =
-        modalMode === "add"
-          ? "/coupon/create"
-          : `/coupon/edit/${selectedCoupon?._id}`;
-      const method = modalMode === "add" ? "post" : "put";
-
-      const response = await add_edit_coupon(url, method, data );
-      if (response.success && response.message =="Coupon Created") {
-        const { offerData } = response;
-        setOffer((prevOffer) => [...prevOffer, offerData]);
-        setShowModal(false);
-        toast.success(`Coupon added successfully`);
-      }
-      if (response.success && response.message=="Coupon Edited") {
-        const { offerData } = response;
-        setOffer((prevOffer) =>
-          prevOffer.map((offer) =>
-            offer._id === offerData._id ? offerData : offer
-          )
-        );
-        setShowModal(false);
-        toast.success(`Coupon updated successfully`);
-      }
-    } catch (error) {
-      handleAxiosError(error, "Error saving coupon");
-    }
-  };
-
   const handleAxiosError = (error: unknown, defaultMessage: string) => {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.message || "Fetching failed";
@@ -125,38 +88,32 @@ export default function CouponsPage() {
       toast.error(defaultMessage);
     }
   };
-  const addCoupon=()=>{
-    openModal("add")
+
+
+  const addoffer=()=>{
+    router.push("/agent/offers/add");
  }
 
-  const apiUrl = "/offer";
+
+  const apiUrl = `/offer/${agent?._id}`;
   return (
     <>
-    
       <Table<Offer> columns={offerColumns} apiUrl={apiUrl} 
-        addButton={addCoupon}
-        buttonName="Add Coupon"/>
+        addButton={addoffer}
+        buttonName="Add offer"/>
 
-      {showModal && (
-        <CouponModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSubmit={handleCouponSubmit}
-          coupon={selectedCoupon}
-          mode={modalMode}
-        />
-      )}
+     
 
-      {showBlockModal && selectedCoupon && (
+      {showBlockModal && selectedOffer && (
         <BlockModal
           title="Confirm Block/Unblock"
           onClose={() => setShowBlockModal(false)}
-          onConfirm={BlockCoupon}
+          onConfirm={Blockoffer}
         >
           <p>
             Are you sure you want to{" "}
-            {selectedCoupon.is_active ? "block" : "unblock"}{" "}
-            {selectedCoupon.coupon_code}?
+            {selectedOffer.is_active ? "block" : "unblock"}{" "}
+            {selectedOffer.offer_name}?
           </p>
         </BlockModal>
       )}

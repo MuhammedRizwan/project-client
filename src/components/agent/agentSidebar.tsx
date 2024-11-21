@@ -10,7 +10,7 @@ export default function AgentDashboard() {
     { href: "/agent/Dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/agent/profile", label: "Profile", icon: User },
     { href: "/agent/travel-packages", label: "Travel Packages", icon: Package },
-    { href: "/agent/offer", label: "Offers", icon: BookOpen },
+    { href: "/agent/offers", label: "Offers", icon: BookOpen },
     { href: "/admin/notifications", label: "Notifications", icon: Bell },
   ];
 
