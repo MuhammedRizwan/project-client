@@ -11,8 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        navy: '#001f3f',
       },
     },
   },

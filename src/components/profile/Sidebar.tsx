@@ -43,8 +43,13 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       },
       {
         name: "Posts",
-        active:pathname=="/posts"?true:false,
-        onClick: () => Router.push('/posts'),
+        active:pathname=="/user-post"?true:false,
+        onClick: () => Router.push('/user-post'),
+      },
+      {
+        name: "Create Post",
+        active:pathname=="/user-post/add-post"?true:false,
+        onClick: () => Router.push('/user-post/add-post'),
       },
       {
         name: "Logout",

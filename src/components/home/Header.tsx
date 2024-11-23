@@ -21,8 +21,8 @@ export default function Header() {
             <Link href="/agencies" className="text-black hover:text-yellow-300 transition-colors">
               Agencies
             </Link>
-            <Link href="/blog" className="text-black hover:text-yellow-300 transition-colors">
-              Blog
+            <Link href="/post" className="text-black hover:text-yellow-300 transition-colors">
+              Post
             </Link>
             <Link href="/contact" className="text-black hover:text-yellow-300 transition-colors">
               Contact

@@ -90,7 +90,7 @@ export const BookingCard = ({
                 View Details
               </Button>
             )}
-             {typeof booking.review_id ==="object" ? (
+             {addReview && typeof booking.review_id ==="object" ? (
               <Button
                 className="bg-blue-100 text-black px-4 ms-3 py-2 rounded-lg hover:bg-blue-200"
                 onClick={()=>editReview && editReview(booking._id,booking.review_id)}

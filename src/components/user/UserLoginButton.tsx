@@ -62,8 +62,8 @@ export default function UserLoginButton() {
             <DropdownItem key="travel history" color="warning" onClick={()=>router.push("/travel-history")}>travel history</DropdownItem>
             <DropdownItem key="bookings" color="warning" onClick={()=>router.push("/booked")}>my bookings</DropdownItem>
             <DropdownItem key="system">notification</DropdownItem>
-            <DropdownItem key="configurations">friends</DropdownItem>
-            <DropdownItem key="help_and_feedback">my posts</DropdownItem>
+            <DropdownItem key="Chats" color="warning" onClick={()=>router.push("/chat")}>friends</DropdownItem>
+            <DropdownItem key="my posts" color="warning" onClick={()=>router.push("/user-post")}>my posts</DropdownItem>
             <DropdownItem key="logout" color="danger" onClick={handleLogout}>
               Logout
             </DropdownItem>

@@ -59,9 +59,9 @@ export default function Header() {
           <NavbarItem>
             <Link
               className="text-blck text-center hover:font-bold inline-block w-10"
-              href="#"
+              href="/post"
             >
-              BLOG
+              Post
             </Link>
           </NavbarItem>
           <NavbarItem>
