@@ -12,7 +12,7 @@ export default function ChatSidebar() {
           placeholder="Search contacts..." 
           size="sm"
           variant="bordered"
-          className="w-full"
+          className="w-full  bg-white  rounded-lg placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600"
         />
       </div>
       <ScrollShadow className="flex-grow">

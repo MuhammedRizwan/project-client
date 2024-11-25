@@ -10,8 +10,8 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        navy: '#001f3f',
+       colors: {
+        navy: '#001f3f', // Custom navy blue hex code
       },
     },
   },
