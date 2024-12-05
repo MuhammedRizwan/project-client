@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Header from "@/components/user/Navbar";
-import Footer from "@/components/user/Footer";
+// import Footer from "@/components/user/Footer";
 import ProtectedRouter from "@/components/user/protuctedRouter";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function UserLayout({
       <ProtectedRouter>
         <Header />
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </ProtectedRouter>
     </>
   );

@@ -4,8 +4,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import BlockModal from "@/components/modal/blockModal";
 import toast from "react-hot-toast";
-import Image from "next/image";
+
 import { agent_data, block_agent, verify_agent } from "@/config/admin/authservice";
+import { Image } from "@nextui-org/react";
 
 export default function ProfileCard({ params }: { params: { id: string } }) {
   const [agent, setAgent] = useState<Agent | null>(null);

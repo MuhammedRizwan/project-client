@@ -10,6 +10,7 @@ interface SearchInputProps {
 const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [debouncedValue, setDebouncedValue] = useState<string>(searchTerm);
+  
 
 
   useEffect(() => {
