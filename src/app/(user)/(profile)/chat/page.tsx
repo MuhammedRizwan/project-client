@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatBox from "@/components/chat/Chatbox";
 import SimplePeer, { Instance, SignalData } from "simple-peer";
@@ -7,6 +7,7 @@ import VideoCall from "@/components/video/video-call";
 import { getSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useRouter } from "next/navigation";
 
 export interface incominCallInfo {
   isSomeoneCalling: boolean;
@@ -14,6 +15,7 @@ export interface incominCallInfo {
   signalData: SignalData | string;
 }
 export default function ChatPage() {
+  const router = useRouter();
   const socket = getSocket();
   const user = useSelector((state: RootState) => state.user.user);
   const [roomId, setRoomId] = useState<string>("");
@@ -29,6 +31,24 @@ export default function ChatPage() {
   });
   const [isCalling, setIsCalling] = useState<boolean>(false);
   const [isCallModalVisible, setIsCallModalVisible] = useState(false);
+  const [reciever, setReciever] = useState<string | undefined>("");
+
+  const destroyConnection = useCallback(() => {
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+      setIsCallAccepted(false);
+      setIsCalling(false);
+      setStream(undefined);
+      router.refresh();
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const lastChattedRoom = localStorage.getItem("lastChattedRoom");
+    if (lastChattedRoom) {
+      setRoomId(lastChattedRoom); 
+    }
+  }, []);
 
   useEffect(() => {
     navigator.mediaDevices
@@ -37,29 +57,25 @@ export default function ChatPage() {
         setStream(mediaStream);
         if (myVideoRef.current) myVideoRef.current.srcObject = mediaStream;
       })
-      .catch((error) => console.error("Error accessing media devices:", error));
-    // Setup socket listeners
+      .catch((error) => console.log("Error accessing media devices:", error));
+
     socket.on("incomming-video-call", handleIncommingCall);
-    socket.on("video-call-ended", destroyConnection);
 
     return () => {
-      // Cleanup listeners
       socket.off("incomming-video-call", handleIncommingCall);
-      socket.off("video-call-ended", destroyConnection);
     };
   }, [socket]);
 
   const initiateCall = (recieverId: string | undefined) => {
-    // Assign local stream to `myVideoRef`
+    setReciever(recieverId);
+    setIsCalling(true);
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((mediaStream) => {
         setStream(mediaStream);
         if (myVideoRef.current) myVideoRef.current.srcObject = mediaStream;
       })
-      .catch((error) => console.error("Error accessing media devices:", error));
-
-    setIsCalling(true);
+      .catch((error) => console.log("Error accessing media devices:", error));
     if (recieverId) {
       const peer = new SimplePeer({
         initiator: true,
@@ -96,20 +112,19 @@ export default function ChatPage() {
     signalData: SignalData;
   }) => {
     setIncominCallInfo({ isSomeoneCalling: true, from, signalData });
+    setReciever(from);
     setIsCallModalVisible(true);
   };
-  const answerCall = () => {
 
+  const answerCall = () => {
+    setIsCallAccepted(true);
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((mediaStream) => {
         setStream(mediaStream);
         if (myVideoRef.current) myVideoRef.current.srcObject = mediaStream;
       })
-      .catch((error) => console.error("Error accessing media devices:", error));
-
-
-    setIsCallAccepted(true);
+      .catch((error) => console.log("Error accessing media devices:", error));
     const peer = new SimplePeer({
       initiator: false,
       trickle: false,
@@ -132,14 +147,7 @@ export default function ChatPage() {
   };
 
   const endCall = () => {
-    socket.emit("end-video-call", { to: incominCallInfo.from });
     destroyConnection();
-  };
-  const destroyConnection = () => {
-    if (connectionRef.current) {
-      connectionRef.current.destroy();
-      window.location.reload();
-    }
   };
 
   return (
@@ -150,10 +158,16 @@ export default function ChatPage() {
           peerVideoRef={peerVideoRef}
           isCallAccepted={isCallAccepted}
           endCall={endCall}
+          reciever={reciever}
         />
       ) : (
         <>
-          <ChatSidebar onSelectRoom={(id) => setRoomId(id)} />
+          <ChatSidebar
+            onSelectRoom={(id) => {
+              setRoomId(id)
+              localStorage.setItem("lastChattedRoom", id);
+            }}
+          />
           <div className="flex-1">
             {roomId ? (
               <ChatBox

@@ -16,6 +16,7 @@ const userSlice = createSlice({
     logout: (state) => {
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
+      localStorage.removeItem("lastChattedRoom")
       state.user = null;
       
     },
