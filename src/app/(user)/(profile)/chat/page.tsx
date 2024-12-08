@@ -4,10 +4,11 @@ import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatBox from "@/components/chat/Chatbox";
 import SimplePeer, { Instance, SignalData } from "simple-peer";
 import VideoCall from "@/components/video/video-call";
-import { getSocket } from "@/lib/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/components/wrapper/socketwrapper";
+
 
 export interface incominCallInfo {
   isSomeoneCalling: boolean;
@@ -16,7 +17,7 @@ export interface incominCallInfo {
 }
 export default function ChatPage() {
   const router = useRouter();
-  const socket = getSocket();
+  const {socket} = useSocket();
   const user = useSelector((state: RootState) => state.user.user);
   const [roomId, setRoomId] = useState<string>("");
   const myVideoRef = useRef<HTMLVideoElement>(null);
@@ -46,11 +47,12 @@ export default function ChatPage() {
   useEffect(() => {
     const lastChattedRoom = localStorage.getItem("lastChattedRoom");
     if (lastChattedRoom) {
-      setRoomId(lastChattedRoom); 
+      setRoomId(lastChattedRoom);
     }
   }, []);
 
   useEffect(() => {
+    if(!socket)return
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((mediaStream) => {
@@ -67,6 +69,7 @@ export default function ChatPage() {
   }, [socket]);
 
   const initiateCall = (recieverId: string | undefined) => {
+    if(!socket)return
     setReciever(recieverId);
     setIsCalling(true);
     navigator.mediaDevices
@@ -117,6 +120,7 @@ export default function ChatPage() {
   };
 
   const answerCall = () => {
+    if(!socket)return
     setIsCallAccepted(true);
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -164,7 +168,7 @@ export default function ChatPage() {
         <>
           <ChatSidebar
             onSelectRoom={(id) => {
-              setRoomId(id)
+              setRoomId(id);
               localStorage.setItem("lastChattedRoom", id);
             }}
           />

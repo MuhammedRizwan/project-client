@@ -1,58 +1,67 @@
+'use client';
+import {  Card, CardBody } from "@nextui-org/react";
+import { Users, MousePointer, ShoppingCart, ThumbsUp } from "lucide-react";
+import MetricCard from "@/components/dashboard/metric-card";
+import { ReviewProgress } from "@/components/dashboard/review-progress";
+import OrderItem from "@/components/dashboard/order-item";
+// import { ProjectRow } from "@/components/dashboard/project-row";
 
-export default function TravelDashboard() {
-
+export default function Dashboard() {
   return (
-    <div className="flex">
-      
-      <div className="flex-grow">
+    <div className="p-8 max-w-[1600px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* Metric Cards */}
+        <MetricCard icon={Users} color="orange-500" title="Users Active" value="1600" percentage="+55%" />
+        <MetricCard icon={MousePointer} color="zinc-900" title="Click Events" value="357" percentage="+124%" />
+        <MetricCard icon={ShoppingCart} color="zinc-900" title="Purchases" value="2300" percentage="+15%" />
+        <MetricCard icon={ThumbsUp} color="zinc-900" title="Likes" value="940" percentage="+90%" />
+      </div>
 
-        <main className="p-4">
-          {/* Dashboard Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-4 bg-white rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Total Bookings</h3>
-              <p className="text-2xl font-bold">350</p>
-            </div>
-            <div className="p-4 bg-white rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
-              <p className="text-2xl font-bold">$25,000</p>
-            </div>
-            <div className="p-4 bg-white rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">New Customers</h3>
-              <p className="text-2xl font-bold">25</p>
-            </div>
-            <div className="p-4 bg-white rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Pending Payments</h3>
-              <p className="text-2xl font-bold">10</p>
-            </div>
-          </section>
+      <div className="grid lg:grid-cols-[1fr,300px] gap-6">
+        <div className="space-y-6">
+          {/* Reviews Section */}
+          <Card>
+            <CardBody>
+              <h2 className="text-xl font-semibold mb-4">Reviews</h2>
+              <ReviewProgress label="Positive Reviews" percentage={80} />
+              <ReviewProgress label="Neutral Reviews" percentage={17} />
+              <ReviewProgress label="Negative Reviews" percentage={3} />
+            </CardBody>
+          </Card>
 
-          {/* Bookings Section */}
-          <section className="mt-8">
-            <h2 className="text-lg font-bold">Recent Bookings</h2>
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg mt-4">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Destination</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Travel Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-                    <td className="px-6 py-4 whitespace-nowrap">Paris, France</td>
-                    <td className="px-6 py-4 whitespace-nowrap">12th Nov 2024</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-green-500">Confirmed</td>
-                  </tr>
-                  {/* Add more bookings */}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </main>
+          {/* Projects Table */}
+          {/* <Card>
+            <CardBody>
+              <h2 className="text-xl font-semibold">Projects</h2>
+              <Table>
+                <TableHeader>
+                  <TableColumn>COMPANIES</TableColumn>
+                  <TableColumn>MEMBERS</TableColumn>
+                  <TableColumn>BUDGET</TableColumn>
+                  <TableColumn>COMPLETION</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  <ProjectRow
+                    name="Soft UI XD Version"
+                    members={["/placeholder.svg", "/placeholder.svg"]}
+                    budget="$14,000"
+                    completion={60}
+                  />
+                </TableBody>
+              </Table>
+            </CardBody>
+          </Card> */}
+        </div>
+
+        {/* Orders Overview */}
+        <Card>
+          <CardBody>
+            <h2 className="text-xl font-semibold">Orders Overview</h2>
+            <OrderItem icon="$" color="green" description="$2400, Design changes" date="22 DEC 7:20 PM" />
+            <OrderItem icon="!" color="red" description="New order #1832412" date="21 DEC 11 PM" />
+            <OrderItem icon="S" color="blue" description="Server payments for April" date="21 DEC 9:34 PM" />
+          </CardBody>
+        </Card>
       </div>
     </div>
   );

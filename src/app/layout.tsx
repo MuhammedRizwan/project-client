@@ -18,10 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Toaster position="bottom-center" />
-          <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
-            {children}
-          </SessionProvider>
+            <Toaster position="bottom-center" />
+            <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+              {children}
+            </SessionProvider>
         </Providers>
       </body>
     </html>

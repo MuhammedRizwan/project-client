@@ -3,7 +3,7 @@
 import { RefObject, useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { Volume2, VolumeOff,VolumeX, Video, VideoOff, PhoneOff} from "lucide-react";
-import { getSocket } from "@/lib/socket";
+import { useSocket } from "../wrapper/socketwrapper";
 
 interface VideoCallProps {
   myVideoRef: RefObject<HTMLVideoElement>;
@@ -20,12 +20,13 @@ export default function VideoCall({
   endCall,
   reciever
 }: VideoCallProps) {
-  const socket = getSocket();
+  const {socket} = useSocket();
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const [peerAudioMuted,setPeerAudioMuted]=useState(false)
 
   useEffect(() => {
+    if(!socket)return
     socket.on("audio-muted", ({ isMuted }) => {
       setPeerAudioMuted(isMuted)
       if (peerVideoRef.current?.srcObject) {
@@ -55,6 +56,7 @@ export default function VideoCall({
   }, [endCall, peerVideoRef, socket]);
 
   const toggleAudio = () => {
+    if(!socket)return
     if (myVideoRef.current?.srcObject) {
       const stream = myVideoRef.current.srcObject as MediaStream;
       stream.getAudioTracks().forEach((track) => {
@@ -69,6 +71,7 @@ export default function VideoCall({
   };
 
   const toggleVideo = () => {
+    if(!socket)return
     if (myVideoRef.current?.srcObject) {
       const stream = myVideoRef.current.srcObject as MediaStream;
       stream.getVideoTracks().forEach((track) => {
@@ -83,6 +86,7 @@ export default function VideoCall({
   };
 
   const handleEndCall=()=>{
+    if(!socket)return
     socket.emit("end-video-call", { to: reciever});
     endCall()
   }

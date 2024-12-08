@@ -61,7 +61,7 @@ export default function Header() {
               className="text-blck text-center hover:font-bold inline-block w-10"
               href="/post"
             >
-              Post
+              POST
             </Link>
           </NavbarItem>
           <NavbarItem>

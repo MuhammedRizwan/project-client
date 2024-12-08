@@ -38,9 +38,9 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       onClick: () => Router.push("/notification"),
     },
     {
-      name: "Friends",
-      active: pathname == "/friends",
-      onClick: () => Router.push("/friends"),
+      name: "Chat",
+      active: pathname == "/chat",
+      onClick: () => Router.push("/chat"),
     },
     {
       name: "Posts",

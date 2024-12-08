@@ -1,24 +1,19 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import {
-  ScrollShadow,
-  Input,
-  Button,
-  Avatar,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalContent,
-} from "@nextui-org/react";
+import { ScrollShadow, Input, Button, Avatar, Image } from "@nextui-org/react";
 import { Paperclip, Smile, Send, Video } from "lucide-react";
 import { Message } from "@/interfaces/chat";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { getSocket } from "@/lib/socket";
 import User from "@/interfaces/user";
 import { fetch_room_message } from "@/config/user/chatservice";
 import { format } from "date-fns";
+import uploadToCloudinary from "@/lib/cloudinary";
+import toast from "react-hot-toast";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import IncommingCallModal from "../video/incommingcall-modal";
+import { useSocket } from "../wrapper/socketwrapper";
+
 interface chatProps {
   roomId: string;
   initiateCall: (recieverId: string | undefined) => void;
@@ -35,8 +30,10 @@ export default function ChatBox({
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [reciever, setReciever] = useState<User | null>(null);
-  const socket = getSocket();
+  const {socket} = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -44,12 +41,12 @@ export default function ChatBox({
     }
   };
   useEffect(() => {
-    if (roomId && user) {
-      socket.emit("joined-room", roomId, user._id);
+    if (roomId && socket) {
+      socket.emit("joined-room", roomId);
       setMessages([]);
     }
     const fetchRecieverData = async () => {
-      const recieverUser = await fetch_room_message(roomId);
+      const recieverUser = await fetch_room_message(roomId,user?._id);
       if (recieverUser.success) {
         const { participants, messages } = recieverUser.room;
         const filteredReceiver = participants.find(
@@ -61,9 +58,10 @@ export default function ChatBox({
       }
     };
     fetchRecieverData();
-  }, [roomId, socket, user]);
+  }, [roomId, socket, user?._id]);
 
   useEffect(() => {
+    if(!socket)return
     socket.on("new-message", (message: Message) => {
       setMessages((prev) => [...prev, message]);
     });
@@ -78,6 +76,7 @@ export default function ChatBox({
   }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
+    if(!socket)return
     e.preventDefault();
     if (newMessage.trim() === "") return;
 
@@ -85,12 +84,44 @@ export default function ChatBox({
       senderId: user?._id,
       message: newMessage,
       message_time: new Date(),
+      message_type: "text",
     };
 
     socket.emit("message", { ...message, roomId });
     setNewMessage("");
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!socket)return
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error(
+        "Invalid file type. Please upload an image in JPEG, PNG, GIF, or WEBP format."
+      );
+      return;
+    }
+    const url = await uploadToCloudinary(file);
+    const message: Message = {
+      senderId: user?._id,
+      message: url,
+      message_time: new Date(),
+      message_type: "image",
+    };
+
+    socket.emit("message", { ...message, roomId });
+    setNewMessage("");
+  };
+
+  const handleEmojiClick = (emojiObject: EmojiClickData): void => {
+    setNewMessage((prev) => prev + emojiObject.emoji);
+  };
   const rejectIncomingCall = () => {};
 
   return (
@@ -118,37 +149,48 @@ export default function ChatBox({
         hideScrollBar
         className="flex-1 p-4 overflow-y-auto bg-gray-50"
       >
-        {messages.map((msg) => (
-          <div
-            key={msg._id}
-            className={`flex mb-4 ${
-              msg.senderId === user?._id ? "justify-end" : ""
-            }`}
-          >
-            {msg.senderId !== user?._id && (
-              <Avatar
-                src={
-                  (reciever?.profile_picture as string) || "/default-avatar.png"
-                }
-                name={reciever?.username || "Unknown"}
-                size="sm"
-                className="mr-2 shadow-lg"
-              />
-            )}
+        {messages.length > 0 &&
+          messages.map((msg) => (
             <div
-              className={`rounded-lg p-3 max-w-xs shadow-md ${
-                msg.senderId === user?._id
-                  ? "bg-navy text-white"
-                  : "bg-gray-200 text-gray-800"
+              key={msg._id}
+              className={`flex mb-4 ${
+                msg.senderId === user?._id ? "justify-end" : ""
               }`}
             >
-              <p className="text-sm">{msg.message}</p>
-              <span className="text-xs text-gray-500 block mt-1">
-                {format(new Date(msg.message_time), "hh:mm a")}
-              </span>
+              {msg.senderId !== user?._id && (
+                <Avatar
+                  src={
+                    (reciever?.profile_picture as string) ||
+                    "/default-avatar.png"
+                  }
+                  name={reciever?.username || "Unknown"}
+                  size="sm"
+                  className="mr-2 shadow-lg"
+                />
+              )}
+              <div
+                className={`rounded-lg p-3 max-w-xs shadow-md ${
+                  msg.senderId === user?._id
+                    ? "bg-navy text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {msg.message_type === "image" && (
+                  <Image
+                    src={msg.message}
+                    alt="Image"
+                    className="max-w-full h-auto"
+                  />
+                )}
+                {msg.message_type == "text" && (
+                  <p className="text-sm">{msg.message}</p>
+                )}
+                <span className="text-xs text-gray-500 block mt-1">
+                  {format(new Date(msg.message_time), "hh:mm a")}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div ref={messagesEndRef}></div> {/* Anchor element for scrolling */}
       </ScrollShadow>
 
@@ -156,14 +198,39 @@ export default function ChatBox({
         onSubmit={handleSendMessage}
         className="bg-gray-500 p-4 border-t border-gray-300 flex items-center space-x-2"
       >
+        <Input
+          ref={fileInput}
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
         <Button
           isIconOnly
           variant="light"
           aria-label="Attach file"
+          onClick={() => fileInput.current?.click()}
           className="bg-white text-navy hover:bg-yellow-100"
         >
           <Paperclip className="h-5 w-5" />
         </Button>
+
+        <div className="relative">
+          {isEmojiPickerVisible && (
+            <div className="absolute bottom-12 left-0 z-50">
+              <EmojiPicker onEmojiClick={handleEmojiClick} />
+            </div>
+          )}
+          <Button
+            isIconOnly
+            variant="light"
+            aria-label="Insert emoji"
+            onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
+            className="bg-white text-navy hover:bg-yellow-100"
+          >
+            <Smile className="h-5 w-5" />
+          </Button>
+        </div>
         <Input
           type="text"
           placeholder="Type a message"
@@ -172,14 +239,7 @@ export default function ChatBox({
           className="flex-1 bg-white rounded-lg placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600"
           size="sm"
         />
-        <Button
-          isIconOnly
-          variant="light"
-          aria-label="Insert emoji"
-          className="bg-white text-navy hover:bg-red-100"
-        >
-          <Smile className="h-5 w-5" />
-        </Button>
+
         <Button
           type="submit"
           isIconOnly
@@ -190,31 +250,12 @@ export default function ChatBox({
           <Send className="h-5 w-5" />
         </Button>
       </form>
-      <Modal isOpen={isCallModalVisible} onClose={rejectIncomingCall}>
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            <Avatar
-              src={(reciever?.profile_picture as string) || "/logos/avatar.avif"}
-              name={reciever?.username}
-              size="lg"
-            />
-            <h3 className="ms-4 text-xl font-semibold">
-              Incoming Call from {reciever?.username || "Unknown"}
-            </h3>
-          </ModalHeader>
-          <ModalBody>
-            <p>Do you want to accept the call?</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={answerCall} color="success">
-              Accept
-            </Button>
-            <Button onClick={rejectIncomingCall} color="danger">
-              Reject
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <IncommingCallModal
+        answerCall={answerCall}
+        isCallModalVisible={isCallModalVisible}
+        reciever={reciever}
+        rejectIncomingCall={rejectIncomingCall}
+      />
     </div>
   );
 }

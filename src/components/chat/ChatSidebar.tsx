@@ -1,60 +1,72 @@
 "use client";
 
-import { getSocket } from "@/lib/socket";
-import { Avatar, ScrollShadow, Tab, Tabs } from "@nextui-org/react";
+import { Avatar, Badge, ScrollShadow, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import SearchInput from "../searchInput";
 import User from "@/interfaces/user";
-import { fetch_contacts, fetch_room } from "@/config/user/chatservice";
+import {
+  fetch_contacts,
+  fetch_room,
+  fetch_chats,
+} from "@/config/user/chatservice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 interface Contact {
   _id: string;
   username?: string;
-  email?: string;
   profile_picture?: string | null;
   lastMessage?: string | null;
   participants?: User[];
+  unReadCount: number,
+  
 }
-
-
 
 export default function ChatSidebar({
   onSelectRoom,
 }: {
   onSelectRoom: (roomId: string) => void;
 }) {
-  const user=useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user);
+  // const {socket} =useSocket();
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [activeTab, setActiveTab] = useState("chats");
-  // const [chats, setChats] = useState<Contact[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("chats");
+  const [chats, setChats] = useState<Contact[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
-    const fetchChatsAndContacts = async () => {
+    const fetchData = async () => {
       try {
-        // const chatsResponse = await fetch(`/api/chats?search=${searchTerm}`);
-        // const chatsData = await chatsResponse.json();
-        // setChats(chatsData.chats);
+        if (!user?._id) return;
 
-        const contactsResponse = await fetch_contacts(user?._id,searchTerm);
-      if(contactsResponse.success){
-        setContacts(contactsResponse.users);
-      }
+        const chatsResponse = await fetch_chats(user._id, searchTerm);
+        if (chatsResponse.success) {
+          setChats(chatsResponse.users);
+        }
+
+        const contactsResponse = await fetch_contacts(user._id, searchTerm);
+        if (contactsResponse.success) {
+          const chatUserIds = chatsResponse.users.map(
+            (user: Contact) => user._id
+          );
+          console.log(chatUserIds);
+          const filteredContacts = contactsResponse.users.filter(
+            (contact: Contact) => !chatUserIds.includes(contact._id)
+          );
+          console.log(filteredContacts);
+          setContacts(filteredContacts);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    fetchChatsAndContacts();
-  }, [searchTerm, user?._id]);
 
-  const handleRoomSelection = async(recieverId: string) => {
-    const response=await fetch_room(recieverId,user?._id);
-    if(response.success){
-      const socket = getSocket();
-      socket.emit("join-room", response.room._id);  
+    fetchData();
+  }, [searchTerm, user?._id]);
+  const handleRoomSelection = async (receiverId: string) => {
+    const response = await fetch_room(receiverId, user?._id);
+    if (response.success) {
       setSelectedRoom(response.room._id);
       onSelectRoom(response.room._id);
     }
@@ -67,24 +79,25 @@ export default function ChatSidebar({
         className={`p-4 cursor-pointer transition-colors ${
           selectedRoom === user._id ? "bg-blue-100" : "hover:bg-content2"
         }`}
-        onClick={() => handleRoomSelection(user._id as string)}
+        onClick={() => handleRoomSelection(user._id)}
       >
         <div className="flex items-center space-x-4">
-          <Avatar src={user.profile_picture as string||"/logos/avatar.avif"} name={user.username} size="sm" />
+          <Badge color="danger" content={user.unReadCount>0?user.unReadCount:null} shape="rectangle">
+            <Avatar
+              src={user.profile_picture || "/logos/avatar.avif"}
+              name={user.username}
+              radius="sm"
+            />
+          </Badge>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
               {user.username}
             </p>
-            {user.lastMessage ?(
+            {user.lastMessage && (
               <p className="text-xs text-foreground-500 truncate">
                 {user.lastMessage}
               </p>
-            ):(
-              <p className="text-xs text-foreground-500 truncate">
-                {user.email}
-              </p>
             )}
-
           </div>
         </div>
       </div>
@@ -93,11 +106,12 @@ export default function ChatSidebar({
 
   return (
     <div className="w-64 bg-content1 border-r border-divider flex flex-col">
+      {/* Search and Tabs */}
       <div className="p-3 border-b border-divider bg-navy">
         <SearchInput onSearch={setSearchTerm} />
-        <Tabs 
-          aria-label="Chat options" 
-          selectedKey={activeTab} 
+        <Tabs
+          aria-label="Chat options"
+          selectedKey={activeTab}
           onSelectionChange={(key) => setActiveTab(key as string)}
           className="mt-2"
           fullWidth={true}
@@ -106,8 +120,12 @@ export default function ChatSidebar({
           <Tab key="contacts" title="Contacts" />
         </Tabs>
       </div>
-      <ScrollShadow className="flex-grow">
-        { renderUserList(contacts)}
+
+      {/* User List */}
+      <ScrollShadow className="flex-grow" hideScrollBar>
+        {activeTab === "chats"
+          ? renderUserList(chats)
+          : renderUserList(contacts)}
       </ScrollShadow>
     </div>
   );
