@@ -1,4 +1,5 @@
 "use client";
+
 import { change_password, fetch_user_profile, update_profile, validate_password } from "@/config/user/profileservice";
 import { PasswordChangeFormValues } from "@/components/profile/form/PasswordChangeFrom";
 import UserProfile from "@/components/profile/UserProfile";

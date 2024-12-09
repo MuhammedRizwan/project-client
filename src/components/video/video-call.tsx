@@ -3,7 +3,7 @@
 import { RefObject, useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { Volume2, VolumeOff,VolumeX, Video, VideoOff, PhoneOff} from "lucide-react";
-import { useSocket } from "../wrapper/socketwrapper";
+import { useSocket } from "../context/socketContext";
 
 interface VideoCallProps {
   myVideoRef: RefObject<HTMLVideoElement>;

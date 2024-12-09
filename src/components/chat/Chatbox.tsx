@@ -12,7 +12,8 @@ import uploadToCloudinary from "@/lib/cloudinary";
 import toast from "react-hot-toast";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import IncommingCallModal from "../video/incommingcall-modal";
-import { useSocket } from "../wrapper/socketwrapper";
+import { useSocket } from "../context/socketContext";
+
 
 interface chatProps {
   roomId: string;
@@ -63,13 +64,15 @@ export default function ChatBox({
   useEffect(() => {
     if(!socket)return
     socket.on("new-message", (message: Message) => {
-      setMessages((prev) => [...prev, message]);
+      if(message.senderId==reciever?._id){
+        setMessages((prev) => [...prev, message]);
+      }
     });
 
     return () => {
       socket.off("new-message");
     };
-  }, [socket]);
+  }, [reciever?._id, socket]);
 
   useEffect(() => {
     scrollToBottom();
@@ -87,7 +90,8 @@ export default function ChatBox({
       message_type: "text",
     };
 
-    socket.emit("message", { ...message, roomId });
+    socket.emit("message", { ...message, roomId,recieverId:reciever?._id });
+    setMessages((prev) => [...prev, message]);
     setNewMessage("");
   };
 
@@ -116,6 +120,7 @@ export default function ChatBox({
     };
 
     socket.emit("message", { ...message, roomId });
+    setMessages((prev) => [...prev, message]);
     setNewMessage("");
   };
 

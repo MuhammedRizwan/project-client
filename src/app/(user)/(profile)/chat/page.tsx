@@ -1,13 +1,14 @@
 "use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatBox from "@/components/chat/Chatbox";
 import SimplePeer, { Instance, SignalData } from "simple-peer";
 import VideoCall from "@/components/video/video-call";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
-import { useSocket } from "@/components/wrapper/socketwrapper";
+import ChatSidebar from "@/components/chat/ChatSidebar";
+import { useSocket } from "@/components/context/socketContext";
 
 
 export interface incominCallInfo {
@@ -167,7 +168,7 @@ export default function ChatPage() {
       ) : (
         <>
           <ChatSidebar
-            onSelectRoom={(id) => {
+            onSelectRoom={(id:string) => {
               setRoomId(id);
               localStorage.setItem("lastChattedRoom", id);
             }}

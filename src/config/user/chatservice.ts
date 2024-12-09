@@ -2,7 +2,6 @@ import axiosInstance from "@/lib/axiosInstence";
 
 export const fetch_contacts = async (userId: string | undefined,searchTerm: string) => {
     try {
-
         const response = await axiosInstance.get(`/chat/contacts/${userId}?search=${searchTerm}`);
         return response.data 
     } catch (error) {

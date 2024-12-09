@@ -11,15 +11,17 @@ import {
 } from "@/config/user/chatservice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useSocket } from "../context/socketContext";
+import { Message } from "@/interfaces/chat";
 
 interface Contact {
   _id: string;
+  chatId?: string;
   username?: string;
   profile_picture?: string | null;
   lastMessage?: string | null;
   participants?: User[];
-  unReadCount: number,
-  
+  unReadCount: number;
 }
 
 export default function ChatSidebar({
@@ -28,7 +30,7 @@ export default function ChatSidebar({
   onSelectRoom: (roomId: string) => void;
 }) {
   const user = useSelector((state: RootState) => state.user.user);
-  // const {socket} =useSocket();
+  const { socket } = useSocket();
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("chats");
@@ -50,11 +52,9 @@ export default function ChatSidebar({
           const chatUserIds = chatsResponse.users.map(
             (user: Contact) => user._id
           );
-          console.log(chatUserIds);
           const filteredContacts = contactsResponse.users.filter(
             (contact: Contact) => !chatUserIds.includes(contact._id)
           );
-          console.log(filteredContacts);
           setContacts(filteredContacts);
         }
       } catch (error) {
@@ -63,12 +63,38 @@ export default function ChatSidebar({
     };
 
     fetchData();
-  }, [searchTerm, user?._id]);
+  }, [searchTerm, user]);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("new-badge", (message: Message) => {
+      const lastChattedRoom = localStorage.getItem("lastChattedRoom");
+      console.log(lastChattedRoom,"lasChatroom",message.chatId)
+      if (lastChattedRoom != message.chatId)
+        setChats((prev) =>
+          prev.map((chat) =>
+            chat._id === message.senderId
+              ? { ...chat, unReadCount: chat.unReadCount + 1 }
+              : chat
+          )
+        );
+    });
+
+    return () => {
+      socket.off("new-badge");
+    };
+  }, [socket]);
+
   const handleRoomSelection = async (receiverId: string) => {
     const response = await fetch_room(receiverId, user?._id);
     if (response.success) {
       setSelectedRoom(response.room._id);
       onSelectRoom(response.room._id);
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.chatId === response.room._id ? { ...chat, unReadCount: 0 } : chat
+        )
+      );
     }
   };
 
@@ -82,13 +108,11 @@ export default function ChatSidebar({
         onClick={() => handleRoomSelection(user._id)}
       >
         <div className="flex items-center space-x-4">
-          <Badge color="danger" content={user.unReadCount>0?user.unReadCount:null} shape="rectangle">
-            <Avatar
-              src={user.profile_picture || "/logos/avatar.avif"}
-              name={user.username}
-              radius="sm"
-            />
-          </Badge>
+          <Avatar
+            src={user.profile_picture || "/logos/avatar.avif"}
+            name={user.username}
+            radius="sm"
+          />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground truncate">
               {user.username}
@@ -99,6 +123,13 @@ export default function ChatSidebar({
               </p>
             )}
           </div>
+          <Badge
+            color="danger"
+            content={user.unReadCount > 0 ? user.unReadCount : null}
+            shape="rectangle"
+          >
+            <span></span>
+          </Badge>
         </div>
       </div>
     ));
