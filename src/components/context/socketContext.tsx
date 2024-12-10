@@ -9,37 +9,50 @@ const URL = "http://localhost:5000";
 
 interface SocketContextType {
   socket: Socket | null;
+  onlineUsers: string[] | undefined;
 }
 
-const SocketContext = createContext<SocketContextType | undefined>(undefined);
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  onlineUsers: [],
+});
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-    const [socket,setSocket]=useState<Socket|null>(null)
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const user = useSelector((state: RootState) => state.user.user);
   const admin = useSelector((state: RootState) => state.admin.admin);
   const agent = useSelector((state: RootState) => state.agent.agent);
-  const loggedUser=user || admin||agent
+  const loggedUser = user || admin || agent;
 
   useEffect(() => {
-    if (!loggedUser) return;
-    if (!socket && typeof window !== "undefined" ) {
-      const newSocket=io(URL, {
-        transports: ["websocket"],
+    if (loggedUser && !socket) {
+      const newSocket = io(URL, {
         query: {
-            userId: loggedUser?._id
-          }
+          transports: ["websocket"],
+          userId: loggedUser._id,
+        },
       });
-      setSocket(newSocket)
+      setSocket(newSocket);
+    } else {
+      setSocket(null);
     }
+    if (!socket) return;
+    socket.on("get-online-users", (users) => {
+      console.log("users online sare ", users);
+      setOnlineUsers(users);
+    });
+
     return () => {
-      socket?.disconnect();
+      socket.off("get-online-users");
+      socket.disconnect();
     };
   }, [loggedUser, socket]);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );

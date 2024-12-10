@@ -31,7 +31,8 @@ export default function ChatBox({
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [reciever, setReciever] = useState<User | null>(null);
-  const {socket} = useSocket();
+  const {socket,onlineUsers} = useSocket();
+  const isOnline = reciever && reciever._id ? onlineUsers?.includes(reciever?._id) : false;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
@@ -141,7 +142,9 @@ export default function ChatBox({
           <p className="text-xl font-semibold text-white mb-0">
             {reciever?.username}
           </p>
-          <span className="text-xs text-white">{reciever?.email}</span>
+          {isOnline && (
+                  <p className="text-sm text-green-500">Online</p>
+                )}
         </div>
         <div className="flex flex-1 flex-row justify-end items-center pe-3">
           <Button onClick={() => initiateCall(reciever?._id)}>

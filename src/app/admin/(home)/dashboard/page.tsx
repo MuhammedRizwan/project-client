@@ -1,9 +1,10 @@
 'use client';
-import {  Card, CardBody } from "@nextui-org/react";
+import {  Card, CardBody, Table, TableBody, TableColumn, TableHeader } from "@nextui-org/react";
 import { Users, MousePointer, ShoppingCart, ThumbsUp } from "lucide-react";
 import MetricCard from "@/components/dashboard/metric-card";
 import { ReviewProgress } from "@/components/dashboard/review-progress";
 import OrderItem from "@/components/dashboard/order-item";
+import { ProjectRow } from "@/components/dashboard/project-row";
 // import { ProjectRow } from "@/components/dashboard/project-row";
 
 export default function Dashboard() {
@@ -30,7 +31,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Projects Table */}
-          {/* <Card>
+          <Card>
             <CardBody>
               <h2 className="text-xl font-semibold">Projects</h2>
               <Table>
@@ -50,7 +51,7 @@ export default function Dashboard() {
                 </TableBody>
               </Table>
             </CardBody>
-          </Card> */}
+          </Card>
         </div>
 
         {/* Orders Overview */}

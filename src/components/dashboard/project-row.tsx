@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Progress, AvatarGroup, Avatar } from "@nextui-org/react";
+import {Progress, Avatar, TableRow, TableCell, AvatarGroup } from "@nextui-org/react";
 
 interface ProjectRowProps {
   name: string;
@@ -20,7 +20,7 @@ export const ProjectRow = ({ name, members, budget, completion }: ProjectRowProp
       </TableCell>
       <TableCell>
         <AvatarGroup max={4}>
-          {members.map((src, idx) => (
+          { members && members.map((src, idx) => (
             <Avatar key={idx} src={src} size="sm" />
           ))}
         </AvatarGroup>
@@ -28,7 +28,7 @@ export const ProjectRow = ({ name, members, budget, completion }: ProjectRowProp
       <TableCell>{budget}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <span>{completion}%</span>
+          <span>{completion}% </span>
           <Progress value={completion} className="max-w-24" color="primary" />
         </div>
       </TableCell>
