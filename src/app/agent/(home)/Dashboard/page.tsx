@@ -3,7 +3,7 @@ import {  Card, CardBody } from "@nextui-org/react";
 import { Users, MousePointer, ShoppingCart, ThumbsUp } from "lucide-react";
 import MetricCard from "@/components/dashboard/metric-card";
 import { ReviewProgress } from "@/components/dashboard/review-progress";
-import OrderItem from "@/components/dashboard/order-item";
+// import OrderItem from "@/components/dashboard/order-item";
 // import { ProjectRow } from "@/components/dashboard/project-row";
 
 export default function Dashboard() {
@@ -54,14 +54,14 @@ export default function Dashboard() {
         </div>
 
         {/* Orders Overview */}
-        <Card>
+        {/* <Card>
           <CardBody>
             <h2 className="text-xl font-semibold">Orders Overview</h2>
-            <OrderItem icon="$" color="green" description="$2400, Design changes" date="22 DEC 7:20 PM" />
-            <OrderItem icon="!" color="red" description="New order #1832412" date="21 DEC 11 PM" />
-            <OrderItem icon="S" color="blue" description="Server payments for April" date="21 DEC 9:34 PM" />
+            <OrderItem color="green" description="$2400, Design changes" date="22 DEC 7:20 PM" />
+            <OrderItem color="red" description="New order #1832412" date="21 DEC 11 PM" />
+            <OrderItem  color="blue" description="Server payments for April" date="21 DEC 9:34 PM" />
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

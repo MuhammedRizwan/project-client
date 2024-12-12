@@ -8,7 +8,7 @@ interface ReviewProgressProps {
 export const ReviewProgress = ({ label, percentage }: ReviewProgressProps) => {
   return (
     <>
-      <div className="flex justify-between mb-2">
+      <div className="flex justify-between mb-4">
         <span>{label}</span>
         <span>{percentage}%</span>
       </div>

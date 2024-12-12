@@ -39,7 +39,7 @@ export default function TravelAgencies() {
         <button
           onClick={() => handleBlockClick(agent)}
           className={`px-4 py-2 ${
-            agent.is_block ? "bg-green-500" : "bg-red-500"
+            agent.is_block ? "bg-green-500" : "bg-red-600"
           } text-white rounded w-20`}
         >
           {agent.is_block ? "Unblock" : "Block"}
@@ -52,7 +52,7 @@ export default function TravelAgencies() {
       render: (agent: Agent) => (
         <button
           onClick={() => viewDetialsClick(agent)}
-          className={`px-4 py-2 w-32 bg-yellow-700 text-white rounded`}
+          className={`px-4 py-2 w-32 bg-zinc-900 text-white rounded`}
         >
           view details
         </button>

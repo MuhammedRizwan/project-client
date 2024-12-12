@@ -7,10 +7,7 @@ import {
   Avatar,
   Button,
   Textarea,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
+
   Input,
   Image,
 } from "@nextui-org/react";
@@ -71,7 +68,7 @@ export default function PostForm({ user, onSubmit, post }: postFormProps) {
             />
             <div>
               <h3 className="font-semibold">{user?.username}</h3>
-              <Dropdown>
+              {/* <Dropdown>
                 <DropdownTrigger>
                   <Button variant="light" size="sm">
                     Post to Anyone
@@ -81,7 +78,7 @@ export default function PostForm({ user, onSubmit, post }: postFormProps) {
                   <DropdownItem>Post to Friends</DropdownItem>
                   <DropdownItem>Post to Group</DropdownItem>
                 </DropdownMenu>
-              </Dropdown>
+              </Dropdown> */}
             </div>
           </div>
           <Button isIconOnly variant="light">

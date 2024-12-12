@@ -131,7 +131,7 @@ export default function Categories() {
       render: (item) => (
         <Button
           onClick={() => handleBlockClick(item)}
-          className={`${item.is_block ? "bg-green-300" : "bg-red-300"}`}
+          className={`${item.is_block ? "bg-green-500" : "bg-red-500"}`}
         >
           {item.is_block ? "Unblock" : "Block"}
         </Button>

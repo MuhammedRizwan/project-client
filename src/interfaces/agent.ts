@@ -11,4 +11,5 @@ export default interface Agent {
     admin_verified:string;
     is_block?: boolean;
     profile_picture?: string|File;
+    createdAt?:Date
   }

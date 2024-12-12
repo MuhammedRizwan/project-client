@@ -49,7 +49,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       socket.off("get-online-users");
       socket.disconnect();
     };
-  }, [loggedUser, socket]);
+  }, [loggedUser]);
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>

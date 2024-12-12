@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, LucideIcon } from "lucide-react";
+import { Bell, BookOpen, Home, LogOut, LucideIcon, Package, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
@@ -13,38 +13,41 @@ export interface MenuItem {
   
   interface SidebarProps {
     name?: string;
-    menuItems: MenuItem[];
     onLogout: () => void;
   }
-export default function Sidebar({ name, menuItems, onLogout }:SidebarProps) {
+export default function Sidebar({ name,onLogout }:SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
-    <aside className="sticky top-16 max-h-screen bg-white shadow-lg w-52 ms-3 mb-3 mt-3 flex flex-col rounded-lg overflow-hidden">
-      <div className="p-6">
-        <h1 className="text-xl font-bold text-gray-800">{name}</h1>
-      </div>
-      <nav className="mt-2 flex-1 overflow-y-auto">
-        <ul className="space-y-4">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <li
-                key={item.href}
-                className={`flex items-center ${
-                  isActive ? "bg-gray-100" : "hover:bg-gray-50"
-                } shadow-md rounded-lg px-6 py-3 cursor-pointer transition-all duration-150`}
-              >
-                <Link href={item.href} className="flex items-center w-full">
-                  <item.icon className="w-6 h-6 text-yellow-500 mr-3" />
-                  <span className="text-gray-700 text-sm">{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+    <aside className="h-screen bg-white shadow-xl w-64 ms-2 mb-20 mt-3 rounded-xl">
+    <div className="p-6">
+      <h1 className="text-3xl font-bold">{name}</h1>
+    </div>
+    <nav className="mt-4">
+      <ul className="space-y-4">
+        {
+          [
+            { href: "/agent/Dashboard", label: "Dashboard", icon:<Home className="w-6 h-6 mr-3" />},
+            { href: "/agent/profile", label: "Profile", icon:<User className="w-6 h-6 mr-3"/> },
+            { href: "/agent/travel-packages", label: "Travel Packages", icon:<Package className="w-6 h-6 mr-3"/> },
+            { href: "/agent/offers", label: "Offers", icon:<BookOpen className="w-6 h-6 mr-3"/>},
+            { href: "/admin/notifications", label: "Notifications", icon:<Bell className="w-6 h-6 mr-3"/> },
+          ].map((item) => (
+          <li
+            key={item.href}
+            className={`flex items-center ${
+              pathname === item.href ? "bg-slate-100 shadow-inner" : "hover:bg-white"
+            } transition-all duration-200 shadow-lg rounded-lg px-6 py-2 cursor-pointer`}
+          >
+            <Link href={item.href} className="flex items-center w-full">
+              {item.icon}
+              <span className="text-gray-800 font-semibold">{item.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
       <div className="p-4 bg-white border-t border-gray-200">
         <button
           onClick={() => {
@@ -53,10 +56,11 @@ export default function Sidebar({ name, menuItems, onLogout }:SidebarProps) {
           }}
           className="flex items-center w-full bg-white shadow-md rounded-lg px-6 py-3 cursor-pointer hover:bg-gray-100 transition-all duration-150"
         >
-          <LogOut className="w-6 h-6 text-yellow-500 mr-3" />
+          <LogOut className="w-6 h-6 mr-3" />
           <span className="text-gray-700">Logout</span>
         </button>
       </div>
     </aside>
   );
 }
+

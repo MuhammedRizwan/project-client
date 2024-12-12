@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Header from "@/components/user/Navbar";
 // import Footer from "@/components/user/Footer";
 import ProtectedRouter from "@/components/user/protuctedRouter";
-import { SocketProvider } from "@/components/context/socketContext";
+
 
 export const metadata: Metadata = {
   title: "Heaven finder user",
@@ -17,10 +17,8 @@ export default function UserLayout({
   return (
     <>
       <ProtectedRouter>
-        <SocketProvider>
           <Header />
           {children}
-        </SocketProvider>
         {/* <Footer /> */}
       </ProtectedRouter>
     </>

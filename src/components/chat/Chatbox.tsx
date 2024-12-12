@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import uploadToCloudinary from "@/lib/cloudinary";
 import toast from "react-hot-toast";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import IncommingCallModal from "../video/incommingcall-modal";
+import IncommingCallModal from "../video/incomingcall-modal";
 import { useSocket } from "../context/socketContext";
 
 

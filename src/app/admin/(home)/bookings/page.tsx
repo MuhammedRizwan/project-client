@@ -10,7 +10,7 @@ export default function BookingsPage() {
       label: "Name",
       render: (booking: Booking) =>
         typeof booking.user_id === "object"
-          ? booking.user_id.username
+          ? booking.bill_details.first_name
           : booking.user_id,
     },
     {
