@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useSocket } from "../context/socketContext";
 import { Message } from "@/interfaces/chat";
+import toast from "react-hot-toast";
 
 interface Contact {
   _id: string;
@@ -69,8 +70,7 @@ export default function ChatSidebar({
     if (!socket) return;
     socket.on("new-badge", (message: Message) => {
       const lastChattedRoom = localStorage.getItem("lastChattedRoom");
-      console.log(lastChattedRoom,"lasChatroom",message.chatId)
-      if (lastChattedRoom != message.chatId)
+      if (lastChattedRoom != message.chatId){
         setChats((prev) =>
           prev.map((chat) =>
             chat._id === message.senderId
@@ -78,6 +78,20 @@ export default function ChatSidebar({
               : chat
           )
         );
+
+      toast("New message!", {
+        icon: "👏",
+      });
+    }
+    });
+    socket.on("new-message", (message: Message) => {
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          message.senderId === chat._id
+            ? { ...chat, lastMessage: message.message }
+            : chat
+        )
+      );
     });
 
     return () => {

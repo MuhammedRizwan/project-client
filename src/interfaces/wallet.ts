@@ -7,6 +7,7 @@ export default interface Wallet {
 
 export interface Transaction {
   _id?: string;
+  booking_id?:string
   date: string;
   reason?: string;
   amount: number;

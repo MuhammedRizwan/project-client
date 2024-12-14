@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User, Building2, List, Calendar, Gift, Bell } from "lucide-react";
+import { Home, User, Building2, List, Calendar, Gift, Bell, Wallet } from "lucide-react";
 
 export default function AdminSidebar({ Name = "HEAVEN FINDER" }) {
   const pathname = usePathname();
@@ -20,6 +20,7 @@ export default function AdminSidebar({ Name = "HEAVEN FINDER" }) {
             { href: "/admin/category", label: "Category", icon: <List className="w-6 h-6  mr-3" /> },
             { href: "/admin/bookings", label: "Bookings", icon: <Calendar className="w-6 h-6  mr-3" /> },
             { href: "/admin/coupons", label: "Coupon", icon: <Gift className="w-6 h-6  mr-3" /> },
+            { href: "/admin/wallet", label: "Wallet", icon: <Wallet className="w-6 h-6  mr-3" /> },
             { href: "/admin/notifications", label: "Notifications", icon: <Bell className="w-6 h-6  mr-3" /> },
           ].map((item) => (
             <li

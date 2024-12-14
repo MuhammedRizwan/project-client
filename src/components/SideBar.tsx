@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BookOpen, Home, LogOut, LucideIcon, Package, User } from "lucide-react";
+import { Bell, BookOpen, Home, LogOut, LucideIcon, Package, User, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
@@ -22,7 +22,7 @@ export default function Sidebar({ name,onLogout }:SidebarProps) {
   return (
     <aside className="h-screen bg-white shadow-xl w-64 ms-2 mb-20 mt-3 rounded-xl">
     <div className="p-6">
-      <h1 className="text-3xl font-bold">{name}</h1>
+      <h1 className="text-xl font-bold">{name}</h1>
     </div>
     <nav className="mt-4">
       <ul className="space-y-4">
@@ -32,7 +32,8 @@ export default function Sidebar({ name,onLogout }:SidebarProps) {
             { href: "/agent/profile", label: "Profile", icon:<User className="w-6 h-6 mr-3"/> },
             { href: "/agent/travel-packages", label: "Travel Packages", icon:<Package className="w-6 h-6 mr-3"/> },
             { href: "/agent/offers", label: "Offers", icon:<BookOpen className="w-6 h-6 mr-3"/>},
-            { href: "/admin/notifications", label: "Notifications", icon:<Bell className="w-6 h-6 mr-3"/> },
+            { href: "/agent/wallet", label: "Wallet", icon:<Wallet className="w-6 h-6 mr-3"/> },
+            { href: "/agent/notifications", label: "Notifications", icon:<Bell className="w-6 h-6 mr-3"/> },
           ].map((item) => (
           <li
             key={item.href}

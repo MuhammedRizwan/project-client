@@ -27,12 +27,22 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const agent = useSelector((state: RootState) => state.agent.agent);
   const loggedUser = user || admin || agent;
 
+  const getRole = () => {
+    if (user) return "user";
+    if (admin) return "admin";
+    if (agent) return "agent";
+    return null;
+  };
+
   useEffect(() => {
     if (loggedUser && !socket) {
+      const role = getRole();
+      console.log(role)
       const newSocket = io(URL, {
         query: {
           transports: ["websocket"],
           userId: loggedUser._id,
+          role
         },
       });
       setSocket(newSocket);

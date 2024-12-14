@@ -7,8 +7,8 @@ interface BookingCardProps {
   booking: Booking;
   onCancel?: (booking: Booking) => void;
   onViewDetails?: (booking: Booking) => void;
-  addReview?: (bookingId: string, packageId: string|undefined) => void;
-  editReview?:(bookingId:string,review:string | Review | undefined)=>void
+  addReview?: (bookingId: string, packageId: string | undefined) => void;
+  editReview?: (bookingId: string, review: string | Review | undefined) => void;
 }
 
 export const BookingCard = ({
@@ -16,7 +16,7 @@ export const BookingCard = ({
   onCancel,
   onViewDetails,
   addReview,
-  editReview
+  editReview,
 }: BookingCardProps) => {
   const pkg = booking.package_id as Package;
   return (
@@ -29,7 +29,13 @@ export const BookingCard = ({
         />
       </div>
       <CardBody className="flex flex-col w-2/3 px-4">
-        <h2 className="text-xl font-semibold mb-2">{pkg.package_name}</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold mb-2">{pkg.package_name}</h2>
+          <p className="text-sm text-gray-600">
+            Travel Status:{" "}
+            <span className="font-bold">{booking.travel_status}</span>
+          </p>
+        </div>
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-600">
             Peoples: <span className="font-bold">{booking.members.length}</span>
@@ -41,8 +47,10 @@ export const BookingCard = ({
             </span>
           </p>
           <p className="text-sm text-gray-600">
-            Travel Status:{" "}
-            <span className="font-bold">{booking.travel_status}</span>
+            Billed Date:{" "}
+            <span className="font-bold">
+              {new Date(booking.booking_date).toLocaleDateString("en-GB")}
+            </span>
           </p>
         </div>
         <div className="flex justify-between items-center">
@@ -50,6 +58,7 @@ export const BookingCard = ({
             Destinations:{" "}
             <span className="font-bold">{pkg.destinations?.join(", ")}</span>
           </p>
+
           <p className="text-lg font-bold text-gray-800 mt-4">
             Price: ₹{booking.payment_amount}
           </p>
@@ -57,7 +66,7 @@ export const BookingCard = ({
         <p className="text-sm text-gray-600">
           Start Date:{" "}
           <span className="font-bold">
-            {new Date(booking.start_date).toLocaleDateString()}
+            {new Date(booking.start_date).toLocaleDateString("en-GB")}
           </span>
         </p>
         <div className="flex justify-between items-center">
@@ -90,21 +99,24 @@ export const BookingCard = ({
                 View Details
               </Button>
             )}
-             {addReview && typeof booking.review_id ==="object" ? (
-              <Button
-                className="bg-blue-100 text-black px-4 ms-3 py-2 rounded-lg hover:bg-blue-200"
-                onClick={()=>editReview && editReview(booking._id,booking.review_id)}
-              >
-                edit feedback
-              </Button>
-            ):(
-              <Button
-                className="bg-slate-200 text-black px-4 ms-3 py-2 rounded-lg hover:bg-slate-300"
-                onClick={()=>addReview &&addReview(booking._id,pkg._id)}
-              >
-                leave your feedback
-              </Button>
-            )}
+            {addReview &&
+              (typeof booking.review_id === "object" ? (
+                <Button
+                  className="bg-blue-100 text-black px-4 ms-3 py-2 rounded-lg hover:bg-blue-200"
+                  onClick={() =>
+                    editReview && editReview(booking._id, booking.review_id)
+                  }
+                >
+                  edit feedback
+                </Button>
+              ) : (
+                <Button
+                  className="bg-slate-200 text-black px-4 ms-3 py-2 rounded-lg hover:bg-slate-300"
+                  onClick={() => addReview && addReview(booking._id, pkg._id)}
+                >
+                  leave your feedback
+                </Button>
+              ))}
           </div>
         </div>
       </CardBody>

@@ -1,5 +1,4 @@
 import { Avatar, Button } from "@nextui-org/react";
-import { UserCog } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface ConfirmAgentProps {

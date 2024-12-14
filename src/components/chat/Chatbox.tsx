@@ -8,11 +8,12 @@ import { RootState } from "@/store/store";
 import User from "@/interfaces/user";
 import { fetch_room_message } from "@/config/user/chatservice";
 import { format } from "date-fns";
-import uploadToCloudinary from "@/lib/cloudinary";
+
 import toast from "react-hot-toast";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import IncommingCallModal from "../video/incomingcall-modal";
 import { useSocket } from "../context/socketContext";
+import uploadToCloudinary from "@/lib/cloudinary";
 
 
 interface chatProps {

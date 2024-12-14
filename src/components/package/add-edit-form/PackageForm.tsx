@@ -11,7 +11,9 @@ import Description from "./Description";
 import Itineraries from "./Itineraries";
 import { Itinerary, PackageFormValues } from "@/interfaces/package";
 import IncludedAndExcluded from "./IncludedAndExcluded";
-
+import { deleteImageUrl, updateImageURL } from "@/config/agent/packageservice";
+import { extractPublicId } from "cloudinary-build-url";
+import uploadToCloudinary from "@/lib/cloudinary";
 
 interface PackageFormProps {
   initialData?: PackageFormValues;
@@ -68,7 +70,9 @@ export default function PackageForm({
     "image/svg+xml",
     "image/jpg",
   ];
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (images.length >= 6) {
       setError("images", { type: "manual", message: "maximum 6 images" });
@@ -82,8 +86,24 @@ export default function PackageForm({
       const imagesToAdd = validImages.slice(0, remainingSlots);
 
       if (imagesToAdd.length > 0) {
-        setImages((prevImages) => [...prevImages, ...imagesToAdd]);
-        setValue("images", [...images, ...imagesToAdd]);
+        try {
+          const uploadedImages = await Promise.all(
+            imagesToAdd.map(async (image) => {
+              return await uploadToCloudinary(image);
+            })
+          );
+
+          const updatedImages = [...images, ...uploadedImages];
+          setImages(updatedImages);
+          setValue("images", updatedImages);
+          toast.success("Images uploaded successfully");
+        } catch (error) {
+          console.error("Error uploading images:", error);
+          setError("images", {
+            type: "manual",
+            message: "Failed to upload images. Please try again.",
+          });
+        }
       } else {
         setError("images", {
           type: "manual",
@@ -93,25 +113,42 @@ export default function PackageForm({
     }
   };
 
-  const handleDelete = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-    setValue("images", updatedImages); // Adjust image names
+  const handleDelete = async (index: number) => {
+    const imageToDelete = images[index];
+    const publicId = extractPublicId(imageToDelete as unknown as string);
+    try {
+      const response = await deleteImageUrl(publicId);
+      if (response.success) {
+        toast.success("image deleted");
+      }
+    } catch (error) {
+      throw error;
+    }
+    setImages((currentImages) => {
+      const updatedImages = currentImages.filter((_, i) => i !== index);
+
+      return updatedImages;
+    });
+    // const updatedImages = images.filter((_, i) => i !== index);
+    // setImages(updatedImages);
+    // setValue("images", updatedImages);
+    setValue("images", images);
     toast.success("Image deleted successfully");
   };
 
   const handleChange = (index: number) => {
+    const oldImage = images[index];
+    // const publicId=getPublicIdFromUrl(oldImage as unknown as string)
+    const publicId = extractPublicId(oldImage as unknown as string);
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*"; // Only allow image selection
 
-    fileInput.onchange = (event: Event) => {
+    fileInput.onchange = async (event: Event) => {
       const target = event.target as HTMLInputElement;
 
       if (target && target.files && target.files[0]) {
- 
-
-        const newImageFile = target.files[0];
+        let newImageFile: File | string = target.files[0];
         if (!acceptedFileTypes.includes(newImageFile.type)) {
           setError("images", {
             type: "manual",
@@ -119,11 +156,29 @@ export default function PackageForm({
           });
           return;
         }
+        try {
+          const formData = new FormData();
+          formData.append("file", newImageFile);
+          formData.append("oldPublicId", publicId as string);
+          const response = await updateImageURL(formData);
+          if (response.success) {
+            newImageFile = response.imageUrl;
+          } else {
+            throw new Error("Image update failed");
+          }
+        } catch (error) {
+          console.error("Error updating image:", error);
+          setError("images", {
+            type: "manual",
+            message: "Failed to update image. Please try again.",
+          });
+          return;
+        }
         const updatedImages = [...images];
-        updatedImages[index] = newImageFile;
+        updatedImages[index] = newImageFile as unknown as File;
 
-        setImages(updatedImages); // Update state
-        setValue("images", updatedImages); // Sync with form state
+        setImages(updatedImages);
+        setValue("images", updatedImages);
 
         toast.success("Image uploaded successfully");
       } else {
@@ -137,7 +192,7 @@ export default function PackageForm({
     fileInput.click(); // Open the file dialog
   };
 
-  console.log(initialData)
+  console.log(initialData);
   const onSubmitHandler = (data: PackageFormValues) => {
     console.log(data);
     const formData = new FormData();
@@ -237,7 +292,7 @@ export default function PackageForm({
                   width={300}
                   height={200}
                   className="object-cover w-full h-full"
-                  onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
+                  // onLoad={() => URL.revokeObjectURL(URL.createObjectURL(image))} // Clean up URL
                 />
               )}
 

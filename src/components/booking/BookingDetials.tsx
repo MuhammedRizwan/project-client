@@ -23,6 +23,8 @@ import {
   RadioGroup,
   Textarea,
 } from "@nextui-org/react";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 const defaultReasons = [
   "Change of plans",
@@ -37,6 +39,7 @@ export default function BookingDetails({
 }: {
   params: { bookingId: string };
 }) {
+  const userId = useSelector((state: RootState) => state.user.user?._id);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [packages, setPackages] = useState<Package | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
@@ -266,45 +269,51 @@ export default function BookingDetails({
             <div className="flex justify-between items-center border-t pt-2">
               <span className="text-gray-600">Confirmation:</span>
               <div className="relative inline-block text-left">
-                {booking && (
-                  <div className="relative inline-block text-left">
-                    {booking.booking_status === "pending" ? (
-                      <select
-                        value={booking.booking_status}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            e.target.value as "confirmed" | "canceled"
-                          )
-                        }
-                        className="border px-3 py-2 rounded-lg"
-                      >
-                        <option value="confirmed">Confirmed</option>
-                        <option value="canceled" className="text-red-500">
-                          Canceled
-                        </option>
-                      </select>
-                    ) : (
-                      <span
-                        className={`px-3 py-2 rounded-lg ${
-                          booking.booking_status === "canceled"
-                            ? "text-red-500"
-                            : ""
-                        }`}
-                      >
-                        {booking.booking_status.charAt(0).toUpperCase() +
-                          booking.booking_status.slice(1)}
-                      </span>
-                    )}
-                  </div>
+                {userId ? (
+                  <p>{booking?.booking_status}</p>
+                ) : (
+                  booking && (
+                    <div className="relative inline-block text-left">
+                      {booking.booking_status === "pending" ? (
+                        <select
+                          value={booking.booking_status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              e.target.value as "confirmed" | "canceled"
+                            )
+                          }
+                          className="border px-3 py-2 rounded-lg"
+                        >
+                          <option value="confirmed">Confirmed</option>
+                          <option value="canceled" className="text-red-500">
+                            Canceled
+                          </option>
+                        </select>
+                      ) : (
+                        <span
+                          className={`px-3 py-2 rounded-lg ${
+                            booking.booking_status === "canceled"
+                              ? "text-red-500"
+                              : ""
+                          }`}
+                        >
+                          {booking.booking_status.charAt(0).toUpperCase() +
+                            booking.booking_status.slice(1)}
+                        </span>
+                      )}
+                    </div>
+                  )
                 )}
               </div>
             </div>
             <div className="flex justify-between items-center border-t pt-2">
-              <span className="text-gray-600">
-                Travel Status:
-              </span>
+              <span className="text-gray-600">Travel Status:</span>
               <span className={`font-medium`}>
-                {booking && (
+                {userId ?(
+                  <p>{booking?.travel_status}</p>
+                ):(
+
+               booking && (
                   <div className="relative inline-block text-left">
                     {["completed", "canceled"].includes(
                       booking.travel_status
@@ -357,6 +366,7 @@ export default function BookingDetails({
                       )
                     )}
                   </div>
+                )
                 )}
               </span>
             </div>

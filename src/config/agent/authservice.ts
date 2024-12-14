@@ -48,7 +48,10 @@ export const send_otp = async (data: { email: string }) => {
   }
 };
 
-export const otp_verification = async (data: { Otp: string; agent: Agent|null }) => {
+export const otp_verification = async (data: {
+  Otp: string;
+  agent: Agent | null;
+}) => {
   try {
     const response = await axiosInstance.post("/agent/otpVerification", data);
     return response.data as {
@@ -87,9 +90,12 @@ export const fetch_agent_profile = async (id: string | undefined) => {
   }
 };
 
-export const update_agent_profile = async (id: string | undefined, data: Agent) => {
+export const update_agent_profile = async (
+  id: string | undefined,
+  data: Agent
+) => {
   try {
-    const response = await axiosInstance.put(`/update/${id}`, data,{
+    const response = await axiosInstance.put(`/update/${id}`, data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data as {
@@ -102,7 +108,10 @@ export const update_agent_profile = async (id: string | undefined, data: Agent) 
   }
 };
 
-export const validate_agent_password = async (id: string | undefined, data: { oldPassword: string|undefined }) => {
+export const validate_agent_password = async (
+  id: string | undefined,
+  data: { oldPassword: string | undefined }
+) => {
   try {
     const response = await axiosInstance.post(`/validate-password/${id}`, data);
     return response.data as {
@@ -113,8 +122,11 @@ export const validate_agent_password = async (id: string | undefined, data: { ol
   } catch (error) {
     throw error;
   }
-}
-export const change_agent_password = async (id: string | undefined, data: { newPassword: string }) => {
+};
+export const change_agent_password = async (
+  id: string | undefined,
+  data: { newPassword: string }
+) => {
   try {
     const response = await axiosInstance.patch(`/change-password/${id}`, data);
     return response.data as {
@@ -125,4 +137,27 @@ export const change_agent_password = async (id: string | undefined, data: { newP
   } catch (error) {
     throw error;
   }
-}
+};
+export const fetchAgentDashboardData = async (id: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(`/dashboard/${id}`);
+    return response.data as {
+      success: boolean;
+      message: string;
+      packages: {
+        packagecount: number;
+        unblockedpackage: number;
+      };
+      booking: {
+        totalbooking: number;
+        completed: number;
+        ongoing: number;
+        pending: number;
+        cancel: number;
+      };
+      bookingRevenue: number;
+    };
+  } catch (error) {
+    throw error;
+  }
+};

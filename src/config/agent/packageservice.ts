@@ -1,4 +1,3 @@
-
 import Package, { PackageFormValues } from "@/interfaces/package";
 import axiosInstance from "@/lib/axiosInstence";
 
@@ -90,6 +89,34 @@ export const block_package = async (
       success: boolean;
       message: string;
       Package: Package;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateImageURL = async (data: FormData) => {
+  try {
+    const response = await axiosInstance.post("/package/update-image", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data as {
+      success: boolean;
+      message: string;
+      imageUrl: string;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteImageUrl = async (publicId:string) => {
+  try {
+    const response = await axiosInstance.post("/package/delete-image", {publicId});
+    return response.data as {
+      success: boolean;
+      message: string;
     };
   } catch (error) {
     throw error;

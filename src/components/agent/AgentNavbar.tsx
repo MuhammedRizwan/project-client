@@ -9,22 +9,20 @@ import {
 } from "@nextui-org/react";
 import Logo from "../Logo";
 import { usePathname, useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { logout } from "@/store/reducer/agentReducer";
 import Cookies from "js-cookie";
-import { RootState } from "@/store/store";
 
 export default function AgentNavbar() {
   const router = useRouter();
-  const agent = useSelector((state: RootState) => state.agent.agent);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const accessToken = Cookies.get("agentToken");
   useEffect(() => {
-    if (!accessToken || !agent) {
+    if (!accessToken) { 
       router.push("/agent");
     }
-  }, [router, accessToken, agent]);
+  }, [router, accessToken]);
   return (
     <Navbar maxWidth={"full"}>
       <NavbarBrand>

@@ -16,7 +16,7 @@ import useAgent from "@/hooks/useAgent";
 import { signup } from "@/config/agent/authservice";
 
 export interface SignupFormData {
-  username: string;
+  agency_name: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -112,7 +112,7 @@ export default function SignupForm() {
                 type="text"
                 label="Username"
                 placeholder="Type your username"
-                {...register("username", {
+                {...register("agency_name", {
                   required: "Username is required",
                   minLength: {
                     value: 5,
@@ -121,7 +121,7 @@ export default function SignupForm() {
                 })}
               />
               <p className="text-red-500 text-xs min-h-[20px]">
-                {errors.username && errors.username.message}
+                {errors.agency_name && errors.agency_name.message}
               </p>
 
               <Input

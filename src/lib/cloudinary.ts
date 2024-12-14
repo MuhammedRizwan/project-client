@@ -1,9 +1,16 @@
 
- const uploadToCloudinary = async (file:File) => {
+const uploadToCloudinary = async (file: File) => {
   const data = new FormData();
   data.append("file", file);
-  data.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string);
-  data.append("cloud_name", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string);
+  data.append("folder", "user_uploads"); 
+  data.append(
+    "upload_preset",
+    process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string
+  );
+  data.append(
+    "cloud_name",
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string
+  );
 
   try {
     const response = await fetch(

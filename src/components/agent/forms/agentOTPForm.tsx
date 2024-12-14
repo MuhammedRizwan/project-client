@@ -68,7 +68,7 @@ export default function AgentOTPInputs() {
         const { agent } = response;
         dispatch(addAgent(agent));
         toast.success(response.message);
-        router.push("/agent");
+        router.push("/agent/Dashboard");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
