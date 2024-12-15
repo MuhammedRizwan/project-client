@@ -1,14 +1,20 @@
 "use client";
 import { Card, CardBody } from "@nextui-org/react";
-import { Users, PlaneTakeoff, HandCoins, Boxes} from "lucide-react";
+import { Users, PlaneTakeoff, HandCoins, Boxes } from "lucide-react";
 import { ReviewProgress } from "@/components/dashboard/review-progress";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { MetricCardSkeleton } from "@/components/dashboard/metric-card";
-import BarGraph from "@/components/dashboard/bargraph";
-import { fetchAgentDashboardData } from "@/config/agent/authservice";
+import BarGraph, { MonthlyDataItem } from "@/components/dashboard/bargraph";
+import {
+  fetchAgentDashboardData,
+  getAgentbarChart,
+} from "@/config/agent/authservice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { newBookings } from "@/config/agent/bookingservice";
+import Booking from "@/interfaces/booking";
+import NewMessage from "@/components/dashboard/newmessage";
 // import { ProjectRow } from "@/components/dashboard/project-row";
 
 const MetricCard = dynamic(() => import("@/components/dashboard/metric-card"), {
@@ -16,7 +22,7 @@ const MetricCard = dynamic(() => import("@/components/dashboard/metric-card"), {
 });
 
 export default function Dashboard() {
-  const agentId=useSelector((state:RootState)=>state.agent.agent?._id)
+  const agentId = useSelector((state: RootState) => state.agent.agent?._id);
   const [packages, setPackages] = useState({
     packagecount: 0,
     unblockedpackage: 0,
@@ -28,7 +34,9 @@ export default function Dashboard() {
     pending: 0,
     cancel: 0,
   });
-  const[revenue,setRevenue]=useState<number|null>(null)
+  const [revenue, setRevenue] = useState<number | null>(null);
+  const [monthlyData, setMonthlyData] = useState<MonthlyDataItem[]>([]);
+  const [newBooking, setNewBooking] = useState<Booking[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,14 +44,39 @@ export default function Dashboard() {
         if (response.success) {
           setPackages(response.packages);
           setBooking(response.booking);
-          setRevenue(response.bookingRevenue)
+          setRevenue(response.bookingRevenue);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+    const fetchMonthlyData = async () => {
+      try {
+        const response = await getAgentbarChart(agentId);
+        if (response.success) {
+          setMonthlyData(response.barChartData);
+        }
+      } catch (error) {
+        console.error("Error fetching monthly data:", error);
+      }
+    };
+    const fetchnewBookings= async () => {
+      try {
+        const response = await newBookings(agentId);
+        if (response.success) {
+          console.log(response.newBooking);
+          setNewBooking(response.newBooking);
+        }
+      } catch (error) {
+        console.error("Error fetching new booking:", error);
+      }
+    }
+
     fetchData();
+    fetchMonthlyData();
+    fetchnewBookings();
   }, [agentId]);
+
   return (
     <div className="p-8 max-w-[1600px] mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -96,7 +129,7 @@ export default function Dashboard() {
               <ReviewProgress
                 label="Bookings completed"
                 percentage={Math.floor(
-                  (booking.completed/ booking.totalbooking) * 100
+                  (booking.completed / booking.totalbooking) * 100
                 )}
               />
               <ReviewProgress
@@ -123,20 +156,15 @@ export default function Dashboard() {
 
         <Card>
           <CardBody>
-            <h2 className="text-xl font-black mb-5">New Messages</h2>
-              {/* <ConfirmAgent
-                key={index}
-                color="green"
-                description={agent.agency_name as string}
-                date= {agent.createdAt ? new Date(agent.createdAt).toLocaleDateString('en-GB'):"N/A"}
-                id={agent._id}
-                pic={agent.profile_picture}
-              /> */}
+            <h2 className="text-xl font-black mb-5">New Bookings</h2>
+             <NewMessage
+                bookings={newBooking}
+              />
           </CardBody>
         </Card>
       </div>
       <div>
-        <BarGraph/>
+        <BarGraph data={monthlyData} />
       </div>
     </div>
   );

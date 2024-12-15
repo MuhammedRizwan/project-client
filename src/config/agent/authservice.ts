@@ -1,6 +1,7 @@
 import { ForgetPassword } from "@/app/(user)/forget-password/page";
 import { SignupFormData } from "@/app/agent/signup/page";
 import { LoginFormData } from "@/components/agent/forms/AgentLoginForm";
+import { MonthlyDataItem } from "@/components/dashboard/bargraph";
 import Agent from "@/interfaces/agent";
 import OTP from "@/interfaces/otp";
 import axiosInstance from "@/lib/axiosInstence";
@@ -161,3 +162,15 @@ export const fetchAgentDashboardData = async (id: string | undefined) => {
     throw error;
   }
 };
+export const getAgentbarChart=async(agentId:string|undefined)=>{
+  try {
+    const response=await axiosInstance.get(`/bar-chart/${agentId}`)
+    return response.data as {
+      success: boolean;
+      message: string;
+      barChartData:MonthlyDataItem[];
+    }
+  } catch (error) {
+    throw error
+  }
+}

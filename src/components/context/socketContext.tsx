@@ -37,7 +37,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (loggedUser && !socket) {
       const role = getRole();
-      console.log(role)
       const newSocket = io(URL, {
         query: {
           transports: ["websocket"],

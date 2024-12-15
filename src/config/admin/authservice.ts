@@ -1,7 +1,9 @@
 import { LoginFormData } from "@/components/admin/AdminLoginForm";
+import { MonthlyDataItem } from "@/components/dashboard/bargraph";
 import Admin from "@/interfaces/admin";
 import Agent from "@/interfaces/agent";
 import User from "@/interfaces/user";
+import Wallet from "@/interfaces/wallet";
 import axiosInstance from "@/lib/axiosInstence";
 
 export const admin_login = async (data: LoginFormData) => {
@@ -35,7 +37,21 @@ export const fetchDashboardData = async () => {
         pendingbooking: number;
         cancelbooking: number;
       };
+      revenue: Wallet;
       unconfirmedagency: Agent[] | null;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getbarChart = async () => {
+  try {
+    const response = await axiosInstance.get("/bar-chart-data");
+    return response.data as {
+      success: boolean;
+      message: string;
+      barChartData:MonthlyDataItem[];
     };
   } catch (error) {
     throw error;
@@ -53,7 +69,7 @@ export const fetch_table_data = async (
     const response = await axiosInstance.get(
       `${apiUrl}?search=${searchTerm}&page=${currentPage}&limit=${rowsPerPage}&filter=${filter}`
     );
-    console.log(response.data);
+  
     return response.data;
   } catch (error) {
     throw error;

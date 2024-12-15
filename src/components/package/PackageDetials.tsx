@@ -17,9 +17,7 @@ export default function PackageDetials({
 }: PackageDetialsProps) {
   const router = useRouter();
   const rating = countReview ? countRating / countReview : 0;
-  console.log(rating);
-  console.log(countReview,"review");
-  console.log(countRating,"rating");
+
 
 
   return (

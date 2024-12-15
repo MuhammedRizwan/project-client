@@ -3,13 +3,14 @@ import { Card, CardBody } from "@nextui-org/react";
 import { Users, PlaneTakeoff, HandCoins, Boxes} from "lucide-react";
 import { ReviewProgress } from "@/components/dashboard/review-progress";
 import { useEffect, useState } from "react";
-import { fetchDashboardData } from "@/config/admin/authservice";
+import { fetchDashboardData, getbarChart } from "@/config/admin/authservice";
 import dynamic from "next/dynamic";
 import { MetricCardSkeleton } from "@/components/dashboard/metric-card";
 import Agent from "@/interfaces/agent";
-import ConfirmAgent from "@/components/dashboard/order-item";
-import BarGraph from "@/components/dashboard/bargraph";
+import ConfirmAgent from "@/components/dashboard/confirmagent";
+import BarGraph, { MonthlyDataItem } from "@/components/dashboard/bargraph";
 import DoughnutChart from "@/components/dashboard/doughnutchart";
+import Wallet from "@/interfaces/wallet";
 // import { ProjectRow } from "@/components/dashboard/project-row";
 
 const MetricCard = dynamic(() => import("@/components/dashboard/metric-card"), {
@@ -31,6 +32,8 @@ export default function Dashboard() {
     cancelbooking: 0,
   });
   const [confirm, setConfirm] = useState<Agent[] | null>(null);
+  const [revenue,setRevenue]=useState<Wallet|null>(null)
+  const [monthlyData, setMonthlyData] = useState<MonthlyDataItem[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,6 +43,7 @@ export default function Dashboard() {
           setAgent(response.agent);
           setPackages(response.packages);
           setBooking(response.bookings);
+          setRevenue(response.revenue)
           setConfirm(response.unconfirmedagency);
         }
       } catch (error) {
@@ -48,6 +52,21 @@ export default function Dashboard() {
     };
     fetchData();
   }, []);
+  useEffect(()=>{
+  const fetchMonthlyData = async () => {
+    try {
+      const response = await getbarChart();
+      if (response.success) {
+        setMonthlyData(response.barChartData);
+      }
+    } catch (error) {
+      console.error("Error fetching monthly data:", error);
+    }
+  };
+
+  fetchMonthlyData();
+}, []);
+
   return (
     <div className="p-8 max-w-[1600px] mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -84,9 +103,9 @@ export default function Dashboard() {
           icon={HandCoins}
           color="bg-zinc-900"
           title="Revenue"
-          value="940"
+          value={revenue?.walletBalance as number}
           percentage="+90%"
-          route="/admin/user"
+          route="/admin/wallet"
         />
       </div>
 
@@ -144,7 +163,7 @@ export default function Dashboard() {
       </div>
       <div className="flex gap-5 space-y-3">
         <DoughnutChart/>
-        <BarGraph/>
+        <BarGraph data={monthlyData}/>
       </div>
     </div>
   );

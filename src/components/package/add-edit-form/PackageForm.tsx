@@ -192,9 +192,8 @@ export default function PackageForm({
     fileInput.click(); // Open the file dialog
   };
 
-  console.log(initialData);
+  
   const onSubmitHandler = (data: PackageFormValues) => {
-    console.log(data);
     const formData = new FormData();
     formData.append("packageName", data.package_name);
     formData.append("maxPerson", data.max_person.toString());

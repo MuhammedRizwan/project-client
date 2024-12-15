@@ -41,8 +41,9 @@ export const fetch_one_booking = async (bookingId: string | undefined) => {
 export const change_booking_status = async (
   bookingId: string | undefined,
   data: {
-    status: "pending" | "confirmed" | "canceled"| undefined;
-  cancellation_reason: string | undefined;}
+    status: "pending" | "confirmed" | "canceled" | undefined;
+    cancellation_reason: string | undefined;
+  }
 ) => {
   try {
     const response = await axiosInstance.patch(
@@ -62,7 +63,13 @@ export const change_booking_status = async (
 export const change_Travel_status = async (
   bookingId: string | undefined,
   data: {
-    travel_status: "pending" | "on-going" | "canceled" | "completed" | undefined;}
+    travel_status:
+      | "pending"
+      | "on-going"
+      | "canceled"
+      | "completed"
+      | undefined;
+  }
 ) => {
   try {
     const response = await axiosInstance.patch(
@@ -78,4 +85,15 @@ export const change_Travel_status = async (
     throw error;
   }
 };
-
+export const newBookings = async (agentId: string | undefined) => {
+  try {
+    const response = await axiosInstance.get(`/booking/new-bookings/${agentId}`);
+    return response.data as {
+      success: boolean;
+      message: string;
+      newBooking: Booking[];
+    };
+  } catch (error) {
+    throw error;
+  }
+};

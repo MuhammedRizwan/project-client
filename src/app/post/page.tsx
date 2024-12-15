@@ -41,7 +41,7 @@ export default function PostList(): JSX.Element {
       try {
         const response = await fetch_all_post();
         if (response.success) {
-          console.log(response.post);
+        
           setPosts(response.post);
         }
       } catch (error) {
