@@ -9,6 +9,8 @@ import axios from "axios";
 import { BookingCard } from "@/components/booking/BookingCard";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Radio, RadioGroup, Textarea } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/components/context/socketContext";
+import Package from "@/interfaces/package";
 
 const defaultReasons = [
   "Change of plans",
@@ -19,6 +21,7 @@ const defaultReasons = [
 ]
 export default function TravelBookings() {
   const router=useRouter()
+  const {socket}=useSocket()
   const user = useSelector((state: RootState) => state.user.user);
   const [travelHistory, setTravelHistory] = useState<Booking[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,6 +64,17 @@ export default function TravelBookings() {
         cancellation_reason: finalReason
       });
       if (response.success) {
+        if (socket) {
+          const Notification = {
+            heading:"Booking Canceled",
+            message: `${(selectedBooking.package_id as Package)?.package_name} Booked by ${user?.username} please Confirm the Booking.`,
+            from: user?._id,
+            fromModel: "User",
+            to: selectedBooking.travel_agent_id,
+            toModel: "Agent",
+          };
+          socket.emit("to-the-agent", Notification);
+        }
         setTravelHistory((prev) =>
           prev.map((b) =>
             b._id === selectedBooking._id

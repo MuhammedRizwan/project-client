@@ -2,6 +2,7 @@ import { ForgetPassword } from "@/app/(user)/forget-password/page";
 import { GoogleData } from "@/app/(user)/google/page";
 import { LoginFormData } from "@/components/user/forms/LoginForm";
 import { SignupFormData } from "@/components/user/forms/SignupForm";
+import INotification from "@/interfaces/notification";
 import OTP from "@/interfaces/otp";
 import User from "@/interfaces/user";
 import axiosInstance from "@/lib/axiosInstence";
@@ -99,5 +100,18 @@ export const filtered_data=async(apiUrl:string,searchTerm:string,currentPage:num
     throw error
   }
 
+}
+export const fetch_user_notification=async(userId:string|undefined)=>{
+  try {
+    const response=await axiosInstance.get(`/notification/user/${userId}`)
+    return response.data as {
+      success:boolean;
+      message:string;
+      notifications:INotification[]|[]
+    }
+    
+  } catch (error) {
+    throw error
+  }
 }
 

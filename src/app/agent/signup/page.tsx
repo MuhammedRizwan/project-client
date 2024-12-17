@@ -22,11 +22,11 @@ export interface SignupFormData {
   confirmPassword: string;
   phone: string;
   location: string;
-  document: File|null;
+  document: File | null;
 }
 
 export default function SignupForm() {
-  useAgent()
+  useAgent();
   const router = useRouter();
   const {
     register,
@@ -57,9 +57,9 @@ export default function SignupForm() {
       //   toast.error("Please Add Any Document")
       //   return
       // }
-      data.document=uploadedFile
+      data.document = uploadedFile;
       const response = await signup(data);
-      if (response.success) {        
+      if (response.success) {
         const { agent } = response;
         dispatch(addAgent(agent));
         toast.success(response.message);

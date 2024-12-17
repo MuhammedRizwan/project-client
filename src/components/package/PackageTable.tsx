@@ -32,7 +32,7 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
           onClick={() => {
             router.push("/agent/travel-packages/add");
           }}
-          className="bg-yellow-600 text-white rounded"
+          className="bg-orange-500 text-white rounded"
         >
           Add Package
         </Button>
@@ -82,7 +82,7 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
                 </div>
                 <div className="flex justify-end space-x-3 mt-3">
                   <Button
-                    className="bg-yellow-500"
+                    className="bg-zinc-900 text-white"
                     onClick={() => router.push(`/agent/bookings/package/${pkg._id}`)}
                   >
                     bookings
@@ -96,7 +96,7 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
                     {pkg.is_block ? "Unblock" : "Block"}
                   </Button>
                   <Button
-                    color="primary"
+                    className="bg-zinc-900 text-white"
                     onClick={() =>
                       router.push(`/agent/travel-packages/edit/${pkg._id}`)
                     }

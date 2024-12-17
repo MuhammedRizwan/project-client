@@ -2,6 +2,7 @@ import { LoginFormData } from "@/components/admin/AdminLoginForm";
 import { MonthlyDataItem } from "@/components/dashboard/bargraph";
 import Admin from "@/interfaces/admin";
 import Agent from "@/interfaces/agent";
+import INotification from "@/interfaces/notification";
 import User from "@/interfaces/user";
 import Wallet from "@/interfaces/wallet";
 import axiosInstance from "@/lib/axiosInstence";
@@ -168,3 +169,17 @@ export const agentBookings = async (agentId: string) => {
     throw error;
   }
 };
+
+export const fetch_admin_notification=async(adminId:string|undefined)=>{
+  try {
+    const response=await axiosInstance.get(`/notification/admin/${adminId}`)
+    return response.data as {
+      success:boolean;
+      message:string;
+      notifications:INotification[]|[]
+    }
+    
+  } catch (error) {
+    throw error
+  }
+}

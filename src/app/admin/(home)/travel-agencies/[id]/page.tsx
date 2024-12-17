@@ -7,8 +7,13 @@ import toast from "react-hot-toast";
 
 import { agent_data, block_agent, verify_agent } from "@/config/admin/authservice";
 import { Image } from "@nextui-org/react";
+import { useSocket } from "@/components/context/socketContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function ProfileCard({ params }: { params: { id: string } }) {
+  const {socket}=useSocket();
+  const admin=useSelector((state:RootState)=>state.admin.admin)
   const [agent, setAgent] = useState<Agent | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -63,7 +68,20 @@ export default function ProfileCard({ params }: { params: { id: string } }) {
     try {
       const response = await verify_agent({id: params.id,admin_verified: "accept"})
       if (response.success) {
+        const agent=response.agent
+        if (socket) {
+          const Notification = {
+            heading:"Agent Confirmed",
+            message: `Hi ${agent.agency_name}, Welcome to the Heaven Finder.`,
+            from: admin?._id,
+            fromModel: "Admin",
+            to: agent._id,
+            toModel: "Agent",
+          };
+          socket.emit("to-the-agent", Notification);
+        }
         toast.success(response.message);
+
         setAgent((prev) => prev && { ...prev, admin_verified: "accept" });
       }
     } catch (error) {

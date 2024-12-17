@@ -92,7 +92,7 @@ export default function MonthlyGraph({ data }: MonthlyGraphProps) {
         <h4 className="font-bold text-large">Monthly Graph</h4>
         <p className="text-tiny uppercase font-bold">Booking & Revenue</p>
       </CardHeader>
-      <CardBody className="overflow-visible py-2">
+      <CardBody className="overflow-visible py-2 w-full">
         <Bar data={chartData} options={options} />
       </CardBody>
     </Card>

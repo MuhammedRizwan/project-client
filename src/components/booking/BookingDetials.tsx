@@ -25,6 +25,7 @@ import {
 } from "@nextui-org/react";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { useSocket } from "../context/socketContext";
 
 const defaultReasons = [
   "Change of plans",
@@ -39,6 +40,7 @@ export default function BookingDetails({
 }: {
   params: { bookingId: string };
 }) {
+  const {socket}=useSocket()
   const userId = useSelector((state: RootState) => state.user.user?._id);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [packages, setPackages] = useState<Package | null>(null);
@@ -90,6 +92,17 @@ export default function BookingDetails({
       });
       if (response.success) {
         const { changeBookingstatus } = response;
+        if (socket) {
+          const Notification = {
+            heading: "Booking Status Updated",
+            message: `Your booking status has been updated to ${changeBookingstatus.booking_status}.`,
+            from: booking.travel_agent_id,
+            fromModel: "Agent",
+            to:userId,
+            toModel: "User",
+          };
+          socket.emit("to-the-user", Notification);
+        }
         setBooking((prev) => {
           if (prev) {
             return {
@@ -123,6 +136,17 @@ export default function BookingDetails({
 
       if (response.success) {
         const { changeTravelstatus } = response;
+        if (socket) {
+          const Notification = {
+            heading: "Travel Status Updated",
+            message: `Your travel status has been updated to ${changeTravelstatus.travel_status}.`,
+            from: booking.travel_agent_id,
+            fromModel: "Agent",
+            to:changeTravelstatus.user_id,
+            toModel: "User",
+          };
+          socket.emit("to-the-user", Notification);
+        }
         setBooking((prev) => {
           if (prev) {
             return {

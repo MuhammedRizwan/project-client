@@ -5,6 +5,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import { PersistGate } from "redux-persist/integration/react";
 import { SocketProvider } from "@/components/context/socketContext";
 
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>

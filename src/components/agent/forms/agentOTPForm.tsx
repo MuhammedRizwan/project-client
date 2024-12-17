@@ -1,4 +1,5 @@
 "use client";
+import { useSocket } from "@/components/context/socketContext";
 import { otp_verification, send_otp } from "@/config/agent/authservice";
 import { addAgent } from "@/store/reducer/agentReducer";
 import { AppDispatch, RootState } from "@/store/store";
@@ -11,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function AgentOTPInputs() {
   const router = useRouter();
+  const {socket}=useSocket()
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [timer, setTimer] = useState(0);
   const [otp, setOtp] = useState(["", "", "", ""]); // State to store OTP input
@@ -66,6 +68,16 @@ export default function AgentOTPInputs() {
       const response = await otp_verification({Otp,agent});
       if (response.success) {
         const { agent } = response;
+        if (socket) {
+          const Notification = {
+            heading:"New Agent Registered",
+            message: `Agent ${agent.agency_name} has been registered.`,
+            url: `/admin/travel-agencies/${agent._id}`,
+            from: agent._id,
+            fromModel: "Agent",
+          };
+          socket.emit("to-the-admin", Notification);
+        }
         dispatch(addAgent(agent));
         toast.success(response.message);
         router.push("/agent/Dashboard");

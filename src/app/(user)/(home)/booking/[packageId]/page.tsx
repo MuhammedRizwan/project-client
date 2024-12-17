@@ -17,6 +17,7 @@ import {
 } from "@/interfaces/booking";
 import { CouponForm } from "@/components/coupon/CouponForm";
 import BookingFormUser from "@/components/booking/BookingForm";
+import { useSocket } from "@/components/context/socketContext";
 
 declare global {
   interface Window {
@@ -30,6 +31,7 @@ export default function BookingForm({
   params: { packageId: string };
 }) {
   const router = useRouter();
+  const {socket}=useSocket()
   const { user } = useSelector((state: RootState) => state.user);
   const [packageData, setPackageData] = useState<Package | null>(null);
   const [members, setMembers] = useState([{ name: "", age: "" }]);
@@ -95,6 +97,18 @@ export default function BookingForm({
           if (data.successpayment) {
             const response = await booking(payload);
             if (response.success) {
+              if (socket) {
+                const Notification = {
+                  heading:"New Booking ",
+                  message: `${packageData?.package_name} Booked by ${user?.username} please Confirm the Booking.`,
+                  from: user?._id,
+                  fromModel: "User",
+                  url:`/agent/bookings/${response.booking._id}`,
+                  to: response.booking.travel_agent_id,
+                  toModel: "Agent",
+                };
+                socket.emit("to-the-agent", Notification);
+              }
               router.push(`/payment/${response.booking._id}`);
             } else {
               toast.error("Something went wrong. Please try again later.");

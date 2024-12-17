@@ -15,8 +15,13 @@ import {
   edit_category,
 } from "@/config/admin/categoryservice";
 import axios from "axios";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
+import { useSocket } from "@/components/context/socketContext";
 
 export default function Categories() {
+  const {socket} =useSocket()
+  const admin=useSelector((state:RootState)=>state.admin.admin)
   const [categories, setCategories] = useState<Category[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -39,6 +44,16 @@ export default function Categories() {
       //changed formData check after
       const response = await add_category(data);
       if (response.success) {
+        if (socket) {
+          const Notification = {
+            heading:"New Category Added",
+            message: `We added new package with ${response.category?.category_name} category.`,
+            from: admin?._id,
+            fromModel: "Admin",
+            toModel: "Agent",
+          };
+          socket.emit("to-agents", Notification);
+        }
         setCategories([...categories, response.category]);
         toast.success("Category added successfully");
       }

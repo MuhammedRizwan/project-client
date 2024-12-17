@@ -21,7 +21,7 @@ export default function AdminSidebar({ Name = "HEAVEN FINDER" }) {
             { href: "/admin/bookings", label: "Bookings", icon: <Calendar className="w-6 h-6  mr-3" /> },
             { href: "/admin/coupons", label: "Coupon", icon: <Gift className="w-6 h-6  mr-3" /> },
             { href: "/admin/wallet", label: "Wallet", icon: <Wallet className="w-6 h-6  mr-3" /> },
-            { href: "/admin/notifications", label: "Notifications", icon: <Bell className="w-6 h-6  mr-3" /> },
+            { href: "/admin/notification", label: "Notifications", icon: <Bell className="w-6 h-6  mr-3" /> },
           ].map((item) => (
             <li
               key={item.href}

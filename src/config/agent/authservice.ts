@@ -3,6 +3,7 @@ import { SignupFormData } from "@/app/agent/signup/page";
 import { LoginFormData } from "@/components/agent/forms/AgentLoginForm";
 import { MonthlyDataItem } from "@/components/dashboard/bargraph";
 import Agent from "@/interfaces/agent";
+import INotification from "@/interfaces/notification";
 import OTP from "@/interfaces/otp";
 import axiosInstance from "@/lib/axiosInstence";
 
@@ -170,6 +171,20 @@ export const getAgentbarChart=async(agentId:string|undefined)=>{
       message: string;
       barChartData:MonthlyDataItem[];
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const fetch_agent_notification=async(agentId:string|undefined)=>{
+  try {
+    const response=await axiosInstance.get(`/notification/agent/${agentId}`)
+    return response.data as {
+      success:boolean;
+      message:string;
+      notifications:INotification[]|[]
+    }
+    
   } catch (error) {
     throw error
   }
