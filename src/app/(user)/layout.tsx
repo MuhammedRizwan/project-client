@@ -1,5 +1,4 @@
 import Header from "@/components/user/Navbar";
-// import Footer from "@/components/user/Footer";
 import ProtectedRouter from "@/components/user/protuctedRouter";
 
 import type { Metadata } from "next";

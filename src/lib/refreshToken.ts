@@ -11,10 +11,10 @@ export default async function refreshToken() {
   
       // Determine the correct refresh endpoint based on the refresh token type
       const endpoint = Cookies.get("adminRefreshToken")
-        ? "http://localhost:5000/admin/refresh-token"
+        ? process.env.NEXT_PUBLIC_API_ADMIN_URL+"/refresh-token"
         : Cookies.get("agentRefreshToken")
-        ? "http://localhost:5000/agent/refresh-token"
-        : "http://localhost:5000/refresh-token";
+        ? process.env.NEXT_PUBLIC_API_AGENT_URL+"/refresh-token"
+        : process.env.NEXT_PUBLIC_API_BASE_URL+"/refresh-token";
   
       // Make the request to refresh the token
       const res = await axios.post(endpoint, { refreshToken });

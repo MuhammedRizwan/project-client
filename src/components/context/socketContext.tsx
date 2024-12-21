@@ -11,8 +11,6 @@ import React, {
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
 
-const URL = "http://localhost:5000";
-
 interface SocketContextType {
   socket: Socket | null;
   onlineUsers: string[] | undefined;
@@ -43,7 +41,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (loggedUser ) {
       const role = getRole();
-      const newSocket = io(URL, {
+      const newSocket = io(process.env.NEXT_PUBLIC_API_BASE_URL, {
         query: {
           transports: ["websocket"],
           userId: loggedUser._id,

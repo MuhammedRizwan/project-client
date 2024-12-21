@@ -4,9 +4,9 @@ import refreshToken from "./refreshToken";
 import toast from "react-hot-toast";
 
 const getBaseUrl = () => {
-  if (Cookies.get("adminToken")) return "http://localhost:5000/admin";
-  if (Cookies.get("agentToken")) return "http://localhost:5000/agent";
-  return "http://localhost:5000";
+  if (Cookies.get("adminToken")) return process.env.NEXT_PUBLIC_API_ADMIN_URL;
+  if (Cookies.get("agentToken")) return process.env.NEXT_PUBLIC_API_AGENT_URL;
+  return process.env.NEXT_PUBLIC_API_BASE_URL;
 };
 
 const getToken = () =>

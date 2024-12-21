@@ -2,7 +2,6 @@ import User from "@/interfaces/user";
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
-// const api = "http://localhost:5000";
 
 
 const initialState = {
