@@ -30,22 +30,12 @@ export default function AdminNavbar() {
   };
 
   return (
-    <Navbar shouldHideOnScroll maxWidth="full">
+    <Navbar maxWidth="full">
       <NavbarBrand>
         <Logo />
         <p className="font-bold text-inherit">HEAVEN FINDER</p>
       </NavbarBrand>
       <NavbarContent justify="end">
-        {/* <NavbarItem>
-          <div>
-            <Link href="/admin/dashboard">Dashboard</Link>
-            <Link href="/admin/user">Users</Link>
-            <Link href="/admin/travel-agencies">Travel Agencies</Link>
-            <Link href="/admin/category">Category</Link>
-            <Link href="/admin/bookings">Bookings</Link>
-            <Link href="/admin/coupons">Coupon</Link>
-          </div>
-        </NavbarItem> */}
         <NavbarItem>
           {token && (
             <Button onClick={handleLogout} color="primary" variant="flat">

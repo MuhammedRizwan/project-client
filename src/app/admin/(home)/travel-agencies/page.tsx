@@ -60,7 +60,6 @@ export default function TravelAgencies() {
     },
   ];
 
- 
   if (error) return <div>{error}</div>;
   const handleBlockClick = (agent: Agent) => {
     setSelectedAgent(agent);
@@ -70,12 +69,11 @@ export default function TravelAgencies() {
     if (selectedAgent) {
       try {
         const newStatus = !selectedAgent.is_block;
-        const response = await block_agent( {
+        const response = await block_agent({
           id: selectedAgent._id,
           is_block: newStatus,
         });
         if (response.success) {
-        
           toast.success(response.message);
 
           // setAgent((prevAgent) =>
@@ -100,23 +98,28 @@ export default function TravelAgencies() {
   const viewDetialsClick = (agent: Agent) => {
     router.push(`/admin/travel-agencies/${agent._id}`);
   };
-  const apiUrl="/travel-agencies"
+  const apiUrl = "/travel-agencies";
   return (
-    <div>
-      <Table<Agent> columns={agentColumns} apiUrl={apiUrl}/>
-      {showModal && selectedAgent && (
-        <BlockModal
-          title="Confirm Block/Unblock"
-          onClose={() => setShowModal(false)}
-          onConfirm={confirmBlockUser}
-        >
-          <p>
-            Are you sure you want to{" "}
-            {selectedAgent.is_block ? "unblock" : "block"}{" "}
-            {selectedAgent.agency_name}?
-          </p>
-        </BlockModal>
-      )}
+    <div className="p-6 md:p-1 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-700 mb-6">
+          Agency List
+        </h1>
+        <Table<Agent> columns={agentColumns} apiUrl={apiUrl} />
+        {showModal && selectedAgent && (
+          <BlockModal
+            title="Confirm Block/Unblock"
+            onClose={() => setShowModal(false)}
+            onConfirm={confirmBlockUser}
+          >
+            <p>
+              Are you sure you want to{" "}
+              {selectedAgent.is_block ? "unblock" : "block"}{" "}
+              {selectedAgent.agency_name}?
+            </p>
+          </BlockModal>
+        )}
+      </div>
     </div>
   );
 }

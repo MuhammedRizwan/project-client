@@ -20,10 +20,9 @@ import { useSelector } from "react-redux";
 import { useSocket } from "@/components/context/socketContext";
 
 export default function Categories() {
-  const {socket} =useSocket()
-  const admin=useSelector((state:RootState)=>state.admin.admin)
+  const { socket } = useSocket();
+  const admin = useSelector((state: RootState) => state.admin.admin);
   const [categories, setCategories] = useState<Category[]>([]);
-  // const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
@@ -41,13 +40,12 @@ export default function Categories() {
   const handleAddCategory = async (data: CategoryFormValues) => {
     try {
       setButtonLoading(true);
-      //changed formData check after
       const response = await add_category(data);
       if (response.success) {
         if (socket) {
           const Notification = {
-            heading:"New Category Added",
-            message: `We added new package with ${response.category?.category_name} category.`,
+            heading: "New Category Added",
+            message: `We added a new category: ${response.category?.category_name}.`,
             from: admin?._id,
             fromModel: "Admin",
             toModel: "Agent",
@@ -73,11 +71,6 @@ export default function Categories() {
     if (!selectedCategory) return;
     try {
       setButtonLoading(true);
-      // const formData = new FormData();
-      // formData.append("category_name", data.category_name);
-      // formData.append("description", data.description);
-      // if (data.image) formData.append("image", data.image);
-
       const response = await edit_category(selectedCategory._id, data);
       if (response.success) {
         setCategories((prev) =>
@@ -124,6 +117,7 @@ export default function Categories() {
       setSelectedCategory(null);
     }
   };
+
   const columns: TableColumn<Category>[] = [
     {
       key: "image",
@@ -132,39 +126,47 @@ export default function Categories() {
         <Image
           src={item.image}
           alt="Category"
-          width={80}
-          height={80}
-          className="w-16 h-16 rounded-lg shadow"
+          width={400}
+          height={300}
+          className="w-full  h-52 md:h-16 rounded-lg object-cover"
         />
       ),
     },
-    { key: "category_name", label: "Category Name" },
-    { key: "description", label: "Description" },
     {
-      key: "is_block",
-      label: "Blocked",
+      key: "description",
+      label: "Details",
       render: (item) => (
-        <Button
-          onClick={() => handleBlockClick(item)}
-          className={`${item.is_block ? "bg-green-500" : "bg-red-500"}`}
-        >
-          {item.is_block ? "Unblock" : "Block"}
-        </Button>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
+          <div className="md:mr-4">
+            <p className="font-bold text-lg">{item.category_name}</p>
+            <p className="text-sm text-gray-500">{item.description}</p>
+          </div>
+        </div>
       ),
     },
     {
-      key: "_id",
-      label: "Edit",
+      key: "is_block",
+      label: "Actions",
       render: (item) => (
-        <Button
-          className="text-sm text-bold bg-blue-500"
-          onClick={() => {
-            setSelectedCategory(item);
-            setShowEditCategoryModal(true);
-          }}
-        >
-          Edit
-        </Button>
+        <div className="flex flex-row items-center space-x-2">
+          <Button
+            onClick={() => handleBlockClick(item)}
+            className={`${
+              item.is_block ? "bg-green-500" : "bg-red-500"
+            } text-white`}
+          >
+            {item.is_block ? "Unblock" : "Block"}
+          </Button>
+          <Button
+            onClick={() => {
+              setSelectedCategory(item);
+              setShowEditCategoryModal(true);
+            }}
+            className="bg-zinc-900 text-white"
+          >
+            Edit
+          </Button>
+        </div>
       ),
     },
   ];
@@ -172,47 +174,52 @@ export default function Categories() {
   const apiUrl = "/category";
 
   return (
-    <>
-      <Table<Category>
-        columns={columns}
-        apiUrl={apiUrl}
-        addButton={addCategory}
-        buttonName="Add Category"
-      />
-
-      {showModal && selectedCategory && (
-        <BlockModal
-          title="Confirm Action"
-          onClose={() => setShowModal(false)}
-          onConfirm={confirmBlockUser}
-        >
-          <p>
-            Are you sure you want to{" "}
-            {selectedCategory.is_block ? "unblock" : "block"} this category?
-          </p>
-        </BlockModal>
-      )}
-
-      {showAddCategoryModal && (
-        <CategoryModal
-          isOpen={showAddCategoryModal}
-          onClose={() => setShowAddCategoryModal(false)}
-          onSubmit={handleAddCategory}
-          title="Add Category"
-          loading={buttonLoading}
+    <div className="p-6 md:p-1 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-700 mb-6">
+          Category List
+        </h1>
+        <Table<Category>
+          columns={columns}
+          apiUrl={apiUrl}
+          addButton={addCategory}
+          buttonName="Add Category"
         />
-      )}
 
-      {showEditCategoryModal && selectedCategory && (
-        <CategoryModal
-          isOpen={showEditCategoryModal}
-          onClose={() => setShowEditCategoryModal(false)}
-          onSubmit={handleEditCategory}
-          initialData={selectedCategory}
-          title="Edit Category"
-          loading={buttonLoading}
-        />
-      )}
-    </>
+        {showModal && selectedCategory && (
+          <BlockModal
+            title="Confirm Action"
+            onClose={() => setShowModal(false)}
+            onConfirm={confirmBlockUser}
+          >
+            <p>
+              Are you sure you want to{" "}
+              {selectedCategory.is_block ? "unblock" : "block"} this category?
+            </p>
+          </BlockModal>
+        )}
+
+        {showAddCategoryModal && (
+          <CategoryModal
+            isOpen={showAddCategoryModal}
+            onClose={() => setShowAddCategoryModal(false)}
+            onSubmit={handleAddCategory}
+            title="Add Category"
+            loading={buttonLoading}
+          />
+        )}
+
+        {showEditCategoryModal && selectedCategory && (
+          <CategoryModal
+            isOpen={showEditCategoryModal}
+            onClose={() => setShowEditCategoryModal(false)}
+            onSubmit={handleEditCategory}
+            initialData={selectedCategory}
+            title="Edit Category"
+            loading={buttonLoading}
+          />
+        )}
+      </div>
+    </div>
   );
 }

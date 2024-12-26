@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import ProtectedRouter from "@/components/admin/ProtectedRouter";
 import AdminSidebar from "@/components/admin/AdminSideBar";
 import Notifications from "@/components/notification/notification";
@@ -15,7 +15,7 @@ export default function AdminLayout({
   const [notificationsData, setNotificationsData] =
     useState<INotification | null>(null);
   useEffect(() => {
-    if(!socket)return
+    if (!socket) return;
     socket.on("show-notification", (notification) => {
       setNotificationsData(notification);
     });
@@ -25,9 +25,10 @@ export default function AdminLayout({
   }, [socket]);
   return (
     <ProtectedRouter>
-       {notificationsData && (
-              <Notifications notificationsData={notificationsData} />
-            )}
+      {notificationsData && (
+        <Notifications notificationsData={notificationsData} />
+      )}
+      
       <div className="flex min-h-screen bg-gray-100">
         <AdminSidebar Name="DASHBOARD" />
         <div className="flex-1 p-2">{children}</div>

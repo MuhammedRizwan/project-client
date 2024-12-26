@@ -1,12 +1,9 @@
-import {
-  Pagination,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
-import { fetch_table_data } from "@/config/admin/authservice";
-import React, { useState, useEffect } from "react";
-import SearchInput from "./searchInput";
+"use client";
 
+import React, { useState, useEffect } from "react";
+import { Pagination, Select, SelectItem, Button } from "@nextui-org/react";
+import { fetch_table_data } from "@/config/admin/authservice";
+import SearchInput from "./searchInput";
 
 export interface TableColumn<T extends object> {
   key: keyof T;
@@ -37,8 +34,8 @@ const Table = <T extends object>({
 
   const rowsPerPage = 8;
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement> ) => {
-    setFilter(event.target.value as "all" | "blocked" | "unblocked");
+  const handleFilterChange = (value: string) => {
+    setFilter(value as "all" | "blocked" | "unblocked");
   };
 
   useEffect(() => {
@@ -62,56 +59,58 @@ const Table = <T extends object>({
   }, [searchTerm, currentPage, columns, apiUrl, filter]);
 
   return (
-    <div className="max-w-6xl m-2 bg-white p-2 rounded-lg shadow-lg">
-      <div className="mb-4 flex justify-between">
-        <div className="w-1/2">
-          <SearchInput
-            onSearch={setSearchTerm}
-          />
+    <div className="w-full max-w-6xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-lg">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="w-full sm:w-1/2">
+          <SearchInput onSearch={setSearchTerm} />
         </div>
 
-        {blockfilter && (
-          <div className="me-4">
+        <div className="flex flex-row flex-wrap gap-4 items-center">
+          {blockfilter && (
             <Select
-              placeholder="All"
-              value={filter}
-              onChange={handleFilterChange}
-              className="w-28"
+              placeholder="Filter"
+              selectedKeys={[filter]}
+              onChange={(e) => handleFilterChange(e.target.value)}
+              className="w-full sm:w-auto min-w-[150px] bg-gray-50 rounded-md shadow-sm"
             >
-              <SelectItem value="all" key={"all"}>All</SelectItem>
-              <SelectItem value="blocked" key={"blocked"}>Blocked</SelectItem>
-              <SelectItem value="unblocked" key={"unblocked"}>Unblocked</SelectItem>
+              <SelectItem key="all" value="all">
+                All
+              </SelectItem>
+              <SelectItem key="blocked" value="blocked">
+                Blocked
+              </SelectItem>
+              <SelectItem key="unblocked" value="unblocked">
+                Unblocked
+              </SelectItem>
             </Select>
-          </div>
-        )}
+          )}
 
-        {buttonName && (
-          <div className="mb-2">
-            <button
+          {buttonName && (
+            <Button
               onClick={addButton}
-              className="px-4 py-2 w-36 bg-yellow-600 text-white rounded"
+              className="flex-none w-full sm:w-auto px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-md"
             >
               {buttonName}
-            </button>
-          </div>
-        )}
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse rounded-lg shadow-sm">
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="w-full border-collapse rounded-lg shadow-sm">
           <thead>
             <tr>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className="px-6 py-3 font-semibold text-xs uppercase tracking-wider text-center bg-gray-50"
+                  className="px-6 py-3 font-semibold text-xs uppercase tracking-wider text-left bg-gray-50 text-gray-700"
                 >
                   {column.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="text-center">
+          <tbody>
             {data.length > 0 ? (
               data.map((row, index) => (
                 <tr
@@ -121,7 +120,10 @@ const Table = <T extends object>({
                   } hover:bg-gray-100`}
                 >
                   {columns.map((column) => (
-                    <td key={String(column.key)} className="px-6 py-4 text-xs">
+                    <td
+                      key={String(column.key)}
+                      className="px-6 py-4 text-sm text-gray-700"
+                    >
                       {column.render
                         ? column.render(row)
                         : (row[column.key] as React.ReactNode)}
@@ -131,7 +133,10 @@ const Table = <T extends object>({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="text-center py-4">
+                <td
+                  colSpan={columns.length}
+                  className="text-center py-4 text-gray-500"
+                >
                   No data available
                 </td>
               </tr>
@@ -140,7 +145,34 @@ const Table = <T extends object>({
         </table>
       </div>
 
-      <div className="flex justify-center items-center mt-4">
+      <div className="sm:hidden space-y-4">
+        {data.length > 0 ? (
+          data.map((row, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md p-4">
+              <div className="space-y-2">
+                {columns.map((column) => (
+                  <div key={String(column.key)} className="flex flex-col">
+                    <span className="text-xs font-medium text-gray-500">
+                      {column.label}
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      {column.render
+                        ? column.render(row)
+                        : (row[column.key] as React.ReactNode)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-4 text-gray-500">
+            No data available
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-center items-center mt-6">
         <Pagination
           showControls
           total={totalPages}

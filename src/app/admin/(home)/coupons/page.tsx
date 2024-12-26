@@ -148,37 +148,42 @@ export default function CouponsPage() {
 
   const apiUrl = "/coupon";
   return (
-    <>
-      <Table<Coupon>
-        columns={couponColumns}
-        apiUrl={apiUrl}
-        addButton={addCoupon}
-        buttonName="Add Coupon"
-      />
-
-      {showModal && (
-        <CouponModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSubmit={handleCouponSubmit}
-          coupon={selectedCoupon}
-          mode={modalMode}
+    <div className="p-6 md:p-1 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-700 mb-6">
+          Coupon List
+        </h1>
+        <Table<Coupon>
+          columns={couponColumns}
+          apiUrl={apiUrl}
+          addButton={addCoupon}
+          buttonName="Add Coupon"
         />
-      )}
 
-      {showBlockModal && selectedCoupon && (
-        <BlockModal
-          title="Confirm Block/Unblock"
-          onClose={() => setShowBlockModal(false)}
-          onConfirm={BlockCoupon}
-        >
-          <p>
-            Are you sure you want to{" "}
-            {selectedCoupon.is_active ? "block" : "unblock"}{" "}
-            {selectedCoupon.coupon_code}?
-          </p>
-        </BlockModal>
-      )}
-    </>
+        {showModal && (
+          <CouponModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSubmit={handleCouponSubmit}
+            coupon={selectedCoupon}
+            mode={modalMode}
+          />
+        )}
+
+        {showBlockModal && selectedCoupon && (
+          <BlockModal
+            title="Confirm Block/Unblock"
+            onClose={() => setShowBlockModal(false)}
+            onConfirm={BlockCoupon}
+          >
+            <p>
+              Are you sure you want to{" "}
+              {selectedCoupon.is_active ? "block" : "unblock"}{" "}
+              {selectedCoupon.coupon_code}?
+            </p>
+          </BlockModal>
+        )}
+      </div>
+    </div>
   );
 }
