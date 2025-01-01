@@ -8,16 +8,14 @@ import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
 import Script from "next/script";
 import { Button } from "@nextui-org/react";
-import { booking, create_order, verify_order } from "@/config/user/bookingservice";
+import { booking, create_order, verify_order } from "@/config/user/bookingservice"; // Import wallet payment
 import { fetch_one_package } from "@/config/user/packageservice";
-import {
-  BookingData,
-  RazorpayOptions,
-  RazorpayResponse,
-} from "@/interfaces/booking";
+import { BookingData, RazorpayOptions, RazorpayResponse } from "@/interfaces/booking";
 import { CouponForm } from "@/components/coupon/CouponForm";
 import BookingFormUser from "@/components/booking/BookingForm";
 import { useSocket } from "@/components/context/socketContext";
+import { wallet_payment } from "@/config/user/walletservice";
+import axios from "axios";
 
 declare global {
   interface Window {
@@ -31,7 +29,7 @@ export default function BookingForm({
   params: { packageId: string };
 }) {
   const router = useRouter();
-  const {socket}=useSocket()
+  const { socket } = useSocket();
   const { user } = useSelector((state: RootState) => state.user);
   const [packageData, setPackageData] = useState<Package | null>(null);
   const [members, setMembers] = useState([{ name: "", age: "" }]);
@@ -39,6 +37,7 @@ export default function BookingForm({
   const [couponId, setCouponId] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'wallet'>('razorpay'); // Track selected payment method
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,54 +76,90 @@ export default function BookingForm({
         coupon_id: couponId,
         start_date: bookingData.start_date,
         payment_status: "pending",
+        payment_method:paymentMethod
       };
-      const response = await create_order({
-        amount: (totalPrice - discount) * 100,
-      });
-      if (!response) throw new Error("Failed to create order");
 
-      const data = await response.order;
-      const paymentData: RazorpayOptions = {
-        key: process.env.RAZORPAY_KEY_ID as string,
-        order_id: data.id,
-        handler: async (response: RazorpayResponse) => {
-          const res = await verify_order({
-            orderId: response.razorpay_order_id,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature,
-          });
-          const data = await res;
-          if (data.successpayment) {
-            const response = await booking(payload);
-            if (response.success) {
-              if (socket) {
-                const Notification = {
-                  heading:"New Booking ",
-                  message: `${packageData?.package_name} Booked by ${user?.username} please Confirm the Booking.`,
-                  from: user?._id,
-                  fromModel: "User",
-                  url:`/agent/bookings/${response.booking._id}`,
-                  to: response.booking.travel_agent_id,
-                  toModel: "Agent",
-                };
-                socket.emit("to-the-agent", Notification);
+      if (paymentMethod === 'razorpay') {
+        // Razorpay payment flow
+        const response = await create_order({
+          amount: (totalPrice - discount) * 100,
+        });
+        if (!response) throw new Error("Failed to create order");
+
+        const data = await response.order;
+        const paymentData: RazorpayOptions = {
+          key: process.env.RAZORPAY_KEY_ID as string,
+          order_id: data.id,
+          handler: async (response: RazorpayResponse) => {
+            const res = await verify_order({
+              orderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            const data = await res;
+            if (data.successpayment) {
+              const bookingResponse = await booking(payload);
+              if (bookingResponse.success) {
+                if (socket) {
+                  const Notification = {
+                    heading: "New Booking ",
+                    message: `${packageData?.package_name} Booked by ${user?.username} please Confirm the Booking.`,
+                    from: user?._id,
+                    fromModel: "User",
+                    url: `/agent/bookings/${bookingResponse.booking._id}`,
+                    to: bookingResponse.booking.travel_agent_id,
+                    toModel: "Agent",
+                  };
+                  socket.emit("to-the-agent", Notification);
+                }
+                router.push(`/payment/${bookingResponse.booking._id}`);
+              } else {
+                toast.error("Something went wrong. Please try again later.");
               }
-              router.push(`/payment/${response.booking._id}`);
             } else {
-              toast.error("Something went wrong. Please try again later.");
+              router.push("/cancel");
             }
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        const payment = new window.Razorpay(paymentData);
+        payment.open();
+      } else if (paymentMethod === 'wallet') {
+        // Wallet payment flow
+        const walletResponse = await wallet_payment({
+          amount: totalPrice - discount,
+          userId: user?._id,
+        });
+        if (walletResponse.success) {
+          const bookingResponse = await booking(payload);
+          if (bookingResponse.success) {
+            if (socket) {
+              const Notification = {
+                heading: "New Booking ",
+                message: `${packageData?.package_name} Booked by ${user?.username} please Confirm the Booking.`,
+                from: user?._id,
+                fromModel: "User",
+                url: `/agent/bookings/${bookingResponse.booking._id}`,
+                to: bookingResponse.booking.travel_agent_id,
+                toModel: "Agent",
+              };
+              socket.emit("to-the-agent", Notification);
+            }
+            router.push(`/payment/${bookingResponse.booking._id}`);
           } else {
-            router.push("/cancel");
+            toast.error("Something went wrong. Please try again later.");
           }
-        },
-        theme: {
-          color: "#3399cc",
-        },
-      };
-      const payment = new window.Razorpay(paymentData);
-      payment.open();
+        }
+      }
     } catch (error) {
-      toast.error("Order creation failed. Please try again.");
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data.message);
+        } else {
+          toast.error("Something went wrong with the payment gateway.");
+        }
+        return;
     } finally {
       setLoading(false);
     }
@@ -147,13 +182,28 @@ export default function BookingForm({
             errors={errors}
             register={register}
           />
-          <Button
-            type="submit"
-            className="w-full py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-            isLoading={loading}
-          >
-            Continue to Payment
-          </Button>
+          <div className="mt-4 flex ">
+            <div className="mr-4 w-full ">
+              <Button
+                type="submit"
+                onClick={() => setPaymentMethod('razorpay')}
+                className="w-full py-3 bg-black text-white rounded-md hover:bg-gray-800"
+                isLoading={loading}
+              >
+                Continue to Razorpay Payment
+              </Button>
+            </div>
+            <div className="mr-4 w-full">
+              <Button
+                type="submit"
+                onClick={() => setPaymentMethod('wallet')}
+                className="w-full py-3 bg-orange-500 text-black rounded-md hover:bg-orange-600"
+                isLoading={loading}
+              >
+                Continue to Wallet Payment
+              </Button>
+            </div>
+          </div>
         </form>
         <CouponForm
           packageData={packageData}

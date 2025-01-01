@@ -20,8 +20,9 @@ export default interface Booking {
   payment_status: "pending" | "paid" | "refunded";
   booking_status: "pending" | "confirmed" | "canceled";
   travel_status: "pending" | "on-going" | "completed" | "canceled";
-  start_date: string; 
-  booking_date: string; 
+  payment_method: "razorpay" | "wallet";
+  start_date: string;
+  booking_date: string;
   cancellation_reason?: string;
   review_id?: string | Review;
 }
@@ -43,6 +44,7 @@ export interface BookingPaload {
   coupon_id: string | undefined;
   start_date: Date;
   payment_status: string;
+  payment_method: string;
 }
 
 export interface BookingData {

@@ -29,56 +29,71 @@ export const verify_order = async (data: {
     throw error;
   }
 };
-export const booking=async(data:BookingPaload)=>{
-    try {
-        const response = await axiosInstance.post("/booking",data)
-        return response.data as {
-            success:boolean, message: string, booking:Booking 
-        }
-    } catch (error) {
-       throw error 
-    }
-}
+export const booking = async (data: BookingPaload) => {
+  try {
+    const response = await axiosInstance.post("/booking", data);
+    return response.data as {
+      success: boolean;
+      message: string;
+      booking: Booking;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const user_booking=async(id:string|undefined)=>{
+export const user_booking = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(`/booking/travel-history/${id}`);
-    return response.data as{
-      success:boolean,message:string,travelHistory:Booking[]
-    }
-  } catch (error) {
-    throw error
-  }
-}
-
-export const cancel_booking=async(id:string|undefined,data:{booking_status:string,cancellation_reason:string})=>{
-  try {
-    const response = await axiosInstance.patch(`/booking/cancel/${id}`,data);
     return response.data as {
-      success:boolean,message:string,cancelBooking:Booking
-    }
+      success: boolean;
+      message: string;
+      travelHistory: Booking[];
+    };
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const fetch_user_booking=async(id:string|undefined)=>{
+export const cancel_booking = async (
+  id: string | undefined,
+  data: { booking_status: string; cancellation_reason: string }
+) => {
+  try {
+    const response = await axiosInstance.patch(`/booking/cancel/${id}`, data);
+    return response.data as {
+      success: boolean;
+      message: string;
+      cancelBooking: Booking;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetch_user_booking = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(`/booking/${id}`);
     return response.data as {
-      success:boolean,message:string,booking:Booking
-    }
+      success: boolean;
+      message: string;
+      booking: Booking;
+    };
   } catch (error) {
-    throw error
+    throw error;
   }
-}
-export const completed_travel=async(id:string|undefined)=>{
+};
+export const completed_travel = async (id: string | undefined) => {
   try {
     const response = await axiosInstance.get(`/booking/travel-completed/${id}`);
     return response.data as {
-      success:boolean,message:string,travelHistory:Booking[]
-    }
+      success: boolean;
+      message: string;
+      travelHistory: Booking[];
+    };
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
+
+

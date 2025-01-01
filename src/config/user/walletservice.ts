@@ -13,3 +13,15 @@ export const fetch_wallet=async(id:string|undefined)=>{
         throw error
     }
 }
+export const wallet_payment = async (data: { userId: string|undefined; amount: number }) => {
+    try {
+      const response = await axiosInstance.post("/wallet/check-balance", data);
+      return response.data as {
+        success: boolean;
+        message: string;
+        wallet: Wallet;
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
