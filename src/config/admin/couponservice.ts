@@ -7,7 +7,7 @@ export const block_coupon = async (
 ) => {
   try {
     const response = await axiosInstance.patch(
-      `/coupon/block/${couponId}}`,
+      `/coupon/block/${couponId}`,
       data
     );
     return response.data as {
