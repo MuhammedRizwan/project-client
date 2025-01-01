@@ -1,6 +1,6 @@
 import Header from "@/components/user/Navbar";
 import ProtectedRouter from "@/components/user/protuctedRouter";
-
+import {GoogleOAuthProvider} from '@react-oauth/google'
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,7 +17,9 @@ export default function UserLayout({
     <>
       <ProtectedRouter>
         <Header />
-        {children}
+        <GoogleOAuthProvider clientId={process.env.AUTH_GOOGLE_ID as string}>
+          {children}
+        </GoogleOAuthProvider>
         {/* <Footer /> */}
       </ProtectedRouter>
     </>
