@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 export default function CouponsPage() {
   const { socket } = useSocket();
   const admin = useSelector((state: RootState) => state.admin.admin);
-  const [, setCoupons] = useState<Coupon[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showBlockModal, setShowBlockModal] = useState<boolean>(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
@@ -115,7 +115,7 @@ export default function CouponsPage() {
           };
           socket.emit("to-users", Notification);
         }
-        setCoupons((prevCoupons) => [...prevCoupons, couponData]);
+        setCoupons((prevCoupons) => [couponData,...prevCoupons]);
         setShowModal(false);
         toast.success(`Coupon added successfully`);
       }
@@ -158,6 +158,8 @@ export default function CouponsPage() {
           apiUrl={apiUrl}
           addButton={addCoupon}
           buttonName="Add Coupon"
+          data={coupons}
+          setData={setCoupons}
         />
 
         {showModal && (

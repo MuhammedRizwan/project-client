@@ -1,9 +1,11 @@
 "use client";
 import Table, { TableColumn } from "@/components/Table";
 import Booking from "@/interfaces/booking";
+import { useState } from "react";
 
 
 export default function BookingsPage() {
+  const [booking,setBooking]=useState<Booking[]>([])
   const bookingColumns: TableColumn<Booking>[] = [
     {
       key: "user_id", // Must match 'keyof Booking'
@@ -71,7 +73,7 @@ export default function BookingsPage() {
 
   return (
     <div>
-     <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} blockfilter={false}/>
+     <Table<Booking> columns={bookingColumns} apiUrl={apiUrl} blockfilter={false} data={booking} setData={setBooking} />
     </div>
   );
 }

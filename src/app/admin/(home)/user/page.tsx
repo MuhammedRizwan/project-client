@@ -11,7 +11,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 export default function userList() {
-  const [, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -112,7 +112,7 @@ export default function userList() {
         <h1 className="text-xl sm:text-2xl font-bold text-gray-700 mb-6">
           User List
         </h1>
-        <Table<User> columns={userColumns} apiUrl={apiUrl} />
+        <Table<User> columns={userColumns} apiUrl={apiUrl} data={users} setData={setUsers} />
         {showModal && selectedUser && (
           <BlockModal
             title="Confirm Block/Unblock"

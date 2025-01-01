@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 export default function TravelAgencies() {
   const router = useRouter();
-
+  const [agent, setAgent] = useState<Agent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -74,13 +74,13 @@ export default function TravelAgencies() {
           is_block: newStatus,
         });
         if (response.success) {
+          const updatedAgent=response.agent
+          setAgent((prevAgent) =>
+            prevAgent.map((agent) =>
+              agent._id === updatedAgent._id ? updatedAgent : agent
+            )
+          );
           toast.success(response.message);
-
-          // setAgent((prevAgent) =>
-          //   prevAgent.map((agent) =>
-          //     agent._id === updatedAgent._id ? updatedAgent : agent
-          // //   )
-          // );
         }
       } catch (error) {
         setError("Error fetching users");
@@ -105,7 +105,7 @@ export default function TravelAgencies() {
         <h1 className="text-xl sm:text-2xl font-bold text-gray-700 mb-6">
           Agency List
         </h1>
-        <Table<Agent> columns={agentColumns} apiUrl={apiUrl} />
+        <Table<Agent> columns={agentColumns} apiUrl={apiUrl} data={agent} setData={setAgent} />
         {showModal && selectedAgent && (
           <BlockModal
             title="Confirm Block/Unblock"

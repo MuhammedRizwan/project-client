@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Pagination, Select, SelectItem, Button } from "@nextui-org/react";
 import { fetch_table_data } from "@/config/admin/authservice";
 import SearchInput from "./searchInput";
@@ -17,6 +17,8 @@ interface TableProps<T extends object> {
   addButton?: () => void;
   buttonName?: string;
   blockfilter?: boolean;
+  data?: T[];
+  setData?: Dispatch<SetStateAction<T[]>>;
 }
 
 const Table = <T extends object>({
@@ -25,8 +27,10 @@ const Table = <T extends object>({
   addButton,
   buttonName,
   blockfilter = true,
+  data = [],
+  setData,
 }: TableProps<T>) => {
-  const [data, setData] = useState<T[]>([]);
+  // const [data, setData] = useState<T[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -39,24 +43,24 @@ const Table = <T extends object>({
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch_table_data(
-          apiUrl,
-          searchTerm,
-          currentPage,
-          rowsPerPage,
-          filter
-        );
-        const { filterData, totalPages } = response;
-        setData(filterData);
-        setTotalPages(totalPages);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [searchTerm, currentPage, columns, apiUrl, filter]);
+      const fetchData = async () => {
+        try {
+          const response = await fetch_table_data(
+            apiUrl,
+            searchTerm,
+            currentPage,
+            rowsPerPage,
+            filter
+          );
+          const { filterData, totalPages } = response;
+          setData?.(filterData);
+          setTotalPages(totalPages);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchData();
+  }, [apiUrl, currentPage, filter, searchTerm, setData]);
 
   return (
     <div className="w-full max-w-6xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-lg">

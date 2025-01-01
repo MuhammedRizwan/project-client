@@ -52,7 +52,9 @@ export default function Categories() {
           };
           socket.emit("to-agents", Notification);
         }
-        setCategories([...categories, response.category]);
+        console.log(response.category,"new category")
+        setCategories([response.category,...categories]);
+
         toast.success("Category added successfully");
       }
     } catch (error) {
@@ -184,6 +186,8 @@ export default function Categories() {
           apiUrl={apiUrl}
           addButton={addCategory}
           buttonName="Add Category"
+          data={categories}
+          setData={setCategories}
         />
 
         {showModal && selectedCategory && (
