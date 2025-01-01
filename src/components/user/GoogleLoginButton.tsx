@@ -13,7 +13,7 @@ import { addUser } from "@/store/reducer/userReducer";
 import { google_login } from "@/config/user/authservice";
 
 // Define types for user data that will be fetched
-interface UserProfile {
+export interface UserProfile {
   email: string;
   name: string;
   picture: string;

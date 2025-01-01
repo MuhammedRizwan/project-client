@@ -1,7 +1,7 @@
 import { ForgetPassword } from "@/app/(user)/forget-password/page";
-import { GoogleData } from "@/app/(user)/google/page";
 import { LoginFormData } from "@/components/user/forms/LoginForm";
 import { SignupFormData } from "@/components/user/forms/SignupForm";
+import { UserProfile } from "@/components/user/GoogleLoginButton";
 import INotification from "@/interfaces/notification";
 import OTP from "@/interfaces/otp";
 import User from "@/interfaces/user";
@@ -63,7 +63,7 @@ export const resend_otp = async (data: { email: string }) => {
     throw error;
   }
 };
-export const google_login = async(data:GoogleData) => {
+export const google_login = async(data:UserProfile) => {
   try {
     const response =await axiosInstance.post("/googleLogin", data);
     return response.data as {
