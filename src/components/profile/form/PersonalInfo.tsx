@@ -1,4 +1,3 @@
-// PersonalInfoForm.js
 "use client";
 import React, { useState, useRef } from "react";
 import {
@@ -13,6 +12,8 @@ import {
 import { ChevronDown, Edit } from "lucide-react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import User from "@/interfaces/user";
+import toast from "react-hot-toast";
+import isEqual from "lodash/isEqual"; // Import lodash's isEqual
 
 interface PersonalInfoFormProps {
   user: User;
@@ -23,7 +24,7 @@ export default function PersonalInfoForm({
   user,
   onSubmit,
 }: PersonalInfoFormProps) {
-  const [image, setImage] = useState<string|File>(user.profile_picture || "");
+  const [image, setImage] = useState<string | File>(user.profile_picture || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -35,8 +36,17 @@ export default function PersonalInfoForm({
     defaultValues: user,
   });
 
+
   const onSubmitPersonalInfo: SubmitHandler<User> = (data) => {
-    onSubmit(data);
+    // Remove potential File object from the comparison
+    const sanitizedData = { ...data, profile_picture: image };
+    const sanitizedUser = { ...user, profile_picture: user.profile_picture };
+
+    if (isEqual(sanitizedData, sanitizedUser)) {
+      toast.error("No changes detected.");
+    } else {
+      onSubmit(data);
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,13 +62,13 @@ export default function PersonalInfoForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmitPersonalInfo)}
-      className="bg-white rounded-lg shadow p-6 mb-8"
+      className="bg-white rounded-lg shadow p-6 mb-8 mx-3"
     >
       <div className="relative flex flex-col items-center mb-6">
         <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 flex items-stretch justify-center">
           {image ? (
             <Image
-              src={ typeof image === "string" ? image : URL.createObjectURL(image)}
+              src={typeof image === "string" ? image : URL.createObjectURL(image)}
               alt="Profile"
               className="object-cover w-full h-full"
             />

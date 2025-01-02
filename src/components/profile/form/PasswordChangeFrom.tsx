@@ -33,7 +33,7 @@ export default function PasswordChangeForm({
            return (
     <form
       onSubmit={handleSubmit(onSubmitPasswordChange)}
-      className="bg-white rounded-lg shadow p-6"
+      className="bg-white rounded-lg shadow p-6 mx-3"
     >
       <h3 className="text-xl font-semibold mb-4">Change Password</h3>
       <div className="space-y-4">
