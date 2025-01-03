@@ -51,7 +51,7 @@ export default function Gallery() {
 
         <div className="grid grid-cols-3 lg:grid-cols-5 gap-2 bg-black">
           {/* Gallery Images 1 */}
-          <div className="col-span-1 row-span-2  bg-red-700">
+          <div className="col-span-1 row-span-2">
             <Image
               src={galleryImages[0].src}
               alt="People jumping on beach at sunset"
@@ -95,7 +95,7 @@ export default function Gallery() {
           </div>
 
           {/* Gallery Images 5 */}
-          <div className="col-span-1 row-span-3 bg-green-500">
+          <div className="col-span-1 row-span-3">
             <Image
               src={galleryImages[0].src}
               alt="People jumping on beach at sunset"
@@ -106,7 +106,7 @@ export default function Gallery() {
           </div>
 
           {/* Gallery Images 6 */}
-          <div className="col-span-1 row-span-4 bg-red-500">
+          <div className="col-span-1 row-span-4">
             <Image
               src={galleryImages[5].src}
               alt="Person walking through Balinese gate"
@@ -117,7 +117,7 @@ export default function Gallery() {
           </div>
 
           {/* Gallery Images 7 */}
-          <div className="col-span-1 row-span-2 bg-orange-500">
+          <div className="col-span-1 row-span-2">
             <Image
               src={galleryImages[6].src}
               alt="Person on a viewing platform in mountains"
@@ -128,7 +128,7 @@ export default function Gallery() {
           </div>
 
           {/* Gallery Images 8 */}
-          <div className="col-span-1 row-span-2 bg-slate-600">
+          <div className="col-span-1 row-span-2">
             <Image
               src={galleryImages[7].src}
               alt="Person looking at a coastal scene"
