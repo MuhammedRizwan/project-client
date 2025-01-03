@@ -222,7 +222,7 @@ export default function PostList(): JSX.Element {
                   ) }
 
                   <span className="text-sm">{post.like.length} likes</span>
-                  <Button isIconOnly color="primary" variant="light">
+                  <Button isIconOnly className='bg-black' variant="light">
                     <MessageCircle />
                   </Button>
                   <span className="text-sm">{post.comment.length} comments</span>
@@ -259,7 +259,7 @@ export default function PostList(): JSX.Element {
                   />
                   <Button
                     isIconOnly
-                    color="primary"
+                    className="bg-black"
                     onClick={() => handleAddComment(post._id)}
                   >
                     <Send />

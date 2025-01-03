@@ -38,7 +38,7 @@ export default function AdminNavbar() {
       <NavbarContent justify="end">
         <NavbarItem>
           {token && (
-            <Button onClick={handleLogout} color="primary" variant="flat">
+            <Button onClick={handleLogout} className='bg-black text-white' variant="flat">
               Logout
             </Button>
           )}

@@ -32,7 +32,7 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
           onClick={() => {
             router.push("/agent/travel-packages/add");
           }}
-          className="bg-orange-500 text-white rounded"
+          className="bg-orange-500 text-black rounded"
         >
           Add Package
         </Button>

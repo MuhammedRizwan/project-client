@@ -203,7 +203,7 @@ export default function TravelBookings() {
                       key={star}
                       className={`w-8 h-8 cursor-pointer ${
                         star <= rating
-                          ? "fill-yellow-400 text-yellow-400"
+                          ? "fill-orange-400 text-orange-400"
                           : "text-gray-300"
                       }`}
                       onClick={() => setRating(star)}
@@ -230,7 +230,7 @@ export default function TravelBookings() {
                   </Button>
                 )}
                 <Button
-                  color="primary"
+                  className="bg-black text-white"
                   onPress={() =>
                     reviewId ? handleEditFeedback() : handleSaveFeedback()
                   }

@@ -60,7 +60,6 @@ export default function AdminLoginForm() {
       <div className="px-6">
         <Input
           isClearable
-          isRequired
           variant="bordered"
           onClear={() => console.log("input cleared")}
           className="max-w-xs mx-4"
@@ -79,7 +78,6 @@ export default function AdminLoginForm() {
           {errors.email && errors.email.message}
         </p>
         <Input
-          isRequired
           variant="bordered"
           label="Password"
           placeholder="Type your confirm password"
@@ -121,7 +119,7 @@ export default function AdminLoginForm() {
           <Button
           isLoading={loading}
             type="submit"
-            className="  bg-yellow-600 text-black w-36"
+            className="bg-black text-white w-36"
             variant="flat"
           >
             Sign in

@@ -60,41 +60,42 @@ export default function UserLoginButton() {
           <DropdownMenu aria-label="User Actions" variant="flat">
             <DropdownItem
               key="profile"
-              color="warning"
+              color="secondary"
               onClick={() => router.push("/profile-edit")}
             >
               profile
             </DropdownItem>
             <DropdownItem
               key="travel history"
-              color="warning"
+              color="secondary"
               onClick={() => router.push("/travel-history")}
             >
               travel history
             </DropdownItem>
             <DropdownItem
               key="bookings"
-              color="warning"
+              color="secondary"
               onClick={() => router.push("/booked")}
             >
               my bookings
             </DropdownItem>
             <DropdownItem
               key="system"
+              color="secondary"
               onClick={() => router.push("/notification")}
             >
               notification
             </DropdownItem>
             <DropdownItem
               key="Chats"
-              color="warning"
+              color="secondary"
               onClick={() => router.push("/chat")}
             >
               friends
             </DropdownItem>
             <DropdownItem
               key="my posts"
-              color="warning"
+              color="secondary"
               onClick={() => router.push("/user-post")}
             >
               my posts
@@ -109,7 +110,7 @@ export default function UserLoginButton() {
           onClick={() => {
             router.push(pathname === "/login" ? "/signup" : "/login");
           }}
-          className=" bg-yellow-700 text-black"
+          className=" bg-orange-700 text-black"
           variant="flat"
         >
           {pathname === "/login" ? "Sign up" : "Sign in"}

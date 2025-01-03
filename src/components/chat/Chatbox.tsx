@@ -219,7 +219,7 @@ export default function ChatBox({
           variant="light"
           aria-label="Attach file"
           onClick={() => fileInput.current?.click()}
-          className="bg-white text-navy hover:bg-yellow-100"
+          className="bg-white text-navy hover:bg-orange-100"
         >
           <Paperclip className="h-5 w-5" />
         </Button>
@@ -235,7 +235,7 @@ export default function ChatBox({
             variant="light"
             aria-label="Insert emoji"
             onClick={() => setIsEmojiPickerVisible(!isEmojiPickerVisible)}
-            className="bg-white text-navy hover:bg-yellow-100"
+            className="bg-white text-navy hover:bg-orange-100"
           >
             <Smile className="h-5 w-5" />
           </Button>
@@ -245,7 +245,7 @@ export default function ChatBox({
           placeholder="Type a message"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          className="flex-1 bg-white rounded-lg placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-yellow-600"
+          className="flex-1 bg-white rounded-lg placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-orange-600"
           size="sm"
         />
 

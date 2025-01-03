@@ -83,7 +83,6 @@ export default function LoginForm() {
       <div className="px-6">
         <Input
           isClearable
-          isRequired
           variant="bordered"
           onClear={() => console.log("input cleared")}
           className="max-w-xs mx-4"
@@ -103,7 +102,6 @@ export default function LoginForm() {
         </p>
 
         <Input
-          isRequired
           variant="bordered"
           label="Password"
           placeholder="Type your password"
@@ -151,7 +149,7 @@ export default function LoginForm() {
             <Button
               isLoading
               type="submit"
-              className="bg-yellow-600 text-black w-36"
+              className="bg-orange-600 text-black w-36"
               variant="flat"
             >
               Sign in
@@ -159,7 +157,7 @@ export default function LoginForm() {
           ) : (
             <Button
               type="submit"
-              className="bg-yellow-600 text-black w-36"
+              className="bg-orange-600 text-black w-36"
               variant="flat"
             >
               Sign in
@@ -173,7 +171,7 @@ export default function LoginForm() {
             Do not have an account?{" "}
             <Link
               href="/signup"
-              className="font-bold text-yellow-600 hover:underline"
+              className="font-bold text-orange-600 hover:underline"
             >
               Sign up
             </Link>

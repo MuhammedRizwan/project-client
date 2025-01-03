@@ -126,7 +126,7 @@ export default function Hero() {
             </Select>
 
             {/* Book Package Button */}
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-3 ms-3  px-6 rounded-md transition-colors"
+            <button className="bg-orange-500 hover:bg-orange-600 text-black font-bold p-3 ms-3  px-6 rounded-md transition-colors"
             onClick={handleSearch}>
               Available Packages
             </button>

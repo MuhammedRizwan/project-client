@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 
 export default function OfferPage() {
     const router=useRouter();
+    const [offer,setOffer]=useState<Offer[]>([])
     const agent = useSelector((state: RootState) => state.agent.agent);
   const [showBlockModal, setShowBlockModal] = useState<boolean>(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
@@ -99,7 +100,10 @@ export default function OfferPage() {
     <>
       <Table<Offer> columns={offerColumns} apiUrl={apiUrl} 
         addButton={addoffer}
-        buttonName="Add offer"/>
+        buttonName="Add offer"
+        data={offer}
+        setData={setOffer}
+        />
 
      
 

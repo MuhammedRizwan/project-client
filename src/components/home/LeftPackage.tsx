@@ -28,7 +28,7 @@ export default function LeftPackage() {
             short life span. It was built by the Incas around 1450 but abandoned
             a century later during the Spanish conquest.
           </p>
-          <Button className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded transition-colors">
+          <Button className="bg-orange-700 hover:bg-orange-600 text-black font-bold py-2 px-3 rounded transition-colors">
             Learn More
           </Button>
         </div>

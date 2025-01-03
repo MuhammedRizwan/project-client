@@ -177,7 +177,7 @@ export default function ForgotPassword() {
                 <Button
                   isLoading
                   type="submit"
-                  className="bg-yellow-600 text-white ms-2 hover:bg-yellow-700"
+                  className="bg-orange-600 text-black ms-2 hover:bg-orange-700"
                 >
                   Send OTP
                 </Button>
@@ -185,7 +185,7 @@ export default function ForgotPassword() {
                 <Button
                   disabled={verified.email == "" ? false : true}
                   type="submit"
-                  className="bg-yellow-600 text-white ms-2 hover:bg-yellow-700"
+                  className="bg-orange-600 text-black ms-2 hover:bg-orange-700"
                 >
                   Send OTP
                 </Button>
@@ -221,7 +221,7 @@ export default function ForgotPassword() {
               <Button
                 isLoading
                 onClick={handleVerifyOtp}
-                className="bg-yellow-600 text-white mt-1 hover:bg-yellow-700"
+                className="bg-orange-600 text-black mt-1 hover:bg-orange-700"
               >
                 Verify
               </Button>
@@ -229,7 +229,7 @@ export default function ForgotPassword() {
               <Button
                 disabled={verified.otp == "" ? false : true}
                 onClick={handleVerifyOtp}
-                className="bg-yellow-600 text-white mt-1 hover:bg-yellow-700"
+                className="bg-orange-600 text-black mt-1 hover:bg-orange-700"
               >
                 Verify
               </Button>
@@ -298,14 +298,14 @@ export default function ForgotPassword() {
               <Button
                 isLoading
                 type="submit"
-                className=" bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
+                className=" bg-orange-600 text-black p-2 rounded-md hover:bg-orange-700"
               >
                 Change
               </Button>
             ) : (
               <Button
                 type="submit"
-                className=" bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
+                className=" bg-orange-600 text-black p-2 rounded-md hover:bg-orange-700"
               >
                 Change
               </Button>

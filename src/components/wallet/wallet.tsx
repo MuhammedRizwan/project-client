@@ -1,33 +1,39 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@nextui-org/react";
-import Wallet from "@/interfaces/wallet";
+import React from 'react';
+import { Card, CardBody } from '@nextui-org/react';
+import Wallet from '@/interfaces/wallet';
+import Table, { TableColumn } from '../Table';
 
-export default function WalletPage({
-  wallet,
-}: {
-  wallet: Wallet|null;
-}) {
+export default function WalletPage({ wallet }: { wallet: Wallet | null }) {
+  const allTransactions = wallet?.transaction.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  ) || [];
 
-
-  const creditTransactions = wallet?.transaction.filter(
-    (t) => t.transactionType === "credit"
-  )||[];
-  const debitTransactions = wallet?.transaction.filter(
-    (t) => t.transactionType === "debit"
-  )||[];
+  const columns: TableColumn<typeof allTransactions[number]>[] = [
+    {
+      key: 'date',
+      label: 'DATE',
+      render: (transaction) => new Date(transaction.date).toLocaleDateString('en-GB'),
+    },
+    {
+      key: 'reason',
+      label: 'DESCRIPTION',
+    },
+    {
+      key: 'amount',
+      label: 'AMOUNT',
+      render: (transaction: { transactionType: string; amount: number; }) => (
+        <span
+          className={
+            transaction.transactionType === 'credit' ? 'text-green-500' : 'text-red-500'
+          }
+        >
+          {transaction.transactionType === 'credit' ? '+' : '-'}₹{transaction.amount.toFixed(2)}
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -35,66 +41,21 @@ export default function WalletPage({
         <CardBody>
           <h2 className="text-2xl font-bold text-white mb-2">Total Balance</h2>
           <p className="text-4xl font-bold text-white">
-          ₹ {wallet?.walletBalance.toFixed(2)}
+            ₹ {wallet?.walletBalance.toFixed(2)}
           </p>
         </CardBody>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="flex justify-between">
-            <h3 className="text-xl font-bold">Credited</h3>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <Table aria-label="Credited transactions">
-              <TableHeader>
-                <TableColumn>DATE</TableColumn>
-                <TableColumn>DESCRIPTION</TableColumn>
-                <TableColumn>AMOUNT</TableColumn>
-              </TableHeader>
-              <TableBody>
-                { creditTransactions.map((transaction) => (
-                  <TableRow key={transaction._id}>
-                    <TableCell>{new Date(transaction.date).toLocaleDateString('en-GB')}</TableCell>
-                    <TableCell>{transaction.reason}</TableCell>
-                    <TableCell className="text-green-500">
-                      +₹{transaction.amount.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex justify-between">
-            <h3 className="text-xl font-bold">Debited</h3>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <Table aria-label="Debited transactions">
-              <TableHeader>
-                <TableColumn>DATE</TableColumn>
-                <TableColumn>DESCRIPTION</TableColumn>
-                <TableColumn>AMOUNT</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {debitTransactions.map((transaction) => (
-                  <TableRow key={transaction._id}>
-                    <TableCell>{transaction.date}</TableCell>
-                    <TableCell>{transaction.reason}</TableCell>
-                    <TableCell className="text-red-500">
-                      -₹{transaction.amount.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardBody>
-        </Card>
-      </div>
+      <Card>
+        <CardBody>
+          <Table
+            columns={columns}
+            apiUrl=""
+            data={allTransactions}
+            blockfilter={false}
+          />
+        </CardBody>
+      </Card>
     </div>
   );
 }

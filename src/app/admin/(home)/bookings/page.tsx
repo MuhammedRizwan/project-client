@@ -42,7 +42,7 @@ export default function BookingsPage() {
         <span
           className={`${
             booking.payment_status === "pending"
-              ? "text-yellow-500"
+              ? "text-orange-500"
               : "text-green-500"
           }`}
         >
@@ -59,7 +59,7 @@ export default function BookingsPage() {
             booking.travel_status === "completed"
               ? "text-green-500"
               : booking.travel_status === "on-going"
-              ? "text-yellow-500"
+              ? "text-orange-500"
               : "text-red-500"
           }`}
         >

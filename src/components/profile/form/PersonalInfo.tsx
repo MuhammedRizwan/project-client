@@ -207,7 +207,7 @@ export default function PersonalInfoForm({
           </span>
         </div>
       </div>
-      <Button type="submit" color="primary" className="mt-4">
+      <Button type="submit"  className="mt-4 bg-orange-500 text-black shadow-lg">
         Save Personal Info
       </Button>
     </form>

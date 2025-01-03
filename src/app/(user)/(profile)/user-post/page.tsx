@@ -232,7 +232,7 @@ export default function PostList() {
                 </Button>
               )}
               <span>{post.like?.length || 0} likes</span>
-              <Button isIconOnly color="primary" variant="light">
+              <Button isIconOnly className="bg-black" variant="light">
                 <MessageCircle />
               </Button>
               <span>{post.comment?.length || 0} comments</span>
@@ -268,9 +268,8 @@ export default function PostList() {
               />
               <Button
                 isIconOnly
-                color="primary"
+                className=" ml-2 bg-black text-white"
                 onClick={() => handleAddComment(post._id as string)}
-                className="ml-2"
               >
                 <Send className="w-4 h-4" />
               </Button>

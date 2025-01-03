@@ -30,7 +30,7 @@ export default function Header() {
       <Navbar
         shouldHideOnScroll
         maxWidth={"full"}
-        className=" bg-yellow-600 rounded-b-3xl"
+        className=" bg-orange-700 rounded-b-3xl shadow-lg"
       >
         <NavbarBrand>
           <Logo />

@@ -24,7 +24,7 @@ export default function AgentNavbar() {
     }
   }, [router, accessToken]);
   return (
-    <Navbar maxWidth={"full"}>
+    <Navbar maxWidth={"full"} className="bg-orange-700">
       <NavbarBrand>
         <Logo />
         <p className="font-bold text-inherit">HEAVEN FINDER</p>
@@ -55,7 +55,7 @@ export default function AgentNavbar() {
                 dispatch(logout());
                 router.push("/agent");
               }}
-              color="primary"
+              className="bg-black text-white"
               variant="flat"
             >
               Logout
@@ -65,7 +65,7 @@ export default function AgentNavbar() {
               onClick={() => {
                 router.push(pathname === "/agent" ? "agent/signup" : "/agent");
               }}
-              color="primary"
+              className="bg-black text-white"
               variant="flat"
             >
               {pathname === "/agent" ? "Signup" : "Login"}

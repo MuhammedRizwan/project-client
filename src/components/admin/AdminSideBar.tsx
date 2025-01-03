@@ -12,6 +12,7 @@ import {
   Bell,
   Menu,
   X,
+  Wallet,
 } from "lucide-react";
 
 export default function AdminSidebar({ Name = "HEAVEN FINDER" }) {
@@ -86,6 +87,11 @@ export default function AdminSidebar({ Name = "HEAVEN FINDER" }) {
                 href: "/admin/coupons",
                 label: "Coupon",
                 icon: <Gift className="w-6 h-6  mr-3" />,
+              },
+              {
+                href: "/admin/wallet",
+                label: "Wallet",
+                icon: <Wallet className="w-6 h-6  mr-3" />,
               },
               {
                 href: "/admin/notifications",

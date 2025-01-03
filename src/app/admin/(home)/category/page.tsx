@@ -155,7 +155,7 @@ export default function Categories() {
             onClick={() => handleBlockClick(item)}
             className={`${
               item.is_block ? "bg-green-500" : "bg-red-500"
-            } text-white`}
+            } text-black`}
           >
             {item.is_block ? "Unblock" : "Block"}
           </Button>

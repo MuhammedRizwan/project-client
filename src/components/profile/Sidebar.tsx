@@ -95,7 +95,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                       onClick={item.onClick}
                       className={`block py-2 px-4 rounded ${
                         item.active
-                          ? "bg-yellow-100 text-yellow-800"
+                          ? "bg-orange-100 text-orange-800"
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
                     >

@@ -14,7 +14,7 @@ export default function Footer() {
             </div>
             <div className="w-full py-10 flex justify-center items-center ms-16">
               <input className="max-w-xs" />
-              <div className="m-1 p-4  bg-yellow-700 rounded-lg z-10 hover:bg-yellow-600">
+              <div className="m-1 p-4  bg-orange-700 rounded-lg z-10 hover:bg-orange-600">
                 <IoSendSharp className="text-white" />
               </div>
             </div>
@@ -34,30 +34,30 @@ export default function Footer() {
             </div>
             <div className="grid grid-cols-3 gap-4 font-serif">
               <div className="hover:cursor-pointer">
-                <h3 className="text-white hover:text-yellow-600 me-24">Home</h3>
+                <h3 className="text-white hover:text-orange-600 me-24 shadow-lg">Home</h3>
               </div>
               <div className="hover:cursor-pointer">
-                <h3 className="text-white hover:text-yellow-600 me-24">
+                <h3 className="text-white hover:text-orange-600 me-24 shadow-lg">
                   Packages
                 </h3>
               </div>
               <div className="hover:cursor-pointer">
-                <h3 className="text-white hover:text-yellow-600 me-24">Blog</h3>
+                <h3 className="text-white hover:text-orange-600 me-24 shadow-lg">Blog</h3>
               </div>
               <div className="hover:cursor-pointer">
-                <h3 className="text-white hover:text-yellow-600 me-24">
+                <h3 className="text-white hover:text-orange-600 me-24 shadow-lg">
                   Contacts
                 </h3>
               </div>
               <div className="hover:cursor-pointer">
-                <h3 className="text-white hover:text-yellow-600 me-24">
+                <h3 className="text-white hover:text-orange-600 me-24 shadow-lg">
                   Booking
                 </h3>
               </div>
             </div>
 
             <div className="py-10">
-              <Button className=" text-yellow-600">
+              <Button className=" text-orange-600 shadow-lg">
                 Login As Travel agent
               </Button>
             </div>

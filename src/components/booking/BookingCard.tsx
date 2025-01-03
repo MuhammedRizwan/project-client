@@ -80,10 +80,10 @@ export const BookingCard = ({
           <div>
             {onCancel && (
               <Button
-                className={`text-white px-4 py-2 rounded-lg ${
+                className={`text-black px-4 py-2 rounded-lg ${
                   booking.booking_status === "canceled"
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-yellow-400 hover:bg-yellow-500"
+                    : "bg-orange-400 hover:bg-orange-500"
                 }`}
                 disabled={booking.booking_status === "canceled"}
                 onClick={() => onCancel(booking)}

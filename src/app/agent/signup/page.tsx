@@ -186,7 +186,7 @@ export default function SignupForm() {
                   <Button
                     isLoading
                     type="submit"
-                    className="bg-yellow-700 text-black w-1/2"
+                    className="bg-orange-700 text-black w-1/2"
                     variant="flat"
                   >
                     Sign Up
@@ -194,7 +194,7 @@ export default function SignupForm() {
                 ) : (
                   <Button
                     type="submit"
-                    className="bg-yellow-700 text-black w-1/2"
+                    className="bg-orange-700 text-black w-1/2"
                     variant="flat"
                   >
                     Sign Up
@@ -310,7 +310,7 @@ export default function SignupForm() {
             Already have an account?{" "}
             <Link
               href="/agent"
-              className="font-bold text-yellow-700 hover:underline"
+              className="font-bold text-orange-700 hover:underline"
             >
               Sign in
             </Link>

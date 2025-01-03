@@ -92,7 +92,7 @@ const Table = <T extends object>({
           {buttonName && (
             <Button
               onClick={addButton}
-              className="flex-none w-full sm:w-auto px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-md"
+              className="flex-none w-full sm:w-auto px-6 py-2 bg-orange-500 hover:bg-orange-600 text-black rounded-md shadow-md"
             >
               {buttonName}
             </Button>

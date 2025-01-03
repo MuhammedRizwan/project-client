@@ -47,14 +47,14 @@ export default function Packages() {
         <div className="flex space-x-2">
           <button
             onClick={handlePrevious}
-            className="p-2 border border-yellow-500 rounded-full text-yellow-500 hover:bg-yellow-500 hover:text-white transition-colors"
+            className="p-2 border border-orange-500 rounded-full text-orange-500 hover:bg-orange-500 hover:text-black transition-colors"
             aria-label="Previous package"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={handleNext}
-            className="p-2 bg-yellow-500 rounded-full text-white hover:bg-yellow-600 transition-colors"
+            className="p-2 bg-orange-500 rounded-full text-black hover:bg-orange-600 transition-colors"
             aria-label="Next package"
           >
             <ChevronRight className="w-6 h-6" />

@@ -71,7 +71,6 @@ export default function AgentLoginForm() {
       <div className="px-6">
         <Input
           isClearable
-          isRequired
           variant="bordered"
           onClear={() => console.log("input cleared")}
           className="max-w-xs mx-4"
@@ -91,7 +90,6 @@ export default function AgentLoginForm() {
         </p>
 
         <Input
-          isRequired
           variant="bordered"
           label="Password"
           placeholder="Type your password"
@@ -137,7 +135,7 @@ export default function AgentLoginForm() {
         <div className="w-1/2 text-end my-3">
           <Button
             type="submit"
-            className="bg-yellow-600 text-black w-36"
+            className="bg-orange-600 text-black w-36"
             variant="flat"
             isLoading={loading}
           >
@@ -150,7 +148,7 @@ export default function AgentLoginForm() {
             Already have an account?{" "}
             <Link
               href="/agent/signup"
-              className="font-bold text-yellow-600 hover:underline"
+              className="font-bold text-orange-600 hover:underline"
             >
               Sign up
             </Link>

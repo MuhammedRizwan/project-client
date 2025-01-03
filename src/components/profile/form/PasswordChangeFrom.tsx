@@ -106,7 +106,7 @@ export default function PasswordChangeForm({
               <span className="text-red-500 text-xs h-[20px] ms-2">{errors.confirmPassword?.message}</span>
           </div>
         </div>
-        <Button type="submit" color="warning" className="mt-4">
+        <Button type="submit"   className="mt-4 bg-orange-500 text-black shadow-lg">
           Change Password
         </Button>
       </div>

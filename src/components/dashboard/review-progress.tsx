@@ -12,7 +12,7 @@ export const ReviewProgress = ({ label, percentage }: ReviewProgressProps) => {
         <span>{label}</span>
         <span>{percentage}%</span>
       </div>
-      <Progress value={percentage} className="h-2" color="warning" />
+      <Progress value={percentage} className="h-2" color="warning"  />
     </>
   );
 };

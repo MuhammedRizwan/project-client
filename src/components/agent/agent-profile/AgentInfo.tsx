@@ -178,7 +178,7 @@ export default function AgentInfo({ agent, onSubmit }: PersonalInfoFormProps) {
           </span>
         </div>
       </div>
-      <Button type="submit" color="primary" className="mt-4">
+      <Button type="submit"  className="mt-4 bg-orange-500 text-black">
         Save Personal Info
       </Button>
     </form>

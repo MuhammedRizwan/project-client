@@ -20,8 +20,10 @@ export default function SignupPage() {
         </div>
         <div className="md:w-1/2 w-full px-10 ">
           <div className="px-10">
-            <h1 className="text-3xl font-bold">Get Started Now</h1>
-            <p>Enter your information to move to the next world</p>
+            <h1 className="text-3xl font-bold mb-3">Get Started Now</h1>
+            <p className="my-2">
+              Enter your information to move to the next world
+            </p>
           </div>
           <SignupForm />
         </div>

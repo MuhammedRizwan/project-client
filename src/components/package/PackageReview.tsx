@@ -69,7 +69,7 @@ export default function PackageReview({
                   key={index}
                   className={`w-4 h-4 ${
                     index < currentReview.rating
-                      ? "fill-yellow-400 text-yellow-400"
+                      ? "fill-orange-400 text-orange-400"
                       : "text-black"
                   }`}
                 />
@@ -100,7 +100,7 @@ export default function PackageReview({
               <div key={stars} className="flex items-center mb-2">
                 <div className="flex items-center w-20">
                   <span className="mr-1">{stars}</span>
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <Star className="w-4 h-4 fill-orange-400 text-orange-400" />
                 </div>
                 <Progress
                   aria-label={`${stars} star reviews`}

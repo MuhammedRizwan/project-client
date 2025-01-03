@@ -82,8 +82,8 @@ export default function ThankyouPage({
                   {packageData?.max_person} Person
                 </span>
               </div>
-              <div className="flex items-center bg-yellow-50 p-2 rounded-md shadow-sm">
-                <Sun className="w-6 h-6 text-yellow-600 mr-2" />
+              <div className="flex items-center bg-orange-50 p-2 rounded-md shadow-sm">
+                <Sun className="w-6 h-6 text-orange-600 mr-2" />
                 <span className="text-gray-800 font-medium">
                   {packageData?.no_of_days} Day
                 </span>
@@ -117,7 +117,7 @@ export default function ThankyouPage({
       </Card>
 
       <Card className="mb-8 bg-gray-50 shadow-lg rounded-lg overflow-hidden">
-  <CardHeader className="bg-yellow-600 text-white p-4">
+  <CardHeader className="bg-orange-600 text-black p-4">
     <h2 className="text-2xl font-bold">Booking Details</h2>
   </CardHeader>
   <Divider />

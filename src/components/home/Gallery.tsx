@@ -44,7 +44,7 @@ export default function Gallery() {
           </p>
 
           {/* Button aligned at the top right */}
-          <button className="absolute bottom-8 right-8 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded transition-colors">
+          <button className="absolute bottom-8 right-8 bg-orange-500 hover:bg-orange-600 text-black font-bold py-2 px-6 rounded transition-colors">
             Open Instagram
           </button>
         </div>
@@ -117,7 +117,7 @@ export default function Gallery() {
           </div>
 
           {/* Gallery Images 7 */}
-          <div className="col-span-1 row-span-2 bg-yellow-500">
+          <div className="col-span-1 row-span-2 bg-orange-500">
             <Image
               src={galleryImages[6].src}
               alt="Person on a viewing platform in mountains"

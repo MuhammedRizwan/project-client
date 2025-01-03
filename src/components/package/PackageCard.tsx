@@ -50,7 +50,7 @@ export default function PackageCard({ packages }: { packages: Package[] }) {
             </div>
             <div className="flex justify-between items-center w-full">
               <Button
-                color="warning"
+                className="bg-orange-500 hover:bg-orange-600 text-black shadow-md"
                 onClick={() => router.push(`/packages/${packageData._id}`)}
               >
                 Details

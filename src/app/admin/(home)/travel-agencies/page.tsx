@@ -40,7 +40,7 @@ export default function TravelAgencies() {
           onClick={() => handleBlockClick(agent)}
           className={`px-4 py-2 ${
             agent.is_block ? "bg-green-500" : "bg-red-600"
-          } text-white rounded w-20`}
+          } text-black rounded w-20`}
         >
           {agent.is_block ? "Unblock" : "Block"}
         </button>

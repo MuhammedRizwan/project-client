@@ -44,7 +44,7 @@ export default function CouponsPage() {
           onClick={() => handleBlockClick(coupon)}
           className={`px-4 py-2 ${
             coupon.is_active ? "bg-red-500" : "bg-green-500"
-          } text-white rounded w-20`}
+          } text-black rounded w-20`}
         >
           {coupon.is_active ? "Block" : "Unblock"}
         </button>

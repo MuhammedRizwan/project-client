@@ -158,7 +158,7 @@ export default function TravelBookings() {
                   Close
                 </Button>
                 <Button 
-                  color="primary" 
+                  className="bg-orange-600 text-black"
                   onPress={confirmCancellation}
                   isDisabled={!selectedReason || (selectedReason === "Other (please specify)" && !cancellationReason.trim())}
                 >
