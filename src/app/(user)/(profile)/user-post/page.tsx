@@ -232,7 +232,7 @@ export default function PostList() {
                 </Button>
               )}
               <span>{post.like?.length || 0} likes</span>
-              <Button isIconOnly className="bg-black" variant="light">
+              <Button isIconOnly className="bg-black text-white" variant="light">
                 <MessageCircle />
               </Button>
               <span>{post.comment?.length || 0} comments</span>
