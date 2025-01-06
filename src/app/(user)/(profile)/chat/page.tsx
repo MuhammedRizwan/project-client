@@ -179,6 +179,7 @@ export default function ChatPage() {
                 roomId={roomId}
                 initiateCall={initiateCall}
                 answerCall={answerCall}
+                endCall={endCall}
                 isCallModalVisible={isCallModalVisible}
               />
             ) : (

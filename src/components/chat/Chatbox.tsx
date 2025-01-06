@@ -20,12 +20,14 @@ interface chatProps {
   roomId: string;
   initiateCall: (recieverId: string | undefined) => void;
   answerCall: () => void;
+  endCall: () => void;  
   isCallModalVisible: boolean;
 }
 export default function ChatBox({
   roomId,
   initiateCall,
   answerCall,
+  endCall,
   isCallModalVisible,
 }: chatProps) {
   const user = useSelector((state: RootState) => state.user.user);
@@ -129,7 +131,9 @@ export default function ChatBox({
   const handleEmojiClick = (emojiObject: EmojiClickData): void => {
     setNewMessage((prev) => prev + emojiObject.emoji);
   };
-  const rejectIncomingCall = () => {};
+  const rejectIncomingCall = () => {
+    endCall();
+  };
 
   return (
     <div className="flex flex-col w-full h-full bg-gray-100">
