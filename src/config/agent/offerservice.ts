@@ -15,6 +15,7 @@ export const add_offer = async (data: Offer) => {
       offer: Offer;
     };
   } catch (error) {
+    console.log(error)
     throw error;
   }
 };
@@ -38,6 +39,7 @@ export const update_offer = async (
   offerId: string | undefined,
   data: Offer
 ) => {
+  console.log(data);
   try {
     const response = await axiosInstance.put(`/offer/update-offer/${offerId}`, data, {
       headers: {
@@ -50,6 +52,7 @@ export const update_offer = async (
       offer: Offer;
     };
   } catch (error) {
+    console.log(error)
     throw error;
   }
 };

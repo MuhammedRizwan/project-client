@@ -38,6 +38,7 @@ export const booking = async (data: BookingPaload) => {
       booking: Booking;
     };
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };

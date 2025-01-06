@@ -16,19 +16,6 @@ export default function Home() {
       <main>
         <Hero />
         <LeftPackage />
-        {/* <section className="bg-gray-100 py-6">
-          <div className="flex justify-around text-center text-gray-600">
-            <div>
-              <h3 className="text-lg font-semibold">March 16, 2024</h3>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">02:35 PM</h3>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">86°F</h3>
-            </div>
-          </div>
-        </section> */}
         <Packages />
         <RightPackage />
         <LeftPackage/>

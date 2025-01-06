@@ -20,7 +20,7 @@ export default function Sidebar({ name,onLogout }:SidebarProps) {
   const router = useRouter();
 
   return (
-    <aside className="h-screen bg-white shadow-xl w-64 ms-2 mb-20 mt-3 rounded-xl">
+    <aside className="sticky h-full bg-white shadow-xl w-64 ms-2 mb-20 rounded-xl">
     <div className="p-6">
       <h1 className="text-xl font-bold">{name}</h1>
     </div>

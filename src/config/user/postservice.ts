@@ -4,7 +4,6 @@ import axiosInstance from "@/lib/axiosInstence";
 
 export const create_post = async (data: Createpost) => {
   try {
-    console.log(data, "ivade ethiii");
     const response = await axiosInstance.post("/post/create-post", data, {
       headers: { "Content-Type": "multipart/form-data" },
     });

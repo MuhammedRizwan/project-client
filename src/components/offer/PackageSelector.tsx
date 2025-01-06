@@ -20,7 +20,6 @@ export default function PackageSelector({
   const initialSelectedPackages = Array.isArray(selectedPackage)
     ? selectedPackage
     : [];
-console.log(initialSelectedPackages,"initialSelectedPackages")
   const [selectedPackages, setSelectedPackages] =
     useState<Package[]>((initialSelectedPackages as Package[]));
   const [inputValue, setInputValue] = useState(
@@ -68,7 +67,7 @@ console.log(initialSelectedPackages,"initialSelectedPackages")
                   key={pack._id}
                   onClose={() => handleRemovePackage(pack)}
                   variant="flat"
-                  color="primary"
+                  className="text-white bg-black"
                 >
                   {pack.package_name}
                 </Chip>
@@ -85,7 +84,7 @@ console.log(initialSelectedPackages,"initialSelectedPackages")
                 <Button
                   key={pack._id}
                   size="sm"
-                  color="primary"
+                  color="secondary"
                   variant={
                     selectedPackages.some((p) => p._id === pack._id)
                       ? "solid"

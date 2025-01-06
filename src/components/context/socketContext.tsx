@@ -50,7 +50,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       });
       socketRef.current = newSocket;
       newSocket.on("get-online-users", (users) => {
-        console.log("users online sare ", users);
         setOnlineUsers(users);
       });
 

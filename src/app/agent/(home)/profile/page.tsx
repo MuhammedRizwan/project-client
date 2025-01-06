@@ -60,7 +60,7 @@ export default function Profile() {
       const oldPassword= data.oldPassword
       const validateResponse = await validate_agent_password(agentData?._id,{oldPassword  });
 
-      if (validateResponse.success) {
+      if (!validateResponse.success) {
         toast.error("Old password is incorrect");
         return;
       }

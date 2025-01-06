@@ -54,7 +54,7 @@ export default function OfferPage() {
       render: (offer: Offer) => (
         <button
           onClick={() => router.push(`/agent/offers/${offer._id}`)}
-          className="px-4 py-2 bg-blue-500 text-white rounded w-20"
+          className="px-4 py-2 bg-black text-white rounded w-20"
         >
           Edit
         </button>

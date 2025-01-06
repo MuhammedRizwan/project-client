@@ -96,6 +96,7 @@ export const update_agent_profile = async (
   id: string | undefined,
   data: Agent
 ) => {
+  console.log(data)
   try {
     const response = await axiosInstance.put(`/update/${id}`, data, {
       headers: { "Content-Type": "multipart/form-data" },

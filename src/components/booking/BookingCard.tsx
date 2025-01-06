@@ -24,7 +24,7 @@ export const BookingCard = ({
       <div className="relative h-full w-1/3 p-3">
         <Image
           alt={pkg.package_name}
-          src={pkg.images?.[0] || "/default-image.jpg"}
+          src={pkg.images?.[0] }
           className="rounded-l-lg h-48 w-72 object-fill"
         />
       </div>

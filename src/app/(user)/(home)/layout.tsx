@@ -16,7 +16,6 @@ export default function UserLayout({
   useEffect(() => {
     if(!socket)return
     socket.on("show-notification", (notification) => {
-      console.log('notification=',notification);
       setNotificationsData(notification);
     });
   }, [socket]);

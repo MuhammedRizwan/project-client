@@ -78,7 +78,7 @@ export default function Dashboard() {
   }, [agentId]);
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto">
+    <div className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard
           icon={Users}

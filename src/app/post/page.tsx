@@ -103,7 +103,7 @@ export default function PostList(): JSX.Element {
               ? {
                   ...post,
                   comment: [...post.comment, {
-                    user_id: user?._id ?? `${user?.username}`,
+                    user_id: response.post.user_id,
                     message: commentText,
                     created_At: new Date(),
                   }],

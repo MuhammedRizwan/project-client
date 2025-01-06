@@ -102,7 +102,7 @@ export default function Component() {
       <Header />
       <div className="relative">
         <Image
-          src={category[currentImageIndex]?.image || "/default-image.jpg"}
+          src={category[currentImageIndex]?.image}
           alt={category[currentImageIndex]?.category_name || "Default"}
           width={600}
           height={500}

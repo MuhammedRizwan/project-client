@@ -18,7 +18,6 @@ export default function UserLayout({
   return (
     <>
       <ProtectedRouter>
-      
         <AgentNavbar />
         {children}
       </ProtectedRouter>

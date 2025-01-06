@@ -5,7 +5,7 @@ import UserLoginButton from '../user/UserLoginButton'
 export default function Header() {
   return (
     <nav className="absolute top-0 left-0 right-0 z-10 bg-transparent">
-      <div className="container mx-auto px-4 py-4">
+      <div className="w-full px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
           <Logo />

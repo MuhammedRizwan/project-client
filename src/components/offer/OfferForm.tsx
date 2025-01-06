@@ -283,8 +283,7 @@ export default function OfferForm({
           <div className="flex items-center justify-end">
             <Button
               type="submit"
-              className="mt-4"
-              color="primary"
+              className="mt-4 bg-black text-white"
               isLoading={loading}
             >
               {offer ? "update offer" : "save offer"}

@@ -52,7 +52,6 @@ export default function Categories() {
           };
           socket.emit("to-agents", Notification);
         }
-        console.log(response.category,"new category")
         setCategories([response.category,...categories]);
 
         toast.success("Category added successfully");
@@ -150,7 +149,7 @@ export default function Categories() {
       key: "is_block",
       label: "Actions",
       render: (item) => (
-        <div className="flex flex-row items-center space-x-2">
+        <div className="flex justify-end flex-row items-center space-x-2">
           <Button
             onClick={() => handleBlockClick(item)}
             className={`${

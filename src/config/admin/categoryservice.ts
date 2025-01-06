@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axiosInstence";
 
 export const add_category = async (data: CategoryFormValues) => {
   try {
+    console.log(data);
     const response = await axiosInstance.post("/category/add", data, {
       headers: {
         "Content-Type": "multipart/form-data",

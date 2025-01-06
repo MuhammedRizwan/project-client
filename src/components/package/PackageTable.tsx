@@ -8,27 +8,32 @@ import SearchInput from "../searchInput";
 interface PackageTableProps {
   data: Package[];
   onBlock: (pkg: Package) => void;
-  setSearchTerm:(name:string)=>void; 
-  totalPages:number;
-  currentPage:number;
-  setCurrentPage:(page:number)=>void
+  setSearchTerm: (name: string) => void;
+  totalPages: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
 }
 
-export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,currentPage,setCurrentPage }: PackageTableProps) {
+export default function PackageTable({
+  data,
+  onBlock,
+  setSearchTerm,
+  totalPages,
+  currentPage,
+  setCurrentPage,
+}: PackageTableProps) {
   const router = useRouter();
-  
+
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg px-5 h-full overflow-y-auto">
+    <div className="max-w-6xl w-full bg-white rounded-lg shadow-lg px-5 h-full py-2">
       <div className="flex justify-between py-5 items-center">
         <h1 className="text-2xl font-bold">Travel Packages</h1>
       </div>
       <div className="flex justify-between mb-5">
-      <div className="w-1/2">
-      <SearchInput
-            onSearch={setSearchTerm}
-          />
-      </div>
-      <Button
+        <div className="w-1/2">
+          <SearchInput onSearch={setSearchTerm} />
+        </div>
+        <Button
           onClick={() => {
             router.push("/agent/travel-packages/add");
           }}
@@ -49,7 +54,7 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
               <div className="relative h-44 md:h-52 w-full md:w-1/3">
                 <Image
                   alt={pkg.package_name}
-                  src={pkg.images?.[0] || "/default-image.jpg"}
+                  src={pkg.images?.[0]}
                   className="rounded-l-lg h-full w-full object-cover"
                 />
               </div>
@@ -83,14 +88,14 @@ export default function PackageTable({ data, onBlock,setSearchTerm,totalPages,cu
                 <div className="flex justify-end space-x-3 mt-3">
                   <Button
                     className="bg-zinc-900 text-white"
-                    onClick={() => router.push(`/agent/bookings/package/${pkg._id}`)}
+                    onClick={() =>
+                      router.push(`/agent/bookings/package/${pkg._id}`)
+                    }
                   >
                     bookings
                   </Button>
                   <Button
-                    className={
-                      pkg.is_block ? "bg-green-700" : "bg-red-700"
-                    }
+                    className={pkg.is_block ? "bg-green-700" : "bg-red-700"}
                     onClick={() => onBlock(pkg)}
                   >
                     {pkg.is_block ? "Unblock" : "Block"}

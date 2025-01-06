@@ -73,6 +73,7 @@ export const edit_package = async (
       data: Package;
     };
   } catch (error) {
+  console.log(error)
     throw error;
   }
 };

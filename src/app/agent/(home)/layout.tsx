@@ -28,9 +28,9 @@ export default function AdminLayout({
       {notificationsData && (
         <Notifications notificationsData={notificationsData} />
       )}
-      <div className="flex bg-gray-100">
+      <div className="flex bg-gray-100 min-h-screen py-3">
         <Agentsidebar />
-        <div className="fleX p-3 w-full">{children}</div>
+        <div className="flex w-full px-2">{children}</div>
       </div>
     </AgentWrapper>
   );
