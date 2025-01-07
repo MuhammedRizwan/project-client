@@ -4,6 +4,9 @@ import { RefObject, useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { Volume2, VolumeOff,VolumeX, Video, VideoOff, PhoneOff} from "lucide-react";
 import { useSocket } from "../context/socketContext";
+import { Message } from "@/interfaces/chat";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface VideoCallProps {
   myVideoRef: RefObject<HTMLVideoElement>;
@@ -11,6 +14,7 @@ interface VideoCallProps {
   isCallAccepted: boolean;
   endCall: () => void;
   reciever:string|undefined
+  roomId:string
 }
 
 export default function VideoCall({
@@ -18,12 +22,30 @@ export default function VideoCall({
   peerVideoRef,
   isCallAccepted,
   endCall,
-  reciever
+  reciever,
+  roomId
 }: VideoCallProps) {
   const {socket} = useSocket();
+  const user = useSelector((state: RootState) => state.user.user);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
-  const [peerAudioMuted,setPeerAudioMuted]=useState(false)
+  const [peerAudioMuted,setPeerAudioMuted]=useState(false);
+  const [callStartTime, setCallStartTime] = useState<number | null>(null); 
+  const [callDuration, setCallDuration] = useState<number>(0); 
+
+  useEffect(() => {
+    if (isCallAccepted && callStartTime === null) {
+      setCallStartTime(Date.now()); 
+    }
+
+    if (callStartTime !== null) {
+      const timer = setInterval(() => {
+        setCallDuration(Math.floor((Date.now() - callStartTime) / 1000)); 
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [isCallAccepted, callStartTime]);
 
   useEffect(() => {
     if(!socket)return
@@ -88,6 +110,17 @@ export default function VideoCall({
   const handleEndCall=()=>{
     if(!socket)return
     socket.emit("end-video-call", { to: reciever});
+    // if (callStartTime) {
+    //   const duration = Math.floor((Date.now() - callStartTime) / 1000);
+    // }
+     const message: Message = {
+          senderId: user?._id,
+          message: `called ${callDuration} seconds`,
+          message_time: new Date(),
+          message_type: "video-call",
+        };
+    
+        socket.emit("message", { ...message, roomId });
     endCall()
   }
 

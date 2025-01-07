@@ -1,7 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ScrollShadow, Input, Button, Avatar, Image } from "@nextui-org/react";
-import { Paperclip, Smile, Send, Video } from "lucide-react";
+import {
+  ScrollShadow,
+  Input,
+  Button,
+  Avatar,
+  Image,
+  Card,
+  CardBody,
+} from "@nextui-org/react";
+import { Paperclip, Smile, Send, Video, Phone, Check } from "lucide-react";
 import { Message } from "@/interfaces/chat";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -15,12 +23,11 @@ import IncommingCallModal from "../video/incomingcall-modal";
 import { useSocket } from "../context/socketContext";
 import uploadToCloudinary from "@/lib/cloudinary";
 
-
 interface chatProps {
   roomId: string;
   initiateCall: (recieverId: string | undefined) => void;
   answerCall: () => void;
-  endCall: () => void;  
+  endCall: () => void;
   isCallModalVisible: boolean;
 }
 export default function ChatBox({
@@ -34,8 +41,9 @@ export default function ChatBox({
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [reciever, setReciever] = useState<User | null>(null);
-  const {socket,onlineUsers} = useSocket();
-  const isOnline = reciever && reciever._id ? onlineUsers?.includes(reciever?._id) : false;
+  const { socket, onlineUsers } = useSocket();
+  const isOnline =
+    reciever && reciever._id ? onlineUsers?.includes(reciever?._id) : false;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const [isEmojiPickerVisible, setIsEmojiPickerVisible] = useState(false);
@@ -51,7 +59,7 @@ export default function ChatBox({
       setMessages([]);
     }
     const fetchRecieverData = async () => {
-      const recieverUser = await fetch_room_message(roomId,user?._id);
+      const recieverUser = await fetch_room_message(roomId, user?._id);
       if (recieverUser.success) {
         const { participants, messages } = recieverUser.room;
         const filteredReceiver = participants.find(
@@ -66,9 +74,9 @@ export default function ChatBox({
   }, [roomId, socket, user?._id]);
 
   useEffect(() => {
-    if(!socket)return
+    if (!socket) return;
     socket.on("new-message", (message: Message) => {
-      if(message.senderId==reciever?._id){
+      if (message.senderId == reciever?._id) {
         setMessages((prev) => [...prev, message]);
       }
     });
@@ -83,7 +91,7 @@ export default function ChatBox({
   }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
-    if(!socket)return
+    if (!socket) return;
     e.preventDefault();
     if (newMessage.trim() === "") return;
 
@@ -94,13 +102,13 @@ export default function ChatBox({
       message_type: "text",
     };
 
-    socket.emit("message", { ...message, roomId,recieverId:reciever?._id });
+    socket.emit("message", { ...message, roomId, recieverId: reciever?._id });
     setMessages((prev) => [...prev, message]);
     setNewMessage("");
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!socket)return
+    if (!socket) return;
     const file = e.target.files?.[0];
     if (!file) return;
     const validImageTypes = [
@@ -147,9 +155,7 @@ export default function ChatBox({
           <p className="text-xl font-semibold text-white mb-0">
             {reciever?.username}
           </p>
-          {isOnline && (
-                  <p className="text-sm text-green-500">Online</p>
-                )}
+          {isOnline && <p className="text-sm text-green-500">Online</p>}
         </div>
         <div className="flex flex-1 flex-row justify-end items-center pe-3">
           <Button onClick={() => initiateCall(reciever?._id)}>
@@ -198,9 +204,40 @@ export default function ChatBox({
                 {msg.message_type == "text" && (
                   <p className="text-sm">{msg.message}</p>
                 )}
-                <span className="text-xs text-gray-500 block mt-1">
-                  {format(new Date(msg.message_time), "hh:mm a")}
-                </span>
+                {msg.message_type == "video-call" && (
+                  <Card className={`max-w-md bg-zinc-900/90 backdrop-blur-sm`}>
+                    <CardBody className="flex flex-row items-center gap-4 py-3 px-4">
+                      <div className="relative">
+                        <Phone className="w-5 h-5 text-white" />
+                        <span
+                          className={`absolute -right-1 -top-1 block w-2 h-2 border-2 border-zinc-900 bg-white rounded-full`}
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        <h3 className="text-white text-sm font-medium">
+                          Video call
+                        </h3>
+                        <p className="text-zinc-400 text-xs">{msg.message}</p>
+                      </div>
+                    </CardBody>
+                  </Card>
+                )}
+                <div className="flex items-end  justify-between">
+                  <span className="text-xs text-gray-500 block mt-1">
+                    {format(new Date(msg.message_time), "hh:mm a")}
+                  </span>
+                  <span className="flex items-center ms-2">
+                    <Check
+                      className={`h-3 w-3 ${
+                        msg.isRead ? "text-blue-500" : "text-gray-500"
+                      }`}
+                    />
+                    {msg.isRead && (
+                      <Check className="h-3 w-3 -ml-1 text-blue-500" />
+                    )}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

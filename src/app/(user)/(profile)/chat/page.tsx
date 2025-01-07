@@ -164,6 +164,7 @@ export default function ChatPage() {
           isCallAccepted={isCallAccepted}
           endCall={endCall}
           reciever={reciever}
+          roomId={roomId}
         />
       ) : (
         <>
