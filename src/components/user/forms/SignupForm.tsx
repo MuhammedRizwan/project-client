@@ -196,7 +196,7 @@ export default function SignupForm() {
             <Button
               isLoading
               type="submit"
-              className="bg-yellow-700 text-black w-36"
+              className="bg-orange-600 text-black w-36"
               variant="flat"
             >
               Sign Up
@@ -204,7 +204,7 @@ export default function SignupForm() {
           ) : (
             <Button
               type="submit"
-              className="bg-yellow-700 text-black w-36"
+              className="bg-orange-600 text-black w-36"
               variant="flat"
             >
               Sign Up

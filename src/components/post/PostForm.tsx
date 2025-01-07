@@ -68,17 +68,6 @@ export default function PostForm({ user, onSubmit, post }: postFormProps) {
             />
             <div>
               <h3 className="font-semibold">{user?.username}</h3>
-              {/* <Dropdown>
-                <DropdownTrigger>
-                  <Button variant="light" size="sm">
-                    Post to Anyone
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem>Post to Friends</DropdownItem>
-                  <DropdownItem>Post to Group</DropdownItem>
-                </DropdownMenu>
-              </Dropdown> */}
             </div>
           </div>
           <Button isIconOnly variant="light">

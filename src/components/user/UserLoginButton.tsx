@@ -20,6 +20,10 @@ export default function UserLoginButton() {
   const pathname = usePathname();
   const accessToken = Cookies.get("accessToken");
   const dispatch = useDispatch();
+  
+  if (!accessToken) {
+    dispatch(logout());
+  }
   const handleLogout = () => {
     dispatch(logout());
     if (user?.google_authenticated) {
