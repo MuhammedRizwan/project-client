@@ -117,63 +117,63 @@ export default function ThankyouPage({
       </Card>
 
       <Card className="mb-8 bg-gray-50 shadow-lg rounded-lg overflow-hidden">
-  <CardHeader className="bg-orange-600 text-black p-4">
-    <h2 className="text-2xl font-bold">Booking Details</h2>
-  </CardHeader>
-  <Divider />
-  <CardBody className="p-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-3 text-green-700">
-          Personal Information
-        </h3>
-        <p className="mb-2">
-          <strong className="text-gray-800">Name:</strong> {bookingData.bill_details.first_name} {bookingData.bill_details.last_name}
-        </p>
-        <p className="mb-2">
-          <strong className="text-gray-800">Email:</strong> {bookingData.bill_details.email}
-        </p>
-        <p className="mb-2">
-          <strong className="text-gray-800">Phone:</strong> {bookingData.bill_details.phone}
-        </p>
-        <p className="mb-2">
-          <strong className="text-gray-800">Address:</strong> {bookingData.bill_details.address}
-        </p>
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-3 text-green-700">
-          Booking Information
-        </h3>
-        <p className="flex items-center gap-2 mb-2">
-          <Calendar className="w-5 h-5 text-green-500" />
-          <strong className="text-gray-800">Start Date:</strong> {new Date(bookingData.start_date).toLocaleDateString()}
-        </p>
-        <p className="flex items-center gap-2 mb-2">
-          <CreditCard className="w-5 h-5 text-green-500" />
-          <strong className="text-gray-800">Payment Amount:</strong> ${bookingData.payment_amount}
-        </p>
-        <p className="flex items-center gap-2 mb-2">
-          <CheckCircle className="w-5 h-5 text-green-500" />
-          <strong className="text-gray-800">Status:</strong> {bookingData.booking_status}
-        </p>
-      </div>
-    </div>
-    <Divider className="my-4" />
-    <div>
-      <h3 className="text-lg font-semibold mb-4 text-green-700">Travel Members</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {bookingData.members.map((member, index) => (
-          <div 
-          key={index} 
-          className="bg-gray-100 text-gray-800 shadow-sm px-3 py-1 rounded-md text-sm border border-gray-200 flex justify-between"
-        >
-         <p><strong>Name: </strong>{member.name}</p>     <p><strong>Age: </strong>{member.age}</p>  
-        </div>
-        ))}
-      </div>
-    </div>
-  </CardBody>
-</Card>
+        <CardHeader className="bg-orange-600 text-black p-4">
+          <h2 className="text-2xl font-bold">Booking Details</h2>
+        </CardHeader>
+        <Divider />
+        <CardBody className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-3 text-green-700">
+                Personal Information
+              </h3>
+              <p className="mb-2">
+                <strong className="text-gray-800">Name:</strong> {bookingData.bill_details.first_name} {bookingData.bill_details.last_name}
+              </p>
+              <p className="mb-2">
+                <strong className="text-gray-800">Email:</strong> {bookingData.bill_details.email}
+              </p>
+              <p className="mb-2">
+                <strong className="text-gray-800">Phone:</strong> {bookingData.bill_details.phone}
+              </p>
+              <p className="mb-2">
+                <strong className="text-gray-800">Address:</strong> {bookingData.bill_details.address}
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-3 text-green-700">
+                Booking Information
+              </h3>
+              <p className="flex items-center gap-2 mb-2">
+                <Calendar className="w-5 h-5 text-green-500" />
+                <strong className="text-gray-800">Start Date:</strong> {new Date(bookingData.start_date).toLocaleDateString()}
+              </p>
+              <p className="flex items-center gap-2 mb-2">
+                <CreditCard className="w-5 h-5 text-green-500" />
+                <strong className="text-gray-800">Payment Amount:</strong> ${bookingData.payment_amount}
+              </p>
+              <p className="flex items-center gap-2 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <strong className="text-gray-800">Status:</strong> {bookingData.booking_status}
+              </p>
+            </div>
+          </div>
+          <Divider className="my-4" />
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-green-700">Travel Members</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {bookingData.members.map((member, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 text-gray-800 shadow-sm px-3 py-1 rounded-md text-sm border border-gray-200 flex justify-between"
+                >
+                  <p><strong>Name: </strong>{member.name}</p>     <p><strong>Age: </strong>{member.age}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardBody>
+      </Card>
 
     </div>
   );

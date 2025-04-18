@@ -88,7 +88,7 @@ export default function BookingForm({
 
         const data = await response.order;
         const paymentData: RazorpayOptions = {
-          key: process.env.RAZORPAY_KEY_ID as string,
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
           order_id: data.id,
           handler: async (response: RazorpayResponse) => {
             const res = await verify_order({
