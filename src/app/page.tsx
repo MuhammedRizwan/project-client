@@ -39,7 +39,7 @@ const Lauterbrunnen = {
       steal the show: ooh and ahh at towering rock faces, mountain peaks, flowery meadows, and some of the tallest 
       free-flowing waterfalls in Europe. Fun fact: J.R.R. Tolkien used Lauterbrunnen as inspiration for the fictional
       valley of Rivendell in The Lord of the Rings.`,
-  image: "/images/Lauterbrunnen.webp  "
+  image: "/images/Lauterbrunnen.webp"
 }
 const Pitons = {
   header: "The Pitons, St. Lucia",
