@@ -23,7 +23,7 @@ const amazon = {
 const machu = {
   header: "Machu Picchu, Peru",
   content: `Located in the Peruvian Andes at nearly 8,000 feet above sea level,
-            Machu Picchu cascades down a dramatic mountain spine surrounded by
+  Machu Picchu cascades down a dramatic mountain spine surrounded by
             the Sacred Valleys jagged peaks. Millions of visitors flock to this
             UNESCO World Heritage site each year to see the terraces and
             classical dry-stone buildings of the citadel. While it is recognized

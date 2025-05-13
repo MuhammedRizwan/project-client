@@ -228,7 +228,7 @@ export default function PackageForm({
     onSubmit(packageFormValues);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)}>
+    <form onSubmit={handleSubmit(onSubmitHandler)} className="w-full">
       <PackageFormData
         register={register}
         errors={errors}
