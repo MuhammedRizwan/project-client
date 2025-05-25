@@ -199,7 +199,7 @@ export default function PostList(): JSX.Element {
               <CardFooter className="flex flex-col items-start space-y-4">
                 <div className="flex items-center gap-1">
                   {post.like.some(
-                    (like) => like.liked_user.toString() === user?._id
+                    (like) => like.liked_user=== user?._id
                   ) ? (
                     <Button
                       isIconOnly
