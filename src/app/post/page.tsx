@@ -94,7 +94,7 @@ export default function PostList(): JSX.Element {
 
   const handleAddComment = async(postId: string)=> {
     const commentText = newComments[postId];
-    if (commentText && commentText.trim()) {
+    if (commentText && commentText.trim() && user) {
       const response =await add_post_comment(postId, user?._id, commentText);
       if(response.success){
         setPosts(
@@ -103,7 +103,7 @@ export default function PostList(): JSX.Element {
               ? {
                   ...post,
                   comment: [...post.comment, {
-                    user_id: response.post.user_id,
+                    user_id: user,
                     message: commentText,
                     created_At: new Date(),
                   }],
